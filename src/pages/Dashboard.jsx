@@ -118,7 +118,20 @@ const Dashboard = () => {
 
   const daysToEU = daysUntil('2027-03-01');
 
+  // Calculate Rank based on level
+  const getRank = (level) => {
+    if (level < 5) return 'Vanguard Recruit';
+    if (level < 15) return 'Shadow Warrior';
+    if (level < 30) return 'Elite Commander';
+    return 'Supreme Overlord';
+  };
+
   if (loading) return <Loader />;
+
+  // Mental state helpers
+  const happyDaysPercent = charts?.moodTrend?.length 
+    ? Math.round((charts.moodTrend.filter(m => m.mood > 5).length / charts.moodTrend.length) * 100) 
+    : 0;
 
   return (
     <div className="animate-in fade-in duration-700 space-y-8 pb-20">
@@ -180,7 +193,7 @@ const Dashboard = () => {
                   <span className="text-[8px] font-black text-emerald-500 uppercase">PROGRESS</span>
                 </div>
              </div>
-             <p className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest text-center">XP TO NEXT LEVEL: {1000 - (user?.experience % 1000)}</p>
+             <p className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest text-center">XP: {user?.experience || 0}</p>
           </div>
         </div>
       </div>
@@ -188,10 +201,10 @@ const Dashboard = () => {
       {/* 🧭 Quick Vitals: 4-Column Summary */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { icon: <ClipboardList size={22} />, label: 'DAILY ROUTINE', value: 'ডেইলি চেকলিস্ট', color: 'bg-emerald-50 text-emerald-600', link: '/routine', status: 'প্রক্রিয়াধীন' },
-          { icon: <Dumbbell size={22} />, label: 'WORKOUT GOAL', value: todayWorkout ? 'ব্যায়াম শেষ' : 'ব্যায়াম বাকি', color: 'bg-rose-50 text-rose-600', link: '/workout', status: todayWorkout ? 'পূর্ণ' : 'বাকি' },
-          { icon: <Activity size={22} />, label: 'HABIT VICTORY', value: `${todayHabits.filter(h => h.completed).length}/${todayHabits.length} টাস্ক`, color: 'bg-orange-50 text-orange-600', link: '/habits', status: 'চলমান' },
-          { icon: <BookOpen size={22} />, label: 'STUDY FOCUS', value: studySubjects[0]?.name || 'কোনো মডিউল নেই', color: 'bg-sky-50 text-sky-600', link: '/study', status: 'স্টাডি টাইম' },
+          { icon: <ClipboardList size={22} />, label: "TODAY'S ROUTINE", value: 'ডেইলি চেকলিস্ট', color: 'bg-emerald-50 text-emerald-600', link: '/routine', status: format(new Date(), 'dd MMM') },
+          { icon: <Dumbbell size={22} />, label: 'WORKOUT RECORD', value: todayWorkout ? 'ব্যায়াম শেষ' : 'ব্যায়াম বাকি', color: 'bg-rose-50 text-rose-600', link: '/workout', status: stats?.totalWorkouts + ' TOTAL' },
+          { icon: <Activity size={22} />, label: 'HABIT VICTORY', value: `${todayHabits.filter(h => h.completed).length}/${todayHabits.length} সম্পন্ন`, color: 'bg-orange-50 text-orange-600', link: '/habits', status: 'শীর্ষ স্কোর: ' + stats?.avgHabitScore },
+          { icon: <BookOpen size={22} />, label: 'STUDY HOURS', value: stats?.totalStudyHours + ' Hours', color: 'bg-sky-50 text-sky-600', link: '/study', status: studySubjects.length + ' মডিউল' },
         ].map((item, i) => (
           <Link key={i} to={item.link} className="p-6 rounded-[2.5rem] bg-white border border-emerald-50 shadow-sm hover:shadow-md hover:translate-y-[-4px] transition-all group flex flex-col justify-between min-h-[160px]">
             <div className="flex justify-between items-start">
@@ -218,8 +231,8 @@ const Dashboard = () => {
           <div className="p-8 md:p-10 rounded-[3rem] border border-emerald-100 shadow-sm bg-white space-y-8 flex-1">
              <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                   <h3 className="text-2xl font-black tracking-tight text-emerald-950">ওয়ারিয়র স্ট্যাটিস্টিকস</h3>
-                   <p className="text-xs font-bold text-emerald-900/30 uppercase tracking-widest">আপনার দীর্ঘমিয়াদী প্রগতির গ্রাফ</p>
+                   <h3 className="text-2xl font-black tracking-tight text-emerald-950">ইউনিট অ্যানালিটিক্স</h3>
+                   <p className="text-xs font-bold text-emerald-900/30 uppercase tracking-widest">আপনার পারফরম্যান্স হিস্ট্রি</p>
                 </div>
                 <div className="p-4 bg-emerald-50 rounded-[2rem] text-emerald-600 shadow-inner">
                    <BarChart3 size={24} />
@@ -228,24 +241,24 @@ const Dashboard = () => {
 
              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <div className="p-6 rounded-[2rem] bg-emerald-50/50 border border-emerald-100/50 text-center space-y-2">
-                   <p className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest leading-none">TOTAL BATTLES</p>
-                   <p className="text-3xl font-black text-emerald-950">{(stats?.totalHabitsCompleted || 0) + (stats?.milestonesCount || 0)}</p>
+                   <p className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest leading-none">TRACKED DAYS</p>
+                   <p className="text-3xl font-black text-emerald-950">{stats?.daysTracked || 0}</p>
                    <div className="flex items-center justify-center gap-1 text-[10px] font-black text-emerald-500 uppercase">
-                      <TrendingUp size={10} /> +12% GROWTH
+                      <TrendingUp size={10} /> ACTIVE STATUS
                    </div>
                 </div>
                 <div className="p-6 rounded-[2rem] bg-orange-50/50 border border-orange-100/50 text-center space-y-2">
                    <p className="text-[10px] font-black text-orange-900/40 uppercase tracking-widest leading-none">BEST STREAK</p>
                    <p className="text-3xl font-black text-orange-950">{streak.longest || 0}</p>
                    <div className="flex items-center justify-center gap-1 text-[10px] font-black text-orange-500 uppercase">
-                      <Trophy size={10} /> ALL TIME RECORD
+                      <Trophy size={10} /> PERSONAL BEST
                    </div>
                 </div>
                 <div className="p-6 rounded-[2rem] bg-purple-50/50 border border-purple-100/50 text-center space-y-2">
-                   <p className="text-[10px] font-black text-purple-900/40 uppercase tracking-widest leading-none">RANK STATUS</p>
-                   <p className="text-3xl font-black text-purple-950">Vanguard</p>
+                   <p className="text-[10px] font-black text-purple-900/40 uppercase tracking-widest leading-none">RANK TITLE</p>
+                   <p className="text-2xl font-black text-purple-950">{getRank(xp.level)}</p>
                    <div className="flex items-center justify-center gap-1 text-[10px] font-black text-purple-500 uppercase">
-                      <Shield size={10} /> DEFENSE STABLE
+                      <Shield size={10} /> LEVEL {xp.level}
                    </div>
                 </div>
              </div>
@@ -281,19 +294,19 @@ const Dashboard = () => {
         <div className="lg:col-span-4 flex flex-col gap-6">
           <div className="p-8 rounded-[3rem] border border-emerald-100 shadow-sm bg-white space-y-6 flex flex-col justify-between">
              <div className="space-y-1">
-                <h3 className="text-xl font-black tracking-tight text-emerald-950">মেন্টাল হেলথ</h3>
-                <p className="text-[10px] font-black text-emerald-900/30 uppercase tracking-widest">মুড অ্যানালাইসিস</p>
+                <h3 className="text-xl font-black tracking-tight text-emerald-950">মেন্টাল ইনসাইটস</h3>
+                <p className="text-[10px] font-black text-emerald-900/30 uppercase tracking-widest">গড় মুড স্কোর</p>
              </div>
              
              <div className="flex items-center justify-center py-4">
-                <div className="relative w-40 h-40">
+                <div className="relative w-36 h-36">
                    <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
-                      <p className="text-3xl font-black text-emerald-950">7.5</p>
-                      <p className="text-[8px] font-black text-emerald-400 uppercase">STABLE MIND</p>
+                      <p className="text-3xl font-black text-emerald-950">{stats?.avgMood || 0}</p>
+                      <p className="text-[8px] font-black text-emerald-500 uppercase">{stats?.avgMood > 5 ? 'HEALTHY MIND' : 'NEEDS FOCUS'}</p>
                    </div>
                    <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
-                         <Pie data={[{ value: 75 }, { value: 25 }]} innerRadius={55} outerRadius={75} startAngle={90} endAngle={450} dataKey="value" stroke="none">
+                         <Pie data={[{ value: stats?.avgMood * 10 || 1 }, { value: 100 - (stats?.avgMood * 10) || 1 }]} innerRadius={50} outerRadius={68} startAngle={90} endAngle={450} dataKey="value" stroke="none">
                             <Cell fill="#10b981" />
                             <Cell fill="#f1f5f9" />
                          </Pie>
@@ -308,18 +321,18 @@ const Dashboard = () => {
                       <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-sm text-emerald-500">
                         <Smile size={18} />
                       </div>
-                      <span className="text-xs font-black text-emerald-950">সুখী দিন</span>
+                      <span className="text-xs font-black text-emerald-950">সুখী দিনগুলো</span>
                    </div>
-                   <span className="text-xs font-black text-emerald-600">84%</span>
+                   <span className="text-xs font-black text-emerald-600">{happyDaysPercent}%</span>
                 </div>
                 <div className="flex items-center justify-between p-4 rounded-2xl bg-orange-50/50 border border-orange-100/50">
                    <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-sm text-orange-500">
                         <Frown size={18} />
                       </div>
-                      <span className="text-xs font-black text-emerald-950">চ্যালেঞ্জিং</span>
+                      <span className="text-xs font-black text-emerald-950">চ্যালেঞ্জিং দিন</span>
                    </div>
-                   <span className="text-xs font-black text-orange-600">16%</span>
+                   <span className="text-xs font-black text-orange-600">{100 - happyDaysPercent}%</span>
                 </div>
              </div>
           </div>
@@ -331,19 +344,19 @@ const Dashboard = () => {
                    <div className="p-3 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20">
                       <Rocket size={20} className="text-emerald-400" />
                    </div>
-                   <div className="px-3 py-1 bg-emerald-400 text-[9px] font-black text-emerald-950 rounded-full uppercase tracking-widest">IMPACT CARD</div>
+                   <div className="px-3 py-1 bg-emerald-400 text-[9px] font-black text-emerald-950 rounded-full uppercase tracking-widest">MISSION</div>
                 </div>
                 <div className="space-y-2">
                    <p className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.3em]">PRIMARY TARGET</p>
-                   <h3 className="text-2xl font-black leading-[1.1] tracking-tight truncate">{user?.goal || 'সাম্রাজ্য গড়ে তোলো'}</h3>
+                   <h3 className="text-2xl font-black leading-[1.1] tracking-tight truncate">{user?.goal || 'লক্ষ্য নির্বাচন করো'}</h3>
                 </div>
                 <div className="pt-4 border-t border-white/10 flex items-center justify-between">
                    <div className="flex items-center gap-2">
                       <Heart size={14} className="text-rose-400 fill-rose-400" />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-emerald-100">STAY DISCIPLINED</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-emerald-100">STAY SHARP</span>
                    </div>
                    <Link to="/milestones" className="text-[10px] font-black px-3 py-2 bg-white text-emerald-950 rounded-xl hover:bg-emerald-50 transition-colors uppercase tracking-widest">
-                      VIEW GOAL
+                      DETAILS
                    </Link>
                 </div>
              </div>
@@ -358,8 +371,8 @@ const Dashboard = () => {
         <div className="p-8 md:p-10 rounded-[3rem] border border-emerald-100 shadow-sm bg-white space-y-8 group transition-all">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
-               <h3 className="text-xl font-black text-emerald-950">স্টাডি পোর্টাল</h3>
-               <p className="text-[10px] font-black text-emerald-900/30 uppercase tracking-widest">অর্জিত জ্ঞান ও প্রজ্ঞা</p>
+               <h3 className="text-xl font-black text-emerald-950">নলেজ পোর্টাল</h3>
+               <p className="text-[10px] font-black text-emerald-900/30 uppercase tracking-widest">পড়াশোনা এবং প্রগতি</p>
             </div>
             <Link to="/study" className="p-4 bg-emerald-50 rounded-[2rem] text-emerald-600 hover:scale-105 transition-transform">
                <BookOpen size={24} />
@@ -372,26 +385,23 @@ const Dashboard = () => {
              </div>
              <div className="flex-1 space-y-2">
                 <div>
-                   <p className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest">CURRENT TRACK</p>
-                   <p className="text-xl font-black text-emerald-950 leading-tight">{studySubjects[0]?.name || 'কোনো মডিউল নেই'}</p>
+                   <p className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest">CURRENT MODULE</p>
+                   <p className="text-xl font-black text-emerald-950 leading-tight truncate">{studySubjects[0]?.name || 'কোনো মডিউল নেই'}</p>
                 </div>
-                <div className="flex items-center gap-4">
-                   <div className="flex -space-x-2">
-                      {[1,2,3].map(i => <div key={i} className="w-6 h-6 rounded-full border-2 border-white bg-emerald-100" />)}
-                   </div>
-                   <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">+5 EXPERTS ACTIVE</span>
+                <div className="flex items-center gap-2">
+                   <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">স্টাডি ট্র্যাকার সক্রিয়</span>
                 </div>
              </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
              <div className="p-5 rounded-[2rem] bg-emerald-50/30 border border-emerald-100/30 text-center">
-                <p className="text-[9px] font-black text-emerald-900/30 uppercase mb-1">COMPLETED TOPICS</p>
+                <p className="text-[9px] font-black text-emerald-900/30 uppercase mb-1">TOPICS FINISHED</p>
                 <p className="text-2xl font-black text-emerald-950">{studySubjects[0]?.topics?.filter(t => t.completed).length || 0}</p>
              </div>
              <div className="p-5 rounded-[2rem] bg-emerald-50/30 border border-emerald-100/30 text-center">
-                <p className="text-[9px] font-black text-emerald-900/30 uppercase mb-1">TOTAL XP EARNED</p>
-                <p className="text-2xl font-black text-emerald-950">+840</p>
+                <p className="text-[9px] font-black text-emerald-900/30 uppercase mb-1">STUDY TIME</p>
+                <p className="text-2xl font-black text-emerald-950">{stats?.totalStudyHours || 0}h</p>
              </div>
           </div>
         </div>
@@ -400,8 +410,8 @@ const Dashboard = () => {
         <div className="p-8 md:p-10 rounded-[3rem] border border-emerald-100 shadow-sm bg-white space-y-8">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
-               <h3 className="text-xl font-black text-orange-950">অ্যাকশন সেন্টার</h3>
-               <p className="text-[10px] font-black text-orange-900/30 uppercase tracking-widest">আজকের যুদ্ধগুলো</p>
+               <h3 className="text-xl font-black text-orange-950">ব্যাটল ফিল্ড</h3>
+               <p className="text-[10px] font-black text-orange-900/30 uppercase tracking-widest">প্রতিদিনের চ্যালেঞ্জ</p>
             </div>
             <Link to="/habits" className="p-4 bg-orange-50 rounded-[2rem] text-orange-600 hover:scale-105 transition-transform">
                <Swords size={24} />
@@ -418,7 +428,7 @@ const Dashboard = () => {
                          </div>
                          <div>
                             <p className="text-sm font-black text-emerald-950">{h.name}</p>
-                            <p className="text-[9px] font-black text-orange-400/60 uppercase tracking-widest">{h.completed ? 'BATTLE WON' : 'PENDING'}</p>
+                            <p className="text-[9px] font-black text-orange-400/60 uppercase tracking-widest">{h.completed ? 'VICTORY' : 'IN PROGRESS'}</p>
                          </div>
                       </div>
                       <div className={`w-6 h-6 rounded-xl border-2 flex items-center justify-center transition-all ${h.completed ? 'bg-emerald-500 border-emerald-500' : 'border-gray-200'}`}>
@@ -429,13 +439,13 @@ const Dashboard = () => {
              ) : (
                 <div className="py-12 flex flex-col items-center justify-center text-center opacity-30 italic">
                    <Shield size={48} className="mb-4" />
-                   <p className="text-sm">কোনো যুদ্ধ নির্ধারিত নেই</p>
+                   <p className="text-sm">কোনো ব্যাটেল নেই</p>
                 </div>
              )}
           </div>
 
           <Link to="/habits" className="block w-full text-center py-4 rounded-[1.8rem] border-2 border-dashed border-orange-100 text-orange-400 text-xs font-black uppercase tracking-widest hover:bg-orange-50 transition-all">
-             ম্যানেজ ব্যাটল লগ
+             ম্যানেজ মিশনস
           </Link>
         </div>
       </div>

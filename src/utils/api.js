@@ -35,11 +35,12 @@ export const authAPI = {
 
 // Routines
 export const routineAPI = {
-  get: (date) => API.get(`/routines/${date}`),
+  get: (date, name = "Daily") => API.get(`/routines/${date}?name=${name}`),
   save: (data) => API.post("/routines", data),
-  toggleTask: (date, taskId, completed) =>
-    API.put(`/routines/${date}/task/${taskId}`, { completed }),
+  toggleTask: (date, taskId, completed, name = "Daily") =>
+    API.put(`/routines/${date}/task/${taskId}`, { completed, name }),
   getWeek: (startDate) => API.get(`/routines/week/${startDate}`),
+  getAllForDate: (date) => API.get(`/routines/${date}/list/all`),
 };
 
 // Habits
@@ -75,6 +76,14 @@ export const workoutAPI = {
   log: (data) => API.post("/workout", data),
   history: (days) => API.get(`/workout/history/${days}`),
   delete: (id) => API.delete(`/workout/${id}`),
+};
+
+// Milestones
+export const milestoneAPI = {
+  get: () => API.get("/milestones"),
+  save: (data) => API.post("/milestones", data),
+  update: (id, data) => API.put(`/milestones/${id}`, data),
+  delete: (id) => API.delete(`/milestones/${id}`),
 };
 
 // Analytics

@@ -13,54 +13,81 @@ import {
   Accessibility,
   Trophy,
   Flower2,
-  Calendar
+  Calendar,
+  Zap,
+  TrendingUp,
+  Circle,
+  Award,
+  Trash2,
+  Info,
+  CheckCircle2,
+  Layout,
+  Clock
 } from 'lucide-react';
-import { workoutAPI } from '../utils/api';
+import { workoutAPI, analyticsAPI } from '../utils/api';
 import { todayStr } from '../utils/helpers';
-import { format, addDays, parseISO } from 'date-fns';
+import { format, addDays, parseISO, subDays } from 'date-fns';
 import toast from 'react-hot-toast';
+import Loader from '../components/Common/Loader';
+import { 
+  AreaChart, 
+  Area, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer 
+} from 'recharts';
 
 const WORKOUT_TYPES = [
-  { type: 'Cardio', icon: 'Activity', color: '#f43f5e' },
-  { type: 'Calisthenics', icon: 'Accessibility', color: '#10b981' },
-  { type: 'Core', icon: 'Flame', color: '#6366f1' },
-  { type: 'Strength', icon: 'Dumbbell', color: '#3b82f6' },
-  { type: 'Yoga', icon: 'Flower2', color: '#8b5cf6' },
-  { type: 'Sports', icon: 'Trophy', color: '#22c55e' },
+  { type: 'Cardio', icon: <Activity size={20} />, color: 'text-rose-500', bg: 'bg-rose-50', border: 'border-rose-100' },
+  { type: 'Calisthenics', icon: <Accessibility size={20} />, color: 'text-emerald-500', bg: 'bg-emerald-50', border: 'border-emerald-100' },
+  { type: 'Core', icon: <Flame size={20} />, color: 'text-orange-500', bg: 'bg-orange-50', border: 'border-orange-100' },
+  { type: 'Strength', icon: <Dumbbell size={20} />, color: 'text-blue-500', bg: 'bg-blue-50', border: 'border-blue-100' },
+  { type: 'Yoga', icon: <Flower2 size={20} />, color: 'text-purple-500', bg: 'bg-purple-50', border: 'border-purple-100' },
+  { type: 'Sports', icon: <Trophy size={20} />, color: 'text-amber-500', bg: 'bg-amber-50', border: 'border-amber-100' },
 ];
 
-const WorkoutIcon = ({ name, size = 20, color = 'currentColor' }) => {
-  const icons = {
-    Activity: <Activity size={size} color={color} />,
-    Accessibility: <Accessibility size={size} color={color} />,
-    Flame: <Flame size={size} color={color} />,
-    Dumbbell: <Dumbbell size={size} color={color} />,
-    Flower2: <Flower2 size={size} color={color} />,
-    Trophy: <Trophy size={size} color={color} />,
-  };
-  return icons[name] || <Dumbbell size={size} color={color} />;
-};
-
 const DEFAULT_EXERCISES = {
-  Cardio: [{ name: 'দৌড়', duration: 1800 }],
-  Calisthenics: [{ name: 'পুশআপ', sets: 3, reps: 20 }, { name: 'পুলআপ', sets: 3, reps: 10 }],
-  Core: [{ name: 'প্ল্যাঙ্ক', duration: 60 }, { name: 'ক্রাঞ্চ', sets: 3, reps: 30 }],
-  Strength: [{ name: 'স্কোয়াট', sets: 3, reps: 15 }],
-  Yoga: [{ name: 'সূর্যনমস্কার', sets: 3 }],
-  Sports: [{ name: 'খেলা', duration: 1800 }],
+  Cardio: [{ name: 'Running', duration: 1800 }],
+  Calisthenics: [{ name: 'Pushups', sets: 3, reps: 20 }, { name: 'Pullups', sets: 3, reps: 10 }],
+  Core: [{ name: 'Plank', duration: 60 }, { name: 'Crunches', sets: 3, reps: 30 }],
+  Strength: [{ name: 'Squats', sets: 3, reps: 15 }],
+  Yoga: [{ name: 'Sun Salutation', sets: 3 }],
+  Sports: [{ name: 'Football/Practice', duration: 1800 }],
 };
 
 const Workout = () => {
   const [date, setDate] = useState(todayStr());
   const [workouts, setWorkouts] = useState([]);
+  const [history, setHistory] = useState([]);
+  const [stats, setStats] = useState(null);
   const [selectedType, setSelectedType] = useState('Calisthenics');
   const [exercises, setExercises] = useState(DEFAULT_EXERCISES['Calisthenics']);
   const [duration, setDuration] = useState(30);
   const [notes, setNotes] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [logging, setLogging] = useState(false);
+
+  const fetchData = async (d) => {
+    try {
+      const [workoutRes, historyRes, analyticsRes] = await Promise.all([
+        workoutAPI.get(d),
+        workoutAPI.history(30),
+        analyticsAPI.getDashboard()
+      ]);
+      setWorkouts(workoutRes.data.workouts || []);
+      setHistory(historyRes.data.workouts || []);
+      setStats(analyticsRes.data.stats);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    workoutAPI.get(date).then(res => setWorkouts(res.data.workouts || [])).catch(() => {});
+    fetchData(date);
   }, [date]);
 
   const changeDate = (delta) => {
@@ -82,14 +109,21 @@ const Workout = () => {
   const removeExercise = (i) => setExercises(exercises.filter((_, idx) => idx !== i));
 
   const logWorkout = async () => {
-    setLoading(true);
+    setLogging(true);
     try {
       const res = await workoutAPI.log({ date, type: selectedType, exercises, totalDuration: duration, notes });
       setWorkouts([...workouts, res.data.workout]);
-      toast.success('ওয়ার্কআউট লগ করা হয়েছে! 🔥');
+      toast.success('ওয়ার্কআউট লগ করা হয়েছে! 🔥', {
+        icon: '💪',
+        style: { borderRadius: '15px', background: '#064e3b', color: '#fff', fontWeight: 'bold' }
+      });
       setNotes('');
-    } catch (e) { toast.error('লগ করা যায়নি'); }
-    finally { setLoading(false); }
+      fetchData(date);
+    } catch (e) { 
+      toast.error('লগ করা যায়নি'); 
+    } finally { 
+      setLogging(false); 
+    }
   };
 
   const deleteWorkout = async (id) => {
@@ -97,123 +131,366 @@ const Workout = () => {
       await workoutAPI.delete(id);
       setWorkouts(workouts.filter(w => w._id !== id));
       toast.success('মুছে ফেলা হয়েছে');
+      fetchData(date);
     } catch (e) { toast.error('ডিলিট করা যায়নি'); }
   };
 
+  // Chart Data preparation
+  const getChartData = () => {
+    const days = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = format(subDays(new Date(), i), 'yyyy-MM-dd');
+      const dayWorkouts = history.filter(w => w.date === d);
+      const totalMins = dayWorkouts.reduce((sum, w) => sum + w.totalDuration, 0);
+      days.push({ name: format(subDays(new Date(), i), 'EEE'), mins: totalMins });
+    }
+    return days;
+  };
+
+  const chartData = getChartData();
+
+  if (loading && history.length === 0) return <Loader />;
+
   return (
-    <div className="fade-in">
-      <div className="page-header">
-        <div>
-          <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <Dumbbell size={28} color="var(--primary)" /> ওয়ার্কআউট ট্র্যাকার
-          </h1>
-          <p className="page-subtitle">শক্তি আসে অনুশীলন থেকে</p>
-        </div>
-      </div>
+    <div className="animate-in fade-in duration-700 space-y-8 pb-24">
+      
+      {/* 🚀 Header: Ultra Premium Warrior Fitness Command */}
+      <div className="relative overflow-hidden rounded-[3.5rem] p-1 shadow-sm border border-emerald-100 bg-white">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-50 rounded-full blur-[100px] -mr-40 -mt-40 opacity-60" />
+        
+        <div className="relative px-8 py-10 flex flex-col md:flex-row md:items-center justify-between gap-10">
+          <div className="space-y-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="px-3 py-1 bg-rose-500 text-[10px] font-black text-white rounded-full uppercase tracking-widest shadow-lg shadow-rose-500/20">
+                WARRIOR STRENGTH
+              </span>
+              <span className="px-3 py-1 bg-emerald-50 border border-emerald-100 text-[10px] font-black text-emerald-600 rounded-full uppercase tracking-widest">
+                ACTIVE RECOVERY
+              </span>
+            </div>
+            
+            <div className="space-y-1">
+              <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-emerald-950">
+                ব্যাটল <span className="bg-gradient-to-r from-rose-600 to-orange-500 bg-clip-text text-transparent">ট্রেনিং</span>
+              </h1>
+              <p className="text-emerald-950/40 font-bold text-sm">শক্তি আর শৃঙ্খলাই তোমার প্রধান অস্ত্র</p>
+            </div>
 
-      {/* Date Nav */}
-      <div className="date-nav" style={{ marginBottom: 20, display: 'inline-flex' }}>
-        <button className="date-nav-btn" onClick={() => changeDate(-1)}><ChevronLeft size={18} /></button>
-        <div className="date-nav-display">
-          {format(parseISO(date), 'dd MMM yyyy')}
-          {date === todayStr() && <span style={{ color: 'var(--secondary)', marginLeft: 8, fontSize: 13 }}>আজ</span>}
-        </div>
-        <button className="date-nav-btn" onClick={() => changeDate(1)} disabled={date === todayStr()}><ChevronRight size={18} /></button>
-      </div>
-
-      <div className="grid-2">
-        {/* Log Workout */}
-        <div className="card">
-          <div className="card-title" style={{ marginBottom: 20 }}>+ নতুন ওয়ার্কআউট লগ</div>
-
-          {/* Type Selection */}
-          <div className="form-group">
-            <label className="form-label">ওয়ার্কআউট টাইপ</label>
-            <div className="workout-type-grid">
-              {WORKOUT_TYPES.map(({ type, icon, color }) => (
-                <div key={type} className={`workout-type-btn${selectedType === type ? ' selected' : ''}`}
-                  onClick={() => selectType(type)}
-                  style={{ borderColor: selectedType === type ? color : 'var(--border-light)', color: selectedType === type ? color : 'var(--text-secondary)' }}>
-                  <span className="workout-type-icon">
-                    <WorkoutIcon name={icon} size={20} color={selectedType === type ? color : 'var(--text-muted)'} />
-                  </span>
-                  {type}
-                </div>
-              ))}
+            <div className="flex items-center gap-6 pt-2">
+               <div className="flex items-center gap-2">
+                 <div className="w-12 h-12 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-500 shadow-sm border border-rose-100">
+                    <Dumbbell size={24} />
+                 </div>
+                 <div>
+                    <div className="text-2xl font-black text-emerald-950">{stats?.totalWorkouts || 0}</div>
+                    <p className="text-[9px] font-black text-rose-500 uppercase tracking-widest leading-none">TOTAL LOGS</p>
+                 </div>
+               </div>
+               <div className="w-px h-10 bg-emerald-100" />
+               <div className="flex items-center gap-2">
+                 <div className="w-12 h-12 rounded-2xl bg-orange-50 flex items-center justify-center text-orange-500 shadow-sm border border-orange-100">
+                    <Flame size={24} fill="currentColor" />
+                 </div>
+                 <div>
+                    <div className="text-2xl font-black text-emerald-950">{(history.reduce((a,b)=>a+b.totalDuration, 0)).toFixed(0)}m</div>
+                    <p className="text-[9px] font-black text-orange-500 uppercase tracking-widest leading-none">TOTAL MINS</p>
+                 </div>
+               </div>
             </div>
           </div>
 
-          {/* Exercises */}
-          <div className="form-group">
-            <label className="form-label">এক্সারসাইজ</label>
-            {exercises.map((ex, i) => (
-              <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr auto', gap: 8, marginBottom: 8 }}>
-                <input type="text" className="form-input" placeholder="নাম" value={ex.name} onChange={e => updateExercise(i, 'name', e.target.value)} />
-                <input type="number" className="form-input" placeholder="Sets" value={ex.sets || ''} onChange={e => updateExercise(i, 'sets', +e.target.value)} />
-                <input type="number" className="form-input" placeholder="Reps" value={ex.reps || ''} onChange={e => updateExercise(i, 'reps', +e.target.value)} />
-                <button className="btn btn-danger btn-sm" onClick={() => removeExercise(i)}><X size={14} /></button>
+          <div className="bg-rose-950 p-8 rounded-[3rem] text-white space-y-4 min-w-[280px] shadow-2xl relative overflow-hidden">
+             <div className="absolute top-0 right-0 p-4 opacity-10">
+                <Trophy size={80} strokeWidth={1} />
+             </div>
+             <div className="flex items-center gap-3">
+                <div className="p-2 bg-white/10 rounded-xl">
+                   <Zap size={20} className="text-orange-400" />
+                </div>
+                <div>
+                   <p className="text-[10px] font-black text-rose-400 uppercase tracking-widest">FITNESS STATUS</p>
+                   <h3 className="text-lg font-black">{stats?.totalWorkouts > 10 ? 'Elite Athlete' : 'Recruit'}</h3>
+                </div>
+             </div>
+             <div className="space-y-2">
+                <div className="flex justify-between text-[10px] font-black uppercase text-rose-400">
+                   <span>Power Level</span>
+                   <span>{Math.min(100, (stats?.totalWorkouts || 0) * 5)}%</span>
+                </div>
+                <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+                   <div className="h-full bg-rose-500 rounded-full shadow-[0_0_10px_rgba(244,63,94,0.5)]" style={{ width: `${Math.min(100, (stats?.totalWorkouts || 0) * 5)}%` }} />
+                </div>
+             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 📅 Date Navigation */}
+      <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="flex items-center gap-3 bg-white p-2 rounded-[2rem] border border-emerald-50 shadow-sm w-max">
+           <button onClick={() => changeDate(-1)} className="p-4 rounded-2xl hover:bg-emerald-50 text-emerald-600 transition-all"><ChevronLeft size={20} /></button>
+           <div className="px-6 text-center">
+              <p className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest leading-none mb-1">SESSION DATE</p>
+              <p className="text-sm font-black text-emerald-950">
+                 {format(parseISO(date), 'EEEE, dd MMM')}
+                 {date === todayStr() && <span className="ml-2 text-emerald-500 text-[10px] uppercase">● আজ</span>}
+              </p>
+           </div>
+           <button 
+             onClick={() => changeDate(1)} 
+             disabled={date === todayStr()}
+             className="p-4 rounded-2xl hover:bg-emerald-50 text-emerald-600 transition-all disabled:opacity-30 disabled:hover:bg-transparent"
+           ><ChevronRight size={20} /></button>
+        </div>
+
+        <div className="flex items-center gap-4 bg-white px-6 py-4 rounded-[2rem] border border-emerald-50 shadow-sm">
+           <Activity size={18} className="text-emerald-400" />
+           <p className="text-xs font-black text-emerald-950 uppercase tracking-widest">আজকের রেকর্ড: <span className="text-emerald-500">{workouts.length} সেশন</span></p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
+        
+        {/* 📋 Left: Workout Logging Hub */}
+        <div className="xl:col-span-12 lg:col-span-12 grid grid-cols-1 lg:grid-cols-2 gap-8">
+           
+           {/* Section: Log Form */}
+           <div className="p-8 md:p-10 rounded-[3.5rem] bg-white border border-emerald-100 shadow-sm space-y-8">
+              <div className="flex items-center justify-between">
+                 <div className="space-y-1">
+                    <h3 className="text-2xl font-black text-emerald-950 tracking-tight">নতুন সেশন লগ</h3>
+                    <p className="text-[10px] font-black text-emerald-900/30 uppercase tracking-widest">আপনার অনুশীলনের বিবরণ দিন</p>
+                 </div>
+                 <div className="p-4 bg-rose-50 rounded-2xl text-rose-500 border border-rose-100 shadow-inner">
+                    <Plus size={24} />
+                 </div>
               </div>
-            ))}
-            <button className="btn btn-ghost btn-sm" onClick={addExercise}><Plus size={14} /> এক্সারসাইজ যোগ</button>
-          </div>
 
-          <div className="form-group">
-            <label className="form-label">মোট সময় (মিনিট)</label>
-            <input type="number" className="form-input" value={duration} onChange={e => setDuration(+e.target.value)} min="5" max="180" />
-          </div>
+              {/* Type Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                 {WORKOUT_TYPES.map((t) => (
+                    <button 
+                      key={t.type}
+                      onClick={() => selectType(t.type)}
+                      className={`p-4 rounded-[2rem] border transition-all flex flex-col items-center gap-2 group ${selectedType === t.type ? 'bg-emerald-950 border-emerald-950 text-white shadow-xl scale-[1.05]' : 'bg-white border-emerald-50 text-emerald-900/40 hover:border-emerald-200'}`}
+                    >
+                       <div className={`p-3 rounded-2xl transition-all ${selectedType === t.type ? 'bg-white/10' : `${t.bg} ${t.color}`}`}>
+                          {t.icon}
+                       </div>
+                       <span className="text-[10px] font-black uppercase tracking-widest">{t.type}</span>
+                    </button>
+                 ))}
+              </div>
 
-          <div className="form-group">
-            <label className="form-label">নোট (ঐচ্ছিক)</label>
-            <textarea className="form-textarea" placeholder="কেমন লাগলো?" value={notes} onChange={e => setNotes(e.target.value)} style={{ minHeight: 80 }} />
-          </div>
+              {/* Exercises Management */}
+              <div className="space-y-4">
+                 <h4 className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest ml-4">EXERCISES</h4>
+                 <div className="space-y-3">
+                    {exercises.map((ex, i) => (
+                       <div key={i} className="flex flex-col md:flex-row gap-3 p-4 bg-emerald-50/50 rounded-[2rem] border border-emerald-100">
+                          <input 
+                            type="text" 
+                            placeholder="Exercise Name" 
+                            className="flex-1 bg-white rounded-2xl px-5 py-3 text-sm font-bold focus:outline-none border border-emerald-100"
+                            value={ex.name} 
+                            onChange={e => updateExercise(i, 'name', e.target.value)} 
+                          />
+                          <div className="flex gap-2">
+                             <input 
+                               type="number" 
+                               placeholder="Sets" 
+                               className="w-20 bg-white rounded-2xl px-4 py-3 text-sm font-bold text-center border border-emerald-100"
+                               value={ex.sets || ''} 
+                               onChange={e => updateExercise(i, 'sets', +e.target.value)} 
+                             />
+                             <input 
+                               type="number" 
+                               placeholder="Reps" 
+                               className="w-20 bg-white rounded-2xl px-4 py-3 text-sm font-bold text-center border border-emerald-100"
+                               value={ex.reps || ''} 
+                               onChange={e => updateExercise(i, 'reps', +e.target.value)} 
+                             />
+                             <button 
+                               onClick={() => removeExercise(i)}
+                               className="p-3 bg-white text-rose-500 rounded-2xl hover:bg-rose-50 transition-all border border-rose-100"
+                             >
+                                <X size={16} />
+                             </button>
+                          </div>
+                       </div>
+                    ))}
+                 </div>
+                 <button 
+                   onClick={addExercise}
+                   className="w-full py-4 rounded-[1.8rem] border-2 border-dashed border-emerald-100 text-emerald-400 text-[10px] font-black uppercase tracking-widest hover:bg-emerald-50 transition-all flex items-center justify-center gap-2"
+                 >
+                    <Plus size={14} /> ADD EXERCISE
+                 </button>
+              </div>
 
-          <button className="btn btn-primary btn-full" onClick={logWorkout} disabled={loading}>
-            {loading ? <><Loader2 size={18} className="spin" /> সেভ হচ্ছে...</> : <><Dumbbell size={18} /> ওয়ার্কআউট লগ করো</>}
-          </button>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <div className="space-y-2">
+                    <label className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest ml-4">DURATION (MINS)</label>
+                    <div className="relative">
+                       <input 
+                         type="number" 
+                         className="w-full bg-emerald-50/50 rounded-2xl px-6 py-4 border border-emerald-100 focus:outline-none focus:ring-2 focus:ring-rose-500/20 text-sm font-black text-emerald-950" 
+                         value={duration} 
+                         onChange={e => setDuration(+e.target.value)} 
+                       />
+                       <Clock size={18} className="absolute right-6 top-1/2 -translate-y-1/2 text-emerald-200" />
+                    </div>
+                 </div>
+                 <div className="space-y-2">
+                    <label className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest ml-4">NOTES (OPTIONAL)</label>
+                    <input 
+                      type="text" 
+                      placeholder="How do you feel?" 
+                      className="w-full bg-emerald-50/50 rounded-2xl px-6 py-4 border border-emerald-100 focus:outline-none focus:ring-2 focus:ring-rose-500/20 text-sm font-black text-emerald-950" 
+                      value={notes} 
+                      onChange={e => setNotes(e.target.value)} 
+                    />
+                 </div>
+              </div>
+
+              <button 
+                onClick={logWorkout} 
+                disabled={logging}
+                className="w-full py-6 bg-rose-600 text-white rounded-[2.5rem] font-black text-sm uppercase tracking-widest hover:bg-rose-700 shadow-2xl shadow-rose-600/30 transition-all flex items-center justify-center gap-3 active:scale-[0.98]"
+              >
+                {logging ? <Loader2 size={24} className="animate-spin" /> : <><CheckCircle2 size={24} /> সেশন কমপ্লিট করো</>}
+              </button>
+           </div>
+
+           {/* Section: Real Charts & History */}
+           <div className="space-y-8">
+              
+              {/* Performance Curve */}
+              <div className="p-8 md:p-10 rounded-[3.5rem] border border-emerald-100 shadow-sm bg-white space-y-8">
+                 <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                       <h3 className="text-2xl font-black text-emerald-950 tracking-tight">ট্রেনিং ভলিউম</h3>
+                       <p className="text-[10px] font-black text-emerald-900/30 uppercase tracking-widest">গত ৭ দিনের অনুশীলনের গ্রাফ (মিনিট)</p>
+                    </div>
+                    <div className="p-4 bg-orange-50 rounded-2xl text-orange-500 border border-orange-100">
+                       <TrendingUp size={24} />
+                    </div>
+                 </div>
+
+                 <div className="h-[240px] w-full pt-4">
+                    <ResponsiveContainer width="100%" height="100%">
+                       <AreaChart data={chartData}>
+                          <defs>
+                             <linearGradient id="workoutGrad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.2}/>
+                                <stop offset="95%" stopColor="#f43f5e" stopOpacity={0}/>
+                             </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                          <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 9, fontWeight: 900, fill: '#94a3b8' }} dy={10} />
+                          <YAxis hide />
+                          <Tooltip 
+                            content={({ active, payload }) => active && payload?.[0] ? (
+                              <div className="bg-white/95 backdrop-blur-md border border-rose-100 p-3 rounded-2xl shadow-xl">
+                                 <p className="text-[9px] font-black text-rose-900/30 uppercase mb-1">{payload[0].payload.name}</p>
+                                 <p className="text-sm font-black text-emerald-950">{payload[0].value} <span className="text-rose-500">Mins</span></p>
+                              </div>
+                            ) : null}
+                          />
+                          <Area type="monotone" dataKey="mins" stroke="#f43f5e" strokeWidth={4} fillOpacity={1} fill="url(#workoutGrad)" dot={{ r: 5, fill: '#fff', stroke: '#f43f5e', strokeWidth: 2 }} activeDot={{ r: 7 }} />
+                       </AreaChart>
+                    </ResponsiveContainer>
+                 </div>
+              </div>
+
+              {/* Today's Stats Cards */}
+              <div className="grid grid-cols-2 gap-4">
+                 <div className="p-8 rounded-[2.5rem] bg-indigo-950 text-white space-y-2 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-4 opacity-10"><Zap size={40} /></div>
+                    <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">POWER SCORE</p>
+                    <h4 className="text-3xl font-black">{workouts.length * 150}</h4>
+                    <p className="text-[8px] font-bold text-white/40 uppercase">POINTS EARNED TODAY</p>
+                 </div>
+                 <div className="p-8 rounded-[2.5rem] bg-emerald-950 text-white space-y-2 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-4 opacity-10"><Award size={40} /></div>
+                    <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">RANK UP</p>
+                    <h4 className="text-3xl font-black">+{stats?.totalWorkouts}</h4>
+                    <p className="text-[8px] font-bold text-white/40 uppercase">LIFETIME BATTLES</p>
+                 </div>
+              </div>
+
+           </div>
         </div>
 
-        {/* Today's Workouts */}
-        <div className="card">
-          <div className="card-title" style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Calendar size={18} color="var(--primary)" /> {format(parseISO(date), 'dd MMM')} এর ওয়ার্কআউট
-          </div>
-          {workouts.length === 0 ? (
-            <div className="empty-state">
-              <div className="empty-icon"><Dumbbell size={40} strokeWidth={1} /></div>
-              <div className="empty-title">কোনো ওয়ার্কআউট নেই</div>
-              <div className="empty-desc">আজকের ওয়ার্কআউট লগ করো</div>
-            </div>
-          ) : (
-            workouts.map(w => {
-              const typeInfo = WORKOUT_TYPES.find(t => t.type === w.type) || WORKOUT_TYPES[0];
-              return (
-                <div key={w._id} style={{ padding: 14, background: 'rgba(255,255,255,0.03)', borderRadius: 10, marginBottom: 10, border: '1px solid var(--border-light)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <WorkoutIcon name={typeInfo.icon} size={20} color={typeInfo.color} />
-                      <span style={{ fontWeight: 700, color: typeInfo.color }}>{w.type}</span>
+        {/* 📋 Lower: Historical Logs Feed */}
+        <div className="xl:col-span-12 space-y-6">
+           <div className="flex items-center justify-between px-4">
+              <h3 className="text-xl font-black text-emerald-950 tracking-tight">অনুশীলনের লগ</h3>
+              <div className="flex items-center gap-2 text-[10px] font-black text-emerald-900/30 uppercase tracking-[0.2em]">
+                 <Layout size={14} /> FILTER BY TYPE
+              </div>
+           </div>
+
+           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {workouts.length > 0 ? (
+                workouts.map(w => {
+                  const typeMeta = WORKOUT_TYPES.find(t => t.type === w.type) || WORKOUT_TYPES[0];
+                  return (
+                    <div key={w._id} className="p-8 rounded-[3rem] bg-white border border-emerald-50 shadow-sm hover:shadow-md transition-all group">
+                       <div className="flex justify-between items-start mb-6">
+                          <div className="flex items-center gap-4">
+                             <div className={`p-4 rounded-2xl ${typeMeta.bg} ${typeMeta.color} border ${typeMeta.border} shadow-inner`}>
+                                {typeMeta.icon}
+                             </div>
+                             <div>
+                                <h4 className="text-lg font-black text-emerald-950">{w.type}</h4>
+                                <div className="flex items-center gap-2 text-[10px] font-black text-emerald-400 uppercase tracking-widest">
+                                   <Clock size={10} /> {w.totalDuration} MINS
+                                </div>
+                             </div>
+                          </div>
+                          <button 
+                            onClick={() => deleteWorkout(w._id)}
+                            className="p-3 bg-gray-50 text-gray-300 rounded-2xl hover:bg-rose-50 hover:text-rose-500 transition-all opacity-0 group-hover:opacity-100"
+                          >
+                             <Trash2 size={16} />
+                          </button>
+                       </div>
+
+                       <div className="space-y-3">
+                          {w.exercises?.map((ex, i) => (
+                             <div key={i} className="flex items-center justify-between p-4 rounded-2xl bg-gray-50/50 border border-gray-100">
+                                <div className="flex items-center gap-3">
+                                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                                   <span className="text-xs font-black text-emerald-950">{ex.name}</span>
+                                </div>
+                                <span className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest">
+                                   {ex.sets && ex.reps ? `${ex.sets} SETS × ${ex.reps}` : `${Math.floor(ex.duration / 60)} MINS`}
+                                </span>
+                             </div>
+                          ))}
+                       </div>
+
+                       {w.notes && (
+                         <div className="mt-6 p-4 rounded-2xl bg-rose-50/30 border border-rose-100 italic text-xs text-rose-700/60 leading-relaxed relative">
+                            <Info size={14} className="absolute -top-1.5 -left-1.5 text-rose-300 bg-white rounded-full" />
+                            "{w.notes}"
+                         </div>
+                       )}
                     </div>
-                    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                      <span style={{ fontSize: 12, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <Timer size={14} /> {w.totalDuration} মিনিট
-                      </span>
-                      <button className="btn btn-danger btn-sm" onClick={() => deleteWorkout(w._id)}><X size={14} /></button>
-                    </div>
-                  </div>
-                  {w.exercises?.map((ex, i) => (
-                    <div key={i} style={{ fontSize: 13, color: 'var(--text-secondary)', marginLeft: 4, marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <ArrowRight size={10} color="var(--text-muted)" />
-                      {ex.name} {ex.sets && ex.reps ? `${ex.sets}×${ex.reps}` : ''}
-                      {ex.duration ? ` ${Math.floor(ex.duration / 60)} মিনিট` : ''}
-                    </div>
-                  ))}
-                  {w.notes && <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 10, fontStyle: 'italic', borderLeft: '2px solid var(--border-light)', paddingLeft: 10 }}>"{w.notes}"</div>}
+                  );
+                })
+              ) : (
+                <div className="col-span-full py-24 flex flex-col items-center justify-center text-center space-y-4 bg-emerald-50/10 rounded-[4rem] border-2 border-dashed border-emerald-100/50">
+                    <Accessibility size={64} strokeWidth={1} className="text-emerald-100" />
+                    <p className="text-sm font-black text-emerald-900/20 uppercase tracking-[0.3em]">অনুশীলনের কোনো রেকর্ড নেই</p>
                 </div>
-              );
-            })
-          )}
+              )}
+           </div>
         </div>
+
       </div>
+
     </div>
   );
 };
