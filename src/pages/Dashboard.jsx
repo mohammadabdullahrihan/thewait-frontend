@@ -1,4 +1,17 @@
 import { useState, useEffect } from 'react';
+import { 
+  Swords, 
+  Target, 
+  Flame, 
+  ClipboardList, 
+  Zap, 
+  BookOpen, 
+  Globe, 
+  BarChart3, 
+  Smile,
+  Trophy,
+  Loader2
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { analyticsAPI, habitAPI } from '../utils/api';
 import { getTodayQuote, xpToNextLevel, todayStr, daysUntil } from '../utils/helpers';
@@ -52,7 +65,7 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className="loading-screen" style={{ position: 'relative', minHeight: '60vh', background: 'transparent' }}>
-        <div className="loading-spinner" />
+        <Loader2 className="spin" size={32} color="var(--secondary)" />
         <p style={{ color: 'var(--text-muted)' }}>ডেটা লোড হচ্ছে...</p>
       </div>
     );
@@ -63,14 +76,17 @@ const Dashboard = () => {
       {/* Header */}
       <div className="page-header">
         <div>
-          <h1 className="page-title">
-            {user?.name?.split(' ')[0]} এর ড্যাশবোর্ড ⚔️
+          <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            {user?.name?.split(' ')[0]} এর ড্যাশবোর্ড <Swords size={28} color="var(--primary)" />
           </h1>
           <p className="page-subtitle">
             {format(new Date(), 'EEEE, dd MMMM yyyy')} · আজই তোমার সেরাটা দাও
           </p>
         </div>
-        <div className="tag">🎯 {user?.goal || 'লক্ষ্য নির্বাচন করো'}</div>
+        <div className="tag">
+          <Target size={14} style={{ marginRight: 6 }} />
+          {user?.goal || 'লক্ষ্য নির্বাচন করো'}
+        </div>
       </div>
 
       {/* Daily Quote */}
@@ -82,31 +98,34 @@ const Dashboard = () => {
       {/* Stats Grid */}
       <div className="stats-grid">
         <div className="stat-card gold">
-          <span className="stat-icon">🔥</span>
+          <span className="stat-icon"><Flame size={24} /></span>
           <span className="stat-value">{streak.current || 0}</span>
           <span className="stat-label">দিনের স্ট্রিক</span>
-          <span className="stat-change">🏆 সর্বোচ্চ {streak.longest || 0} দিন</span>
+          <span className="stat-change">
+            <Trophy size={12} style={{ marginRight: 4 }} />
+            সর্বোচ্চ {streak.longest || 0} দিন
+          </span>
         </div>
         <div className="stat-card green">
-          <span className="stat-icon">📋</span>
+          <span className="stat-icon"><ClipboardList size={24} /></span>
           <span className="stat-value">{stats?.avgRoutineCompletion || 0}%</span>
           <span className="stat-label">গড় রুটিন কমপ্লিশন</span>
           <span className="stat-change">৩০ দিনের গড়</span>
         </div>
         <div className="stat-card blue">
-          <span className="stat-icon">⚡</span>
+          <span className="stat-icon"><Zap size={24} /></span>
           <span className="stat-value">Lv.{xp.level}</span>
           <span className="stat-label">তোমার লেভেল</span>
           <span className="stat-change">{user?.experience || 0} XP অর্জিত</span>
         </div>
         <div className="stat-card purple">
-          <span className="stat-icon">📚</span>
+          <span className="stat-icon"><BookOpen size={24} /></span>
           <span className="stat-value">{stats?.totalStudyHours || 0}h</span>
           <span className="stat-label">মোট পড়াশোনা</span>
           <span className="stat-change">৩০ দিনে</span>
         </div>
         <div className="stat-card danger">
-          <span className="stat-icon">🌍</span>
+          <span className="stat-icon"><Globe size={24} /></span>
           <span className="stat-value">{daysToJourney}</span>
           <span className="stat-label">EU Journey কাউন্টডাউন</span>
           <span className="stat-change" style={{ color: 'var(--warning)' }}>মার্চ ২০২৭</span>
@@ -115,7 +134,9 @@ const Dashboard = () => {
 
       {/* Level XP Bar */}
       <div className="card" style={{ marginBottom: 24 }}>
-        <div className="card-title" style={{ marginBottom: 16 }}>⚡ লেভেল প্রগ্রেস</div>
+        <div className="card-title" style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Zap size={18} color="var(--secondary)" fill="var(--secondary)" /> লেভেল প্রগ্রেস
+        </div>
         <div className="xp-bar-section">
           <div className="xp-info">
             <span className="xp-level">Level {xp.level}</span>
@@ -146,20 +167,22 @@ const Dashboard = () => {
       {/* Charts */}
       <div className="grid-2">
         <div className="card">
-          <div className="card-title" style={{ marginBottom: 20 }}>📊 সাপ্তাহিক হ্যাবিট স্কোর</div>
+          <div className="card-title" style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <BarChart3 size={18} color="var(--primary)" /> সাপ্তাহিক হ্যাবিট স্কোর
+          </div>
           {charts?.weeklyHabitData?.length > 0 ? (
             <ResponsiveContainer width="100%" height={180}>
               <BarChart data={charts.weeklyHabitData.map(d => ({ ...d, date: d.date?.slice(5) }))}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
                 <XAxis dataKey="date" tick={{ fill: 'var(--text-muted)', fontSize: 11 }} />
                 <YAxis domain={[0, 7]} tick={{ fill: 'var(--text-muted)', fontSize: 11 }} />
                 <Tooltip content={customTooltip} />
-                <Bar dataKey="score" fill="#FFB800" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="score" fill="var(--secondary)" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
             <div className="empty-state">
-              <div className="empty-icon">📊</div>
+              <div className="empty-icon"><BarChart3 size={40} strokeWidth={1} /></div>
               <div className="empty-title">ডেটা নেই</div>
               <div className="empty-desc">হ্যাবিট ট্র্যাক করা শুরু করো</div>
             </div>
@@ -167,20 +190,22 @@ const Dashboard = () => {
         </div>
 
         <div className="card">
-          <div className="card-title" style={{ marginBottom: 20 }}>😊 মুড ট্র্যান্ড</div>
+          <div className="card-title" style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Smile size={18} color="#8b5cf6" /> মুড ট্র্যান্ড
+          </div>
           {charts?.moodTrend?.length > 0 ? (
             <ResponsiveContainer width="100%" height={180}>
               <LineChart data={charts.moodTrend.map(d => ({ ...d, date: d.date?.slice(5) }))}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
                 <XAxis dataKey="date" tick={{ fill: 'var(--text-muted)', fontSize: 11 }} />
                 <YAxis domain={[1, 10]} tick={{ fill: 'var(--text-muted)', fontSize: 11 }} />
                 <Tooltip content={customTooltip} />
-                <Line type="monotone" dataKey="mood" stroke="#8b5cf6" strokeWidth={2} dot={{ fill: '#8b5cf6', r: 4 }} />
+                <Line type="monotone" dataKey="mood" stroke="#8b5cf6" strokeWidth={3} dot={{ fill: '#8b5cf6', r: 4 }} />
               </LineChart>
             </ResponsiveContainer>
           ) : (
             <div className="empty-state">
-              <div className="empty-icon">😊</div>
+              <div className="empty-icon"><Smile size={40} strokeWidth={1} /></div>
               <div className="empty-title">মুড ডেটা নেই</div>
               <div className="empty-desc">জার্নালে মুড ট্র্যাক করো</div>
             </div>
@@ -190,14 +215,17 @@ const Dashboard = () => {
 
       {/* Streak Display */}
       <div className="card" style={{ marginTop: 20 }}>
-        <div className="streak-display">
-          <div className="streak-flame">🔥</div>
+        <div className="streak-display" style={{ background: 'rgba(34, 197, 94, 0.05)', borderColor: 'rgba(34, 197, 94, 0.2)' }}>
+          <div className="streak-flame"><Flame size={40} fill="var(--secondary)" color="var(--secondary)" /></div>
           <div className="streak-info">
             <div className="streak-count">{streak.current || 0}</div>
             <div className="streak-label">দিনের টানা স্ট্রিক</div>
           </div>
           <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
-            <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)' }}>{streak.longest || 0}</div>
+            <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 5 }}>
+              <Trophy size={20} color="var(--secondary)" />
+              {streak.longest || 0}
+            </div>
             <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>সর্বোচ্চ স্ট্রিক</div>
           </div>
         </div>

@@ -44,15 +44,15 @@ export const xpToNextLevel = (xp) => {
 
 export const getHabitEmoji = (key) => {
   const map = {
-    wakeUp6am: "⏰",
-    workout: "💪",
-    study: "📚",
-    noFap: "🚫",
-    noCartoon: "📵",
-    sleep10pm: "🌙",
-    journal: "📔",
+    wakeUp6am: "AlarmClock",
+    workout: "Dumbbell",
+    study: "Book",
+    noFap: "Shield",
+    noCartoon: "MonitorOff",
+    sleep10pm: "Moon",
+    journal: "Scroll",
   };
-  return map[key] || "✅";
+  return map[key] || "Check";
 };
 
 export const getHabitName = (key) => {
@@ -69,11 +69,11 @@ export const getHabitName = (key) => {
 };
 
 export const moodLabel = (score) => {
-  if (score <= 2) return { label: "খুব খারাপ", emoji: "😞" };
-  if (score <= 4) return { label: "খারাপ", emoji: "😕" };
-  if (score <= 6) return { label: "ঠিকঠাক", emoji: "😐" };
-  if (score <= 8) return { label: "ভালো", emoji: "😊" };
-  return { label: "দারুণ!", emoji: "🔥" };
+  if (score <= 2) return { label: "খুব খারাপ", icon: "Frown" };
+  if (score <= 4) return { label: "খারাপ", icon: "Meh" };
+  if (score <= 6) return { label: "ঠিকঠাক", icon: "Smile" };
+  if (score <= 8) return { label: "ভালো", icon: "Laugh" };
+  return { label: "দারুণ!", icon: "Flame" };
 };
 
 export const getMilestones = () => [
@@ -119,7 +119,7 @@ export const getMilestones = () => [
   },
   {
     phase: "Phase 6",
-    title: "🌍 Journey to EU",
+    title: "Journey to EU",
     start: "Mar 2027",
     end: "",
     status: "upcoming",

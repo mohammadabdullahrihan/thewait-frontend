@@ -1,17 +1,45 @@
 import { useState, useEffect } from 'react';
+import { 
+  Dumbbell, 
+  ChevronLeft, 
+  ChevronRight, 
+  Activity, 
+  Flame, 
+  Plus, 
+  X, 
+  Timer, 
+  Loader2, 
+  ArrowRight,
+  Accessibility,
+  Trophy,
+  Flower2,
+  Calendar
+} from 'lucide-react';
 import { workoutAPI } from '../utils/api';
 import { todayStr } from '../utils/helpers';
 import { format, addDays, parseISO } from 'date-fns';
 import toast from 'react-hot-toast';
 
 const WORKOUT_TYPES = [
-  { type: 'Cardio', icon: '🏃', color: '#ef4444' },
-  { type: 'Calisthenics', icon: '🤸', color: '#FFB800' },
-  { type: 'Core', icon: '🔥', color: '#f59e0b' },
-  { type: 'Strength', icon: '🏋️', color: '#3b82f6' },
-  { type: 'Yoga', icon: '🧘', color: '#8b5cf6' },
-  { type: 'Sports', icon: '⚽', color: '#22c55e' },
+  { type: 'Cardio', icon: 'Activity', color: '#f43f5e' },
+  { type: 'Calisthenics', icon: 'Accessibility', color: '#10b981' },
+  { type: 'Core', icon: 'Flame', color: '#6366f1' },
+  { type: 'Strength', icon: 'Dumbbell', color: '#3b82f6' },
+  { type: 'Yoga', icon: 'Flower2', color: '#8b5cf6' },
+  { type: 'Sports', icon: 'Trophy', color: '#22c55e' },
 ];
+
+const WorkoutIcon = ({ name, size = 20, color = 'currentColor' }) => {
+  const icons = {
+    Activity: <Activity size={size} color={color} />,
+    Accessibility: <Accessibility size={size} color={color} />,
+    Flame: <Flame size={size} color={color} />,
+    Dumbbell: <Dumbbell size={size} color={color} />,
+    Flower2: <Flower2 size={size} color={color} />,
+    Trophy: <Trophy size={size} color={color} />,
+  };
+  return icons[name] || <Dumbbell size={size} color={color} />;
+};
 
 const DEFAULT_EXERCISES = {
   Cardio: [{ name: 'দৌড়', duration: 1800 }],
@@ -58,7 +86,7 @@ const Workout = () => {
     try {
       const res = await workoutAPI.log({ date, type: selectedType, exercises, totalDuration: duration, notes });
       setWorkouts([...workouts, res.data.workout]);
-      toast.success('💪 ওয়ার্কআউট লগ করা হয়েছে!');
+      toast.success('ওয়ার্কআউট লগ করা হয়েছে! 🔥');
       setNotes('');
     } catch (e) { toast.error('লগ করা যায়নি'); }
     finally { setLoading(false); }
@@ -76,19 +104,21 @@ const Workout = () => {
     <div className="fade-in">
       <div className="page-header">
         <div>
-          <h1 className="page-title">💪 ওয়ার্কআউট ট্র্যাকার</h1>
+          <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Dumbbell size={28} color="var(--primary)" /> ওয়ার্কআউট ট্র্যাকার
+          </h1>
           <p className="page-subtitle">শক্তি আসে অনুশীলন থেকে</p>
         </div>
       </div>
 
       {/* Date Nav */}
       <div className="date-nav" style={{ marginBottom: 20, display: 'inline-flex' }}>
-        <button className="date-nav-btn" onClick={() => changeDate(-1)}>‹</button>
+        <button className="date-nav-btn" onClick={() => changeDate(-1)}><ChevronLeft size={18} /></button>
         <div className="date-nav-display">
           {format(parseISO(date), 'dd MMM yyyy')}
           {date === todayStr() && <span style={{ color: 'var(--secondary)', marginLeft: 8, fontSize: 13 }}>আজ</span>}
         </div>
-        <button className="date-nav-btn" onClick={() => changeDate(1)} disabled={date === todayStr()}>›</button>
+        <button className="date-nav-btn" onClick={() => changeDate(1)} disabled={date === todayStr()}><ChevronRight size={18} /></button>
       </div>
 
       <div className="grid-2">
@@ -104,7 +134,9 @@ const Workout = () => {
                 <div key={type} className={`workout-type-btn${selectedType === type ? ' selected' : ''}`}
                   onClick={() => selectType(type)}
                   style={{ borderColor: selectedType === type ? color : 'var(--border-light)', color: selectedType === type ? color : 'var(--text-secondary)' }}>
-                  <span className="workout-type-icon">{icon}</span>
+                  <span className="workout-type-icon">
+                    <WorkoutIcon name={icon} size={20} color={selectedType === type ? color : 'var(--text-muted)'} />
+                  </span>
                   {type}
                 </div>
               ))}
@@ -119,10 +151,10 @@ const Workout = () => {
                 <input type="text" className="form-input" placeholder="নাম" value={ex.name} onChange={e => updateExercise(i, 'name', e.target.value)} />
                 <input type="number" className="form-input" placeholder="Sets" value={ex.sets || ''} onChange={e => updateExercise(i, 'sets', +e.target.value)} />
                 <input type="number" className="form-input" placeholder="Reps" value={ex.reps || ''} onChange={e => updateExercise(i, 'reps', +e.target.value)} />
-                <button className="btn btn-danger btn-sm" onClick={() => removeExercise(i)}>✕</button>
+                <button className="btn btn-danger btn-sm" onClick={() => removeExercise(i)}><X size={14} /></button>
               </div>
             ))}
-            <button className="btn btn-ghost btn-sm" onClick={addExercise}>+ এক্সারসাইজ যোগ</button>
+            <button className="btn btn-ghost btn-sm" onClick={addExercise}><Plus size={14} /> এক্সারসাইজ যোগ</button>
           </div>
 
           <div className="form-group">
@@ -136,18 +168,18 @@ const Workout = () => {
           </div>
 
           <button className="btn btn-primary btn-full" onClick={logWorkout} disabled={loading}>
-            {loading ? '⏳ সেভ হচ্ছে...' : '💪 ওয়ার্কআউট লগ করো'}
+            {loading ? <><Loader2 size={18} className="spin" /> সেভ হচ্ছে...</> : <><Dumbbell size={18} /> ওয়ার্কআউট লগ করো</>}
           </button>
         </div>
 
         {/* Today's Workouts */}
         <div className="card">
-          <div className="card-title" style={{ marginBottom: 16 }}>
-            {format(parseISO(date), 'dd MMM')} এর ওয়ার্কআউট
+          <div className="card-title" style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Calendar size={18} color="var(--primary)" /> {format(parseISO(date), 'dd MMM')} এর ওয়ার্কআউট
           </div>
           {workouts.length === 0 ? (
             <div className="empty-state">
-              <div className="empty-icon">💪</div>
+              <div className="empty-icon"><Dumbbell size={40} strokeWidth={1} /></div>
               <div className="empty-title">কোনো ওয়ার্কআউট নেই</div>
               <div className="empty-desc">আজকের ওয়ার্কআউট লগ করো</div>
             </div>
@@ -158,21 +190,24 @@ const Workout = () => {
                 <div key={w._id} style={{ padding: 14, background: 'rgba(255,255,255,0.03)', borderRadius: 10, marginBottom: 10, border: '1px solid var(--border-light)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: 20 }}>{typeInfo.icon}</span>
+                      <WorkoutIcon name={typeInfo.icon} size={20} color={typeInfo.color} />
                       <span style={{ fontWeight: 700, color: typeInfo.color }}>{w.type}</span>
                     </div>
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                      <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>⏱️ {w.totalDuration} মিনিট</span>
-                      <button className="btn btn-danger btn-sm" onClick={() => deleteWorkout(w._id)}>✕</button>
+                      <span style={{ fontSize: 12, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <Timer size={14} /> {w.totalDuration} মিনিট
+                      </span>
+                      <button className="btn btn-danger btn-sm" onClick={() => deleteWorkout(w._id)}><X size={14} /></button>
                     </div>
                   </div>
                   {w.exercises?.map((ex, i) => (
-                    <div key={i} style={{ fontSize: 13, color: 'var(--text-secondary)', marginLeft: 4, marginBottom: 2 }}>
-                      • {ex.name} {ex.sets && ex.reps ? `${ex.sets}×${ex.reps}` : ''}
+                    <div key={i} style={{ fontSize: 13, color: 'var(--text-secondary)', marginLeft: 4, marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <ArrowRight size={10} color="var(--text-muted)" />
+                      {ex.name} {ex.sets && ex.reps ? `${ex.sets}×${ex.reps}` : ''}
                       {ex.duration ? ` ${Math.floor(ex.duration / 60)} মিনিট` : ''}
                     </div>
                   ))}
-                  {w.notes && <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 6, fontStyle: 'italic' }}>"{w.notes}"</div>}
+                  {w.notes && <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 10, fontStyle: 'italic', borderLeft: '2px solid var(--border-light)', paddingLeft: 10 }}>"{w.notes}"</div>}
                 </div>
               );
             })

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Swords, Mail, Lock, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const Login = () => {
@@ -24,55 +25,71 @@ const Login = () => {
 
   return (
     <div className="auth-page">
-      <div className="auth-card fade-in">
-        <div className="auth-logo">
-          <div className="auth-logo-icon">⚔️</div>
-          <h1>অপেক্ষা</h1>
-          <p>তোমার শৃঙ্খলার যাত্রা এখান থেকেই শুরু</p>
+      <div className="auth-container fade-in">
+        {/* Hero Section - Visible only on Desktop */}
+        <div className="auth-hero">
+          <div className="auth-hero-content">
+            <h2 className="hero-title">তোমার প্রতিটি দিন হোক একটি বিজয়</h2>
+            <p className="hero-text">
+              শৃঙ্খলাই স্বাধীনতা। "অপেক্ষা" তোমার লক্ষ্য অর্জন, শারীরিক উন্নতি এবং মানসিক বিকাশের জন্য একটি শক্তিশালী মাধ্যম।
+            </p>
+          </div>
         </div>
 
-        <h2 className="auth-title">স্বাগত আবার!</h2>
-        <p className="auth-subtitle">তোমার অ্যাকাউন্টে লগইন করো</p>
-
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label className="form-label">ইমেইল</label>
-            <div className="input-group">
-              <span className="input-icon">📧</span>
-              <input
-                type="email"
-                className="form-input"
-                placeholder="তোমার ইমেইল"
-                value={form.email}
-                onChange={e => setForm({...form, email: e.target.value})}
-                required
-              />
-            </div>
+        {/* Login Form Section */}
+        <div className="auth-form-side">
+          <div className="auth-logo">
+            <span className="app-name">অপেক্ষা</span>
           </div>
 
-          <div className="form-group">
-            <label className="form-label">পাসওয়ার্ড</label>
-            <div className="input-group">
-              <span className="input-icon">🔒</span>
-              <input
-                type="password"
-                className="form-input"
-                placeholder="তোমার পাসওয়ার্ড"
-                value={form.password}
-                onChange={e => setForm({...form, password: e.target.value})}
-                required
-              />
-            </div>
+          <div className="auth-form-header">
+            <h2 className="auth-title">স্বাগত আবার!</h2>
+            <p className="auth-subtitle">তোমার যাত্রায় ফিরে যাও</p>
           </div>
 
-          <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={loading}>
-            {loading ? '⏳ লগইন হচ্ছে...' : '⚔️ যুদ্ধে নামো'}
-          </button>
-        </form>
+          <form onSubmit={handleSubmit} className="auth-form">
+            <div className="form-group">
+              <label className="form-label" style={{ textTransform: 'none', letterSpacing: 0 }}>ইমেইল ঠিকানা</label>
+              <div className="input-group">
+                <span className="input-icon"><Mail size={18} /></span>
+                <input
+                  type="email"
+                  className="form-input"
+                  placeholder="name@warrior.com"
+                  value={form.email}
+                  onChange={e => setForm({...form, email: e.target.value})}
+                  required
+                />
+              </div>
+            </div>
 
-        <p className="auth-switch">
-          নতুন সাধক? <Link to="/register">অ্যাকাউন্ট তৈরি করো</Link>
-        </p>
+            <div className="form-group">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <label className="form-label" style={{ marginBottom: 0, textTransform: 'none', letterSpacing: 0 }}>পাসওয়ার্ড</label>
+                <Link to="/forgot-password" style={{ fontSize: 12, color: 'var(--secondary)', textDecoration: 'none', fontWeight: 600 }}>পাসওয়ার্ড ভুলে গেছ?</Link>
+              </div>
+              <div className="input-group">
+                <span className="input-icon"><Lock size={18} /></span>
+                <input
+                  type="password"
+                  className="form-input"
+                  placeholder="••••••••"
+                  value={form.password}
+                  onChange={e => setForm({...form, password: e.target.value})}
+                  required
+                />
+              </div>
+            </div>
+
+            <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={loading} style={{ marginTop: 12 }}>
+              {loading ? "প্রবেশ হচ্ছে..." : "প্রবেশ করো"}
+            </button>
+          </form>
+
+          <div className="auth-switch">
+            নতুন কোনো যোদ্ধা? <Link to="/register">অ্যাকাউন্ট তৈরি করো</Link>
+          </div>
+        </div>
       </div>
     </div>
   );

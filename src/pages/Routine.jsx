@@ -1,4 +1,13 @@
 import { useState, useEffect } from 'react';
+import { 
+  ClipboardList, 
+  Plus, 
+  X, 
+  ChevronLeft, 
+  ChevronRight, 
+  Check,
+  Sparkles
+} from 'lucide-react';
 import { routineAPI } from '../utils/api';
 import { todayStr } from '../utils/helpers';
 import { format, addDays, parseISO } from 'date-fns';
@@ -34,7 +43,7 @@ const Routine = () => {
     try {
       const res = await routineAPI.toggleTask(date, taskId, !completed);
       setRoutine(res.data.routine);
-      if (!completed) toast.success('+5 XP অর্জিত! 🎉', { duration: 1500 });
+      if (!completed) toast.success('+5 XP অর্জিত! 🔥', { duration: 1500 });
     } catch (e) { toast.error('আপডেট করা যায়নি'); }
   };
 
@@ -63,22 +72,24 @@ const Routine = () => {
     <div className="fade-in">
       <div className="page-header">
         <div>
-          <h1 className="page-title">📋 দৈনিক রুটিন</h1>
+          <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <ClipboardList size={28} color="var(--primary)" /> দৈনিক রুটিন
+          </h1>
           <p className="page-subtitle">প্রতিটি কাজ শেষ করাই তোমার পরিচয়</p>
         </div>
         <button className="btn btn-primary" onClick={() => setShowAdd(!showAdd)}>
-          {showAdd ? '✕ বাতিল' : '+ টাস্ক যোগ'}
+          {showAdd ? <><X size={16} /> বাতিল</> : <><Plus size={16} /> টাস্ক যোগ</>}
         </button>
       </div>
 
       {/* Date Navigation */}
       <div className="date-nav" style={{ marginBottom: 20, display: 'inline-flex' }}>
-        <button className="date-nav-btn" onClick={() => changeDate(-1)}>‹</button>
+        <button className="date-nav-btn" onClick={() => changeDate(-1)}><ChevronLeft size={18} /></button>
         <div className="date-nav-display">
           {format(parseISO(date), 'EEEE, dd MMM yyyy')}
           {date === todayStr() && <span style={{ color: 'var(--secondary)', marginLeft: 8, fontSize: 13 }}>আজ</span>}
         </div>
-        <button className="date-nav-btn" onClick={() => changeDate(1)} disabled={date === todayStr()}>›</button>
+        <button className="date-nav-btn" onClick={() => changeDate(1)} disabled={date === todayStr()}><ChevronRight size={18} /></button>
       </div>
 
       {/* Progress */}
@@ -97,7 +108,7 @@ const Routine = () => {
 
       {/* Add Task Form */}
       {showAdd && (
-        <div className="card" style={{ marginBottom: 20, border: '1px solid rgba(255,184,0,0.25)' }}>
+        <div className="card" style={{ marginBottom: 20, border: '1px solid rgba(34, 197, 94, 0.25)' }}>
           <div className="card-title" style={{ marginBottom: 16 }}>নতুন টাস্ক যোগ</div>
           <div className="grid-3" style={{ gap: 12 }}>
             <input type="time" className="form-input" value={newTask.time} onChange={e => setNewTask({...newTask, time: e.target.value})} />
@@ -106,16 +117,21 @@ const Routine = () => {
               {['Discipline', 'Study', 'Health', 'Mindfulness', 'Other'].map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
-          <button className="btn btn-primary" style={{ marginTop: 14 }} onClick={addTask}>✅ টাস্ক যোগ করো</button>
+          <button className="btn btn-primary" style={{ marginTop: 14 }} onClick={addTask}>
+            <Check size={16} /> টাস্ক যোগ করো
+          </button>
         </div>
       )}
 
       {/* Task List */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: 40, color: 'var(--text-muted)' }}>লোড হচ্ছে...</div>
+        <div className="loading-screen" style={{ minHeight: 200, background: 'transparent' }}>
+          <div className="loading-spinner" />
+          <p style={{ color: 'var(--text-muted)' }}>লোড হচ্ছে...</p>
+        </div>
       ) : routine?.tasks?.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-icon">📋</div>
+          <div className="empty-icon"><ClipboardList size={40} strokeWidth={1} /></div>
           <div className="empty-title">কোনো টাস্ক নেই</div>
           <div className="empty-desc">উপরে "+ টাস্ক যোগ" বাটনে ক্লিক করে টাস্ক যোগ করো</div>
         </div>
@@ -128,7 +144,7 @@ const Routine = () => {
                 onClick={() => task._id && toggleTask(task._id, task.completed)}
                 style={{ cursor: task._id ? 'pointer' : 'default' }}
               >
-                {task.completed && '✓'}
+                {task.completed && <Check size={14} />}
               </div>
               {task.time && <span className="task-time">{task.time}</span>}
               <span className="task-name">{task.task}</span>

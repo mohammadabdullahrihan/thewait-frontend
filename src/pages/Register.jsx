@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Swords, User, Mail, Lock, Cake, Loader2, ShieldCheck } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const Register = () => {
@@ -30,66 +31,79 @@ const Register = () => {
 
   return (
     <div className="auth-page">
-      <div className="auth-card fade-in" style={{ maxWidth: 480 }}>
-        <div className="auth-logo">
-          <div className="auth-logo-icon">⚔️</div>
-          <h1>অপেক্ষা</h1>
-          <p>সাধকের যাত্রায় স্বাগতম</p>
+      <div className="auth-container fade-in" style={{ maxWidth: 1100 }}>
+        {/* Hero Section */}
+        <div className="auth-hero" style={{ backgroundPosition: 'left center' }}>
+          <div className="auth-hero-content">
+            <h2 className="hero-title">তোমার নতুন যাত্রার সূচনা হোক আজ</h2>
+            <p className="hero-text">
+              "অপেক্ষা" কেবল একটি অ্যাপ নয়, এটি তোমার শ্রেষ্ঠ সংস্করণ হওয়ার একটি দীর্ঘ লড়াই। আমাদের সাথে যোগ দাও।
+            </p>
+          </div>
         </div>
 
-        <h2 className="auth-title">নতুন যাত্রা শুরু হোক</h2>
-        <p className="auth-subtitle">তোমার অ্যাকাউন্ট তৈরি করো এবং শৃঙ্খলার পথে নামো</p>
-
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label className="form-label">পূর্ণ নাম</label>
-            <div className="input-group">
-              <span className="input-icon">👤</span>
-              <input type="text" className="form-input" placeholder="তোমার নাম" value={form.name} onChange={e => setForm({...form, name: e.target.value})} required />
-            </div>
+        {/* Registration Form Section */}
+        <div className="auth-form-side" style={{ padding: '40px 60px' }}>
+          <div className="auth-logo">
+            <span className="app-name">অপেক্ষা</span>
           </div>
 
-          <div className="form-group">
-            <label className="form-label">ইমেইল</label>
-            <div className="input-group">
-              <span className="input-icon">📧</span>
-              <input type="email" className="form-input" placeholder="তোমার ইমেইল" value={form.email} onChange={e => setForm({...form, email: e.target.value})} required />
-            </div>
+          <div className="auth-form-header">
+            <h2 className="auth-title">নতুন সাধক?</h2>
+            <p className="auth-subtitle" style={{ marginBottom: 0 }}>তোমার অ্যাকাউন্ট তৈরি করো</p>
           </div>
 
-          <div className="grid-2">
+          <form onSubmit={handleSubmit} className="auth-form">
             <div className="form-group">
-              <label className="form-label">পাসওয়ার্ড</label>
+              <label className="form-label" style={{ textTransform: 'none', letterSpacing: 0 }}>পূর্ণ নাম</label>
               <div className="input-group">
-                <span className="input-icon">🔒</span>
-                <input type="password" className="form-input" placeholder="৬+ অক্ষর" value={form.password} onChange={e => setForm({...form, password: e.target.value})} required />
+                <span className="input-icon"><User size={18} /></span>
+                <input type="text" className="form-input" placeholder="তোমার নাম" value={form.name} onChange={e => setForm({...form, name: e.target.value})} required />
               </div>
             </div>
+
             <div className="form-group">
-              <label className="form-label">বয়স</label>
+              <label className="form-label" style={{ textTransform: 'none', letterSpacing: 0 }}>ইমেইল</label>
               <div className="input-group">
-                <span className="input-icon">🎂</span>
-                <input type="number" className="form-input" placeholder="বয়স" value={form.age} onChange={e => setForm({...form, age: e.target.value})} min="10" max="60" />
+                <span className="input-icon"><Mail size={18} /></span>
+                <input type="email" className="form-input" placeholder="name@warrior.com" value={form.email} onChange={e => setForm({...form, email: e.target.value})} required />
               </div>
             </div>
+
+            <div className="grid-2">
+              <div className="form-group">
+                <label className="form-label" style={{ textTransform: 'none', letterSpacing: 0 }}>পাসওয়ার্ড</label>
+                <div className="input-group">
+                  <span className="input-icon"><Lock size={18} /></span>
+                  <input type="password" className="form-input" placeholder="৬+ অক্ষর" value={form.password} onChange={e => setForm({...form, password: e.target.value})} required />
+                </div>
+              </div>
+              <div className="form-group">
+                <label className="form-label" style={{ textTransform: 'none', letterSpacing: 0 }}>বয়স</label>
+                <div className="input-group">
+                  <span className="input-icon"><Cake size={18} /></span>
+                  <input type="number" className="form-input" placeholder="বয়স" value={form.age} onChange={e => setForm({...form, age: e.target.value})} min="10" max="60" />
+                </div>
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" style={{ textTransform: 'none', letterSpacing: 0 }}>তোমার লক্ষ্য</label>
+              <select className="form-select" value={form.goal} onChange={e => setForm({...form, goal: e.target.value})} style={{ borderRadius: 12, height: 48, background: '#f8fafc' }}>
+                <option value="">লক্ষ্য নির্বাচন করো</option>
+                {goalOptions.map(g => <option key={g} value={g}>{g}</option>)}
+              </select>
+            </div>
+
+            <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={loading} style={{ marginTop: 8 }}>
+              {loading ? "তৈরি হচ্ছে..." : "সাধক হিসেবে যোগ দাও"}
+            </button>
+          </form>
+
+          <div className="auth-switch">
+             ইতিমধ্যে যোদ্ধা? <Link to="/login">লগইন করো</Link>
           </div>
-
-          <div className="form-group">
-            <label className="form-label">তোমার লক্ষ্য</label>
-            <select className="form-select" value={form.goal} onChange={e => setForm({...form, goal: e.target.value})}>
-              <option value="">লক্ষ্য নির্বাচন করো</option>
-              {goalOptions.map(g => <option key={g} value={g}>{g}</option>)}
-            </select>
-          </div>
-
-          <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={loading}>
-            {loading ? '⏳ তৈরি হচ্ছে...' : '🚀 সাধক হিসেবে যোগ দাও'}
-          </button>
-        </form>
-
-        <p className="auth-switch">
-          ইতিমধ্যে অ্যাকাউন্ট আছে? <Link to="/login">লগইন করো</Link>
-        </p>
+        </div>
       </div>
     </div>
   );

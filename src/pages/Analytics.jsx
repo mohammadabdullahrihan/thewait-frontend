@@ -1,4 +1,17 @@
 import { useState, useEffect } from 'react';
+import { 
+  BarChart3, 
+  Flame, 
+  ClipboardList, 
+  BookOpen, 
+  Dumbbell, 
+  Smile, 
+  Calendar, 
+  Target,
+  ArrowUpRight,
+  TrendingUp,
+  Loader2
+} from 'lucide-react';
 import { analyticsAPI, habitAPI } from '../utils/api';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, RadarChart, Radar, PolarGrid, PolarAngleAxis } from 'recharts';
 
@@ -24,8 +37,8 @@ const Analytics = () => {
 
   if (loading) {
     return (
-      <div style={{ textAlign: 'center', padding: 80, color: 'var(--text-muted)' }}>
-        <div className="loading-spinner" style={{ margin: '0 auto 20px' }} />
+      <div style={{ textAlign: 'center', padding: 80, color: 'var(--text-primary)' }}>
+        <Loader2 className="spin" size={40} style={{ margin: '0 auto 20px', color: 'var(--secondary)' }} />
         <p>ডেটা লোড হচ্ছে...</p>
       </div>
     );
@@ -47,7 +60,9 @@ const Analytics = () => {
     <div className="fade-in">
       <div className="page-header">
         <div>
-          <h1 className="page-title">📊 অ্যানালিটিক্স</h1>
+          <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <BarChart3 size={28} color="var(--primary)" /> অ্যানালিটিক্স
+          </h1>
           <p className="page-subtitle">৩০ দিনের তোমার সম্পূর্ণ প্রগ্রেস রিপোর্ট</p>
         </div>
       </div>
@@ -55,12 +70,12 @@ const Analytics = () => {
       {/* Stats Overview */}
       <div className="stats-grid" style={{ marginBottom: 24 }}>
         {[
-          { icon: '🔥', value: `${stats.avgHabitScore}/7`, label: 'গড় হ্যাবিট স্কোর', cls: 'gold' },
-          { icon: '📋', value: `${stats.avgRoutineCompletion}%`, label: 'গড় রুটিন কমপ্লিশন', cls: 'green' },
-          { icon: '📚', value: `${stats.totalStudyHours}h`, label: 'মোট পড়াশোনা', cls: 'blue' },
-          { icon: '💪', value: stats.totalWorkouts, label: 'মোট ওয়ার্কআউট', cls: 'purple' },
-          { icon: '😊', value: `${stats.avgMood}/10`, label: 'গড় মুড', cls: 'danger' },
-          { icon: '📅', value: stats.daysTracked, label: 'ট্র্যাকড দিন', cls: 'gold' },
+          { icon: <Flame size={20} />, value: `${stats.avgHabitScore}/7`, label: 'গড় হ্যাবিট স্কোর', cls: 'gold' },
+          { icon: <ClipboardList size={20} />, value: `${stats.avgRoutineCompletion}%`, label: 'গড় রুটিন কমপ্লিশন', cls: 'green' },
+          { icon: <BookOpen size={20} />, value: `${stats.totalStudyHours}h`, label: 'মোট পড়াশোনা', cls: 'blue' },
+          { icon: <Dumbbell size={20} />, value: stats.totalWorkouts, label: 'মোট ওয়ার্কআউট', cls: 'purple' },
+          { icon: <Smile size={20} />, value: `${stats.avgMood}/10`, label: 'গড় মুড', cls: 'danger' },
+          { icon: <Calendar size={20} />, value: stats.daysTracked, label: 'ট্র্যাকড দিন', cls: 'gold' },
         ].map((s, i) => (
           <div key={i} className={`stat-card ${s.cls}`}>
             <span className="stat-icon">{s.icon}</span>
@@ -73,46 +88,52 @@ const Analytics = () => {
       <div className="grid-2" style={{ marginBottom: 24 }}>
         {/* Weekly Habit Chart */}
         <div className="card">
-          <div className="card-title" style={{ marginBottom: 20 }}>🔥 সাপ্তাহিক হ্যাবিট স্কোর</div>
+          <div className="card-title" style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Flame size={20} color="var(--secondary)" /> সাপ্তাহিক হ্যাবিট স্কোর
+          </div>
           {charts.weeklyHabitData?.length > 0 ? (
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={charts.weeklyHabitData.map(d => ({ ...d, date: d.date?.slice(5) }))}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                <XAxis dataKey="date" tick={{ fill: '#64748b', fontSize: 11 }} />
-                <YAxis domain={[0, 7]} tick={{ fill: '#64748b', fontSize: 11 }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                <XAxis dataKey="date" tick={{ fill: 'var(--text-muted)', fontSize: 11 }} />
+                <YAxis domain={[0, 7]} tick={{ fill: 'var(--text-muted)', fontSize: 11 }} />
                 <Tooltip {...tooltipStyle} />
-                <Bar dataKey="score" name="স্কোর" fill="#FFB800" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="score" name="স্কোর" fill="var(--secondary)" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
-          ) : <div className="empty-state"><div className="empty-icon">📊</div><div className="empty-title">ডেটা নেই</div></div>}
+          ) : <div className="empty-state"><div className="empty-icon"><BarChart3 size={40} /></div><div className="empty-title">ডেটা নেই</div></div>}
         </div>
 
         {/* Mood Trend */}
         <div className="card">
-          <div className="card-title" style={{ marginBottom: 20 }}>😊 মুড ট্র্যান্ড (১৪ দিন)</div>
+          <div className="card-title" style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Smile size={20} color="var(--accent)" /> মুড ট্র্যান্ড (১৪ দিন)
+          </div>
           {charts.moodTrend?.length > 0 ? (
             <ResponsiveContainer width="100%" height={200}>
               <LineChart data={charts.moodTrend.map(d => ({ ...d, date: d.date?.slice(5) }))}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                <XAxis dataKey="date" tick={{ fill: '#64748b', fontSize: 11 }} />
-                <YAxis domain={[1, 10]} tick={{ fill: '#64748b', fontSize: 11 }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                <XAxis dataKey="date" tick={{ fill: 'var(--text-muted)', fontSize: 11 }} />
+                <YAxis domain={[1, 10]} tick={{ fill: 'var(--text-muted)', fontSize: 11 }} />
                 <Tooltip {...tooltipStyle} />
-                <Line type="monotone" dataKey="mood" name="মুড" stroke="#8b5cf6" strokeWidth={2.5} dot={{ fill: '#8b5cf6', r: 4 }} activeDot={{ r: 6 }} />
+                <Line type="monotone" dataKey="mood" name="মুড" stroke="#8b5cf6" strokeWidth={3} dot={{ fill: '#8b5cf6', r: 4 }} activeDot={{ r: 6 }} />
               </LineChart>
             </ResponsiveContainer>
-          ) : <div className="empty-state"><div className="empty-icon">😊</div><div className="empty-title">ডেটা নেই</div></div>}
+          ) : <div className="empty-state"><div className="empty-icon"><Smile size={40} /></div><div className="empty-title">ডেটা নেই</div></div>}
         </div>
       </div>
 
       {/* Radar Chart Overview */}
       <div className="grid-2" style={{ marginBottom: 24 }}>
         <div className="card">
-          <div className="card-title" style={{ marginBottom: 20 }}>🎯 সার্বিক পারফরম্যান্স</div>
+          <div className="card-title" style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Target size={20} color="var(--primary)" /> সার্বিক পারফরম্যান্স
+          </div>
           <ResponsiveContainer width="100%" height={250}>
             <RadarChart data={radarData}>
-              <PolarGrid stroke="rgba(255,255,255,0.1)" />
+              <PolarGrid stroke="var(--border)" />
               <PolarAngleAxis dataKey="category" tick={{ fill: 'var(--text-muted)', fontSize: 12 }} />
-              <Radar name="পারফরম্যান্স" dataKey="value" stroke="#FFB800" fill="#FFB800" fillOpacity={0.15} strokeWidth={2} />
+              <Radar name="পারফরম্যান্স" dataKey="value" stroke="var(--secondary)" fill="var(--secondary)" fillOpacity={0.15} strokeWidth={2} />
               <Tooltip {...tooltipStyle} />
             </RadarChart>
           </ResponsiveContainer>
@@ -120,9 +141,11 @@ const Analytics = () => {
 
         {/* Study Progress */}
         <div className="card">
-          <div className="card-title" style={{ marginBottom: 16 }}>📚 বিষয়ভিত্তিক পড়াশোনা</div>
+          <div className="card-title" style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <BookOpen size={20} color="var(--primary)" /> বিষয়ভিত্তিক পড়াশোনা
+          </div>
           {studyProgress.length === 0 ? (
-            <div className="empty-state"><div className="empty-icon">📚</div><div className="empty-title">ডেটা নেই</div></div>
+            <div className="empty-state"><div className="empty-icon"><BookOpen size={40} /></div><div className="empty-title">ডেটা নেই</div></div>
           ) : (
             studyProgress.map((s, i) => (
               <div key={i} style={{ marginBottom: 16 }}>
@@ -134,8 +157,8 @@ const Analytics = () => {
                   <div className="progress-bar-fill blue" style={{ width: `${s.totalTopics ? (s.completedTopics / s.totalTopics) * 100 : 0}%` }} />
                 </div>
                 {s.lastScore && (
-                  <div style={{ fontSize: 11, color: 'var(--success)', marginTop: 4 }}>
-                    শেষ স্কোর: {s.lastScore.score}/{s.lastScore.maxScore}
+                  <div style={{ fontSize: 11, color: 'var(--success)', marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <TrendingUp size={10} /> শেষ স্কোর: {s.lastScore.score}/{s.lastScore.maxScore}
                   </div>
                 )}
               </div>
@@ -146,11 +169,13 @@ const Analytics = () => {
 
       {/* GitHub-style heatmap */}
       <div className="card">
-        <div className="card-title" style={{ marginBottom: 20 }}>🗓️ হ্যাবিট হিটম্যাপ (বছরের প্রগ্রেস)</div>
+        <div className="card-title" style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Calendar size={20} color="var(--primary)" /> হ্যাবিট হিটম্যাপ (বছরের প্রগ্রেস)
+        </div>
         <div style={{ overflowX: 'auto' }}>
           {heatmap.length === 0 ? (
             <div className="empty-state">
-              <div className="empty-icon">🗓️</div>
+              <div className="empty-icon"><Calendar size={40} /></div>
               <div className="empty-title">ডেটা নেই</div>
               <div className="empty-desc">হ্যাবিট ট্র্যাক করলে এখানে দেখাবে</div>
             </div>
@@ -167,7 +192,7 @@ const Analytics = () => {
           )}
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 16, fontSize: 12, color: 'var(--text-muted)' }}>
-          <span>কম</span>
+          <span>کم</span>
           {[0, 1, 2, 3, 4, 5].map(l => <div key={l} className="heatmap-cell" data-level={l} style={{ flexShrink: 0 }} />)}
           <span>বেশি</span>
         </div>

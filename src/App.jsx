@@ -1,5 +1,16 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, NavLink, Link } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import { 
+  Home, 
+  ClipboardList, 
+  Flame, 
+  BookOpen, 
+  Book, 
+  Loader2,
+  Check,
+  AlertCircle,
+  Dumbbell
+} from 'lucide-react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Sidebar from './components/Layout/Sidebar';
 import Login from './pages/Login';
@@ -20,8 +31,8 @@ const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) {
     return (
-      <div className="loading-screen">
-        <div className="loading-spinner" />
+      <div className="loading-screen" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+        <Loader2 className="spin" size={48} color="var(--secondary)" />
         <p style={{ color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>অপেক্ষা লোড হচ্ছে...</p>
       </div>
     );
@@ -39,16 +50,17 @@ const AppLayout = ({ children }) => (
     {/* Mobile Bottom Nav */}
     <nav className="mobile-nav">
       {[
-        { to: '/dashboard', icon: '🏠', label: 'হোম' },
-        { to: '/routine', icon: '📋', label: 'রুটিন' },
-        { to: '/habits', icon: '🔥', label: 'হ্যাবিট' },
-        { to: '/study', icon: '📚', label: 'পড়াশোনা' },
-        { to: '/journal', icon: '📔', label: 'জার্নাল' },
+        { to: '/dashboard', icon: <Home size={20} />, label: 'হোম' },
+        { to: '/routine', icon: <ClipboardList size={20} />, label: 'রুটিন' },
+        { to: '/workout', icon: <Dumbbell size={20} />, label: 'ব্যায়াম' },
+        { to: '/habits', icon: <Flame size={20} />, label: 'হ্যাবিট' },
+        { to: '/study', icon: <BookOpen size={20} />, label: 'পড়াশোনা' },
+        { to: '/journal', icon: <Book size={20} />, label: 'জার্নাল' },
       ].map(item => (
-        <a key={item.to} href={item.to} className="mobile-nav-item">
+        <NavLink key={item.to} to={item.to} className={({ isActive }) => `mobile-nav-item${isActive ? ' active' : ''}`}>
           <span className="mobile-nav-icon">{item.icon}</span>
           {item.label}
-        </a>
+        </NavLink>
       ))}
     </nav>
   </div>
@@ -131,9 +143,16 @@ function App() {
               border: '1px solid var(--border)',
               borderRadius: '12px',
               fontSize: '14px',
+              padding: '12px 16px',
             },
-            success: { iconTheme: { primary: '#22c55e', secondary: '#0f2a3f' } },
-            error: { iconTheme: { primary: '#ef4444', secondary: '#0f2a3f' } },
+            success: {
+              icon: <Check size={20} color="#22c55e" />,
+              iconTheme: { primary: '#22c55e', secondary: '#0f2a3f' } 
+            },
+            error: {
+              icon: <AlertCircle size={20} color="#ef4444" />,
+              iconTheme: { primary: '#ef4444', secondary: '#0f2a3f' } 
+            },
           }}
         />
         <AppContent />

@@ -1,10 +1,45 @@
 import { useState, useEffect } from 'react';
+import { 
+  Flame, 
+  ChevronLeft, 
+  ChevronRight, 
+  Check, 
+  Calendar, 
+  Trophy,
+  AlarmClock,
+  Dumbbell,
+  Book,
+  Shield,
+  MonitorOff,
+  Moon,
+  Scroll,
+  Zap,
+  Medal,
+  Loader2
+} from 'lucide-react';
 import { habitAPI } from '../utils/api';
 import { todayStr, getHabitEmoji, getHabitName } from '../utils/helpers';
 import { format, addDays, parseISO } from 'date-fns';
 import toast from 'react-hot-toast';
 
 const habitKeys = ['wakeUp6am', 'workout', 'study', 'noFap', 'noCartoon', 'sleep10pm', 'journal'];
+
+const HabitIcon = ({ name, size = 20, color = 'currentColor' }) => {
+  const icons = {
+    AlarmClock: <AlarmClock size={size} color={color} />,
+    Dumbbell: <Dumbbell size={size} color={color} />,
+    Book: <Book size={size} color={color} />,
+    Shield: <Shield size={size} color={color} />,
+    MonitorOff: <MonitorOff size={size} color={color} />,
+    Moon: <Moon size={size} color={color} />,
+    Scroll: <Scroll size={size} color={color} />,
+    Check: <Check size={size} color={color} />,
+    Zap: <Zap size={size} color={color} />,
+    Medal: <Medal size={size} color={color} />,
+    Trophy: <Trophy size={size} color={color} />,
+  };
+  return icons[name] || icons.Check;
+};
 
 const Habits = () => {
   const [date, setDate] = useState(todayStr());
@@ -39,7 +74,7 @@ const Habits = () => {
     setHabitScore(score);
     try {
       await habitAPI.save(date, { habits: updated });
-      if (updated[key]) toast.success(`${getHabitEmoji(key)} +10 XP!`, { duration: 1500 });
+      if (updated[key]) toast.success(`+10 XP অর্জিত! 🔥`, { duration: 1500 });
     } catch (e) { toast.error('সেভ হয়নি'); }
   };
 
@@ -49,42 +84,47 @@ const Habits = () => {
   };
 
   const allBadges = [
-    { name: 'Bronze Warrior 🥉', needed: 7, desc: '৭ দিনের স্ট্রিক' },
-    { name: 'Silver Warrior 🥈', needed: 30, desc: '৩০ দিনের স্ট্রিক' },
-    { name: 'Gold Warrior 🥇', needed: 90, desc: '৯০ দিনের স্ট্রিক' },
-    { name: 'Streak Master ⚡', needed: 30, desc: '৩০ দিন নো-ফ্যাপ' },
+    { name: 'Bronze Warrior', icon: 'Medal', color: '#cd7f32', needed: 7, desc: '৭ দিনের স্ট্রিক' },
+    { name: 'Silver Warrior', icon: 'Medal', color: '#c0c0c0', needed: 30, desc: '৩০ দিনের স্ট্রিক' },
+    { name: 'Gold Warrior', icon: 'Trophy', color: '#FFD700', needed: 90, desc: '৯০ দিনের স্ট্রিক' },
+    { name: 'Streak Master', icon: 'Zap', color: '#22c55e', needed: 30, desc: '৩০ দিন নো-ফ্যাপ' },
   ];
 
   return (
     <div className="fade-in">
       <div className="page-header">
         <div>
-          <h1 className="page-title">🔥 হ্যাবিট ট্র্যাকার</h1>
+          <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Flame size={28} color="var(--primary)" /> হ্যাবিট ট্র্যাকার
+          </h1>
           <p className="page-subtitle">ডোপামিন ডিটক্স · প্রতিদিনের ৭টি মূল হ্যাবিট</p>
         </div>
       </div>
 
       {/* Streak */}
-      <div className="streak-display" style={{ marginBottom: 24 }}>
-        <div className="streak-flame">🔥</div>
+      <div className="streak-display" style={{ marginBottom: 24, background: 'rgba(34, 197, 94, 0.05)', borderColor: 'rgba(34, 197, 94, 0.2)' }}>
+        <div className="streak-flame"><Flame size={40} fill="var(--secondary)" color="var(--secondary)" /></div>
         <div className="streak-info">
           <div className="streak-count">{streak.current || 0}</div>
           <div className="streak-label">দিনের টানা স্ট্রিক</div>
         </div>
         <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
-          <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)' }}>{streak.longest || 0}</div>
+          <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 5 }}>
+            <Trophy size={20} color="var(--secondary)" />
+            {streak.longest || 0}
+          </div>
           <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>সর্বোচ্চ</div>
         </div>
       </div>
 
       {/* Date Nav */}
       <div className="date-nav" style={{ marginBottom: 20, display: 'inline-flex' }}>
-        <button className="date-nav-btn" onClick={() => changeDate(-1)}>‹</button>
+        <button className="date-nav-btn" onClick={() => changeDate(-1)}><ChevronLeft size={18} /></button>
         <div className="date-nav-display">
           {format(parseISO(date), 'EEEE, dd MMM')}
           {date === todayStr() && <span style={{ color: 'var(--secondary)', marginLeft: 8, fontSize: 13 }}>আজ</span>}
         </div>
-        <button className="date-nav-btn" onClick={() => changeDate(1)} disabled={date === todayStr()}>›</button>
+        <button className="date-nav-btn" onClick={() => changeDate(1)} disabled={date === todayStr()}><ChevronRight size={18} /></button>
       </div>
 
       {/* Habit Score */}
@@ -97,7 +137,7 @@ const Habits = () => {
           <div className="progress-bar-fill gold" style={{ width: `${(habitScore / 7) * 100}%` }} />
         </div>
         <div style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 8 }}>
-          {habitScore >= 7 ? '🎉 সব হ্যাবিট সম্পন্ন! অসাধারণ!' : `আরও ${7 - habitScore}টি হ্যাবিট বাকি`}
+          {habitScore >= 7 ? 'সব হ্যাবিট সম্পন্ন! অসাধারণ!' : `আরও ${7 - habitScore}টি হ্যাবিট বাকি`}
         </div>
       </div>
 
@@ -108,20 +148,27 @@ const Habits = () => {
             key={key}
             className={`habit-card${habits[key] ? ' completed' : ''}`}
             onClick={() => toggleHabit(key)}
+            style={habits[key] ? { background: 'rgba(34, 197, 94, 0.1)', borderColor: 'var(--secondary)' } : {}}
           >
-            <div className="habit-icon">{getHabitEmoji(key)}</div>
-            <div className="habit-name">{getHabitName(key)}</div>
-            <div className="habit-check">{habits[key] && '✓'}</div>
+            <div className="habit-icon">
+              <HabitIcon name={getHabitEmoji(key)} size={24} color={habits[key] ? 'var(--secondary)' : 'var(--text-muted)'} />
+            </div>
+            <div className="habit-name" style={habits[key] ? { color: 'var(--secondary)' } : {}}>{getHabitName(key)}</div>
+            <div className="habit-check" style={habits[key] ? { background: 'var(--secondary)', borderColor: 'var(--secondary)' } : {}}>{habits[key] && <Check size={16} />}</div>
           </div>
         ))}
       </div>
 
       {/* 30-day history view */}
       <div className="card">
-        <div className="card-title" style={{ marginBottom: 16 }}>📅 ৩০ দিনের হিস্টোরি</div>
-        {history.length === 0 ? (
+        <div className="card-title" style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Calendar size={18} color="var(--primary)" /> ৩০ দিনের হিস্টোরি
+        </div>
+        {loading ? (
+          <div style={{ padding: 20, textAlign: 'center' }}><Loader2 className="spin" size={24} color="var(--secondary)" /></div>
+        ) : history.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-icon">📅</div>
+            <div className="empty-icon"><Calendar size={40} strokeWidth={1} /></div>
             <div className="empty-title">ডেটা নেই</div>
             <div className="empty-desc">হ্যাবিট ট্র্যাক করা শুরু করো</div>
           </div>
@@ -134,9 +181,9 @@ const Habits = () => {
                   borderRadius: 8,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 11, fontWeight: 700,
-                  background: h.habitScore >= 6 ? 'rgba(46,125,50,0.7)' : h.habitScore >= 4 ? 'rgba(255,184,0,0.5)' : h.habitScore >= 1 ? 'rgba(59,130,246,0.4)' : 'rgba(255,255,255,0.06)',
-                  color: h.habitScore >= 1 ? 'white' : 'var(--text-muted)',
-                  border: '1px solid rgba(255,255,255,0.1)',
+                  background: h.habitScore >= 6 ? 'rgba(34, 197, 94, 0.8)' : h.habitScore >= 4 ? 'rgba(34, 197, 94, 0.4)' : h.habitScore >= 1 ? 'rgba(34, 197, 94, 0.15)' : 'var(--bg-dark)',
+                  color: h.habitScore >= 4 ? 'white' : 'var(--text-primary)',
+                  border: '1px solid var(--border)',
                   cursor: 'default'
                 }}
               >
@@ -149,11 +196,15 @@ const Habits = () => {
 
       {/* Badges */}
       <div className="card" style={{ marginTop: 20 }}>
-        <div className="card-title" style={{ marginBottom: 16 }}>🏆 ব্যাজ সিস্টেম</div>
+        <div className="card-title" style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Trophy size={18} color="var(--gold)" /> ব্যাজ সিস্টেম
+        </div>
         <div className="badges-grid">
           {allBadges.map((b, i) => (
             <div key={i} className={`badge-item${streak.current < b.needed ? ' badge-locked' : ''}`}>
-              <div className="badge-icon">{b.name.split(' ').pop()}</div>
+              <div className="badge-icon">
+                <HabitIcon name={b.icon} size={24} color={streak.current >= b.needed ? b.color : 'var(--text-muted)'} />
+              </div>
               <div>
                 <div className="badge-name">{b.name}</div>
                 <div className="badge-desc">{b.desc}</div>

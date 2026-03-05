@@ -1,10 +1,51 @@
 import { useState, useEffect } from 'react';
+import { 
+  PenTool, 
+  ChevronLeft, 
+  ChevronRight, 
+  Save, 
+  Loader2, 
+  Calendar, 
+  BookOpen, 
+  Sparkles, 
+  Lightbulb, 
+  Target, 
+  Heart, 
+  Hash,
+  Frown,
+  Meh,
+  Smile,
+  Laugh,
+  Flame,
+  CloudRain,
+  MehIcon,
+  SmileIcon
+} from 'lucide-react';
 import { journalAPI } from '../utils/api';
 import { todayStr, moodLabel } from '../utils/helpers';
 import { format, addDays, parseISO } from 'date-fns';
 import toast from 'react-hot-toast';
 
-const MOOD_EMOJIS = ['😞', '😢', '😕', '😑', '😐', '🙂', '😊', '😄', '😁', '🔥'];
+const MoodIcon = ({ score, size = 20, color = 'currentColor' }) => {
+  if (score <= 2) return <CloudRain size={size} color={color} />;
+  if (score <= 4) return <Frown size={size} color={color} />;
+  if (score <= 6) return <Meh size={size} color={color} />;
+  if (score <= 8) return <Smile size={size} color={color} />;
+  return <Flame size={size} color={color} />;
+};
+
+const MOOD_ICONS = [
+  { score: 1, icon: CloudRain },
+  { score: 2, icon: CloudRain },
+  { score: 3, icon: Frown },
+  { score: 4, icon: Frown },
+  { score: 5, icon: Meh },
+  { score: 6, icon: Meh },
+  { score: 7, icon: Smile },
+  { score: 8, icon: Smile },
+  { score: 9, icon: Flame },
+  { score: 10, icon: Flame },
+];
 
 const Journal = () => {
   const [date, setDate] = useState(todayStr());
@@ -37,7 +78,7 @@ const Journal = () => {
     setSaving(true);
     try {
       await journalAPI.save(date, entry);
-      toast.success('📔 ডায়েরি সংরক্ষিত হয়েছে');
+      toast.success('ডায়েরি সংরক্ষিত হয়েছে');
       fetchData(date);
     } catch (e) { toast.error('সেভ হয়নি'); }
     finally { setSaving(false); }
@@ -46,17 +87,19 @@ const Journal = () => {
   const mood = moodLabel(entry.mood);
 
   const prompts = [
-    { key: 'goodThings', label: '✨ আজ আমি কী ভালো করলাম?', placeholder: 'আজকের ভালো মুহূর্তগুলো লিখো...' },
-    { key: 'learned', label: '💡 আজ আমি কী শিখলাম?', placeholder: 'নতুন কি জানলে আজ?' },
-    { key: 'improvements', label: '🎯 আগামীকাল আমি কী উন্নতি করব?', placeholder: 'আগামীকালের পরিকল্পনা...' },
-    { key: 'gratitude', label: '🙏 আজ কিসের জন্য কৃতজ্ঞ?', placeholder: 'কৃতজ্ঞতা প্রকাশ করো...' },
+    { key: 'goodThings', icon: <Sparkles size={16} />, label: 'আজ আমি কী ভালো করলাম?', placeholder: 'আজকের ভালো মুহূর্তগুলো লিখো...' },
+    { key: 'learned', icon: <Lightbulb size={16} />, label: 'আজ আমি কী শিখলাম?', placeholder: 'নতুন কি জানলে আজ?' },
+    { key: 'improvements', icon: <Target size={16} />, label: 'আগামীকাল আমি কী উন্নতি করব?', placeholder: 'আগামীকালের পরিকল্পনা...' },
+    { key: 'gratitude', icon: <Heart size={16} />, label: 'আজ কিসের জন্য কৃতজ্ঞ?', placeholder: 'কৃতজ্ঞতা প্রকাশ করো...' },
   ];
 
   return (
     <div className="fade-in">
       <div className="page-header">
         <div>
-          <h1 className="page-title">📔 জার্নাল</h1>
+          <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <PenTool size={28} color="var(--primary)" /> জার্নাল
+          </h1>
           <p className="page-subtitle">প্রতিদিনের চিন্তা, অনুভূতি এবং পরিকল্পনা</p>
         </div>
       </div>
@@ -64,15 +107,15 @@ const Journal = () => {
       {/* Date Nav */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <div className="date-nav" style={{ display: 'inline-flex' }}>
-          <button className="date-nav-btn" onClick={() => changeDate(-1)}>‹</button>
+          <button className="date-nav-btn" onClick={() => changeDate(-1)}><ChevronLeft size={18} /></button>
           <div className="date-nav-display">
             {format(parseISO(date), 'EEEE, dd MMMM yyyy')}
             {date === todayStr() && <span style={{ color: 'var(--secondary)', marginLeft: 8, fontSize: 13 }}>আজ</span>}
           </div>
-          <button className="date-nav-btn" onClick={() => changeDate(1)} disabled={date === todayStr()}>›</button>
+          <button className="date-nav-btn" onClick={() => changeDate(1)} disabled={date === todayStr()}><ChevronRight size={18} /></button>
         </div>
         <button className="btn btn-primary" onClick={saveEntry} disabled={saving}>
-          {saving ? '⏳...' : '💾 সেভ'}
+          {saving ? <Loader2 size={16} className="spin" /> : <><Save size={16} /> সেভ</>}
         </button>
       </div>
 
@@ -81,23 +124,29 @@ const Journal = () => {
         <div>
           {/* Mood Selector */}
           <div className="card" style={{ marginBottom: 20 }}>
-            <div className="card-title" style={{ marginBottom: 16 }}>
-              😊 মুড: <span style={{ color: 'var(--secondary)', marginLeft: 8 }}>{mood.emoji} {mood.label} ({entry.mood}/10)</span>
+            <div className="card-title" style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
+              <MoodIcon score={entry.mood} size={20} color="var(--secondary)" />
+              মুড: <span style={{ color: 'var(--secondary)', marginLeft: 4 }}>{mood.label} ({entry.mood}/10)</span>
             </div>
             <div className="mood-selector">
-              {MOOD_EMOJIS.map((emoji, idx) => (
-                <button key={idx} className={`mood-btn${entry.mood === idx + 1 ? ' selected' : ''}`}
-                  onClick={() => setEntry({...entry, mood: idx + 1})} title={`${idx + 1}/10`}>
-                  {emoji}
-                </button>
-              ))}
+              {MOOD_ICONS.map((m, idx) => {
+                const Icon = m.icon;
+                return (
+                  <button key={idx} className={`mood-btn${entry.mood === m.score ? ' selected' : ''}`}
+                    onClick={() => setEntry({...entry, mood: m.score})} title={`${m.score}/10`}>
+                    <Icon size={20} />
+                  </button>
+                );
+              })}
             </div>
           </div>
 
           {/* Journal Prompts */}
-          {prompts.map(({ key, label, placeholder }) => (
+          {prompts.map(({ key, icon, label, placeholder }) => (
             <div className="card" style={{ marginBottom: 16 }} key={key}>
-              <label className="form-label" style={{ fontSize: 14, textTransform: 'none', letterSpacing: 0, marginBottom: 12 }}>{label}</label>
+              <label className="form-label" style={{ fontSize: 14, textTransform: 'none', letterSpacing: 0, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+                {icon} {label}
+              </label>
               <textarea
                 className="form-textarea"
                 placeholder={placeholder}
@@ -110,7 +159,9 @@ const Journal = () => {
 
           {/* Free Write */}
           <div className="card" style={{ marginBottom: 16 }}>
-            <label className="form-label" style={{ fontSize: 14, textTransform: 'none', letterSpacing: 0, marginBottom: 12 }}>✍️ মুক্ত লেখা (মনের যা আসে লিখো)</label>
+            <label className="form-label" style={{ fontSize: 14, textTransform: 'none', letterSpacing: 0, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <PenTool size={16} /> মুক্ত লেখা (মনের যা আসে লিখো)
+            </label>
             <textarea
               className="form-textarea"
               placeholder="আজ মনে যা এলো..."
@@ -121,30 +172,33 @@ const Journal = () => {
           </div>
 
           <button className="btn btn-primary btn-full btn-lg" onClick={saveEntry} disabled={saving}>
-            {saving ? '⏳ সংরক্ষণ হচ্ছে...' : '💾 ডায়েরি সংরক্ষণ করো'}
+            {saving ? <><Loader2 size={18} className="spin" /> সংরক্ষণ হচ্ছে...</> : <><Save size={18} /> ডায়েরি সংরক্ষণ করো</>}
           </button>
         </div>
 
         {/* Recent Entries */}
         <div>
           <div className="card" style={{ marginBottom: 16 }}>
-            <div className="card-title" style={{ marginBottom: 16 }}>📅 সাম্প্রতিক এন্ট্রি</div>
-            {recentEntries.length === 0 ? (
+            <div className="card-title" style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Calendar size={18} color="var(--primary)" /> সাম্প্রতিক এন্ট্রি
+            </div>
+            {loading ? (
+              <div style={{ padding: 20, textAlign: 'center' }}><div className="loading-spinner" /></div>
+            ) : recentEntries.length === 0 ? (
               <div className="empty-state">
-                <div className="empty-icon">📔</div>
+                <div className="empty-icon"><BookOpen size={40} strokeWidth={1} /></div>
                 <div className="empty-title">কোনো এন্ট্রি নেই</div>
                 <div className="empty-desc">প্রথম ডায়েরি লিখো</div>
               </div>
             ) : (
               recentEntries.map((e, i) => {
-                const m = moodLabel(e.mood);
                 return (
                   <div key={i}
                     onClick={() => setDate(e.date)}
-                    style={{ padding: '12px 14px', borderRadius: 10, border: '1px solid var(--border-light)', marginBottom: 8, cursor: 'pointer', transition: 'all 0.2s', background: date === e.date ? 'rgba(255,184,0,0.06)' : 'transparent', borderColor: date === e.date ? 'rgba(255,184,0,0.3)' : 'var(--border-light)' }}>
+                    style={{ padding: '12px 14px', borderRadius: 10, border: '1px solid var(--border-light)', marginBottom: 8, cursor: 'pointer', transition: 'all 0.2s', background: date === e.date ? 'rgba(34, 197, 94, 0.08)' : 'transparent', borderColor: date === e.date ? 'var(--secondary)' : 'var(--border-light)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                      <span style={{ fontSize: 13, fontWeight: 600 }}>{format(parseISO(e.date), 'dd MMM')}</span>
-                      <span style={{ fontSize: 16 }}>{m.emoji}</span>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: date === e.date ? 'var(--secondary)' : 'inherit' }}>{format(parseISO(e.date), 'dd MMM')}</span>
+                      <span style={{ fontSize: 16 }}><MoodIcon score={e.mood} size={16} color={date === e.date ? 'var(--secondary)' : 'var(--text-muted)'} /></span>
                     </div>
                     <div style={{ fontSize: 12, color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {e.goodThings || e.freeWrite || 'এন্ট্রি আছে'}

@@ -1,3 +1,4 @@
+import { Target, Globe, GraduationCap, BookOpen, Check, Calendar, Flame, Timer } from 'lucide-react';
 import { getMilestones, daysUntil } from '../utils/helpers';
 
 const Milestones = () => {
@@ -7,7 +8,9 @@ const Milestones = () => {
     <div className="fade-in">
       <div className="page-header">
         <div>
-          <h1 className="page-title">🎯 মাইলস্টোন ও টাইমলাইন</h1>
+          <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Target size={28} color="var(--primary)" /> মাইলস্টোন ও টাইমলাইন
+          </h1>
           <p className="page-subtitle">এপ্রিল ২০২৫ — মার্চ ২০২৭ · তোমার পুরো যাত্রার মানচিত্র</p>
         </div>
       </div>
@@ -15,21 +18,21 @@ const Milestones = () => {
       {/* Journey Countdown */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 16, marginBottom: 28 }}>
         {[
-          { label: 'EU Journey', date: '2027-03-01', icon: '🌍', color: 'var(--secondary)' },
-          { label: 'IELTS Target', date: '2026-09-30', icon: '🎓', color: 'var(--info)' },
-          { label: 'GED Target', date: '2026-03-31', icon: '📚', color: 'var(--accent)' },
+          { label: 'EU Journey', date: '2027-03-01', icon: <Globe size={32} />, color: 'var(--secondary)' },
+          { label: 'IELTS Target', date: '2026-09-30', icon: <GraduationCap size={32} />, color: 'var(--info)' },
+          { label: 'GED Target', date: '2026-03-31', icon: <BookOpen size={32} />, color: 'var(--accent)' },
         ].map(item => {
           const days = daysUntil(item.date);
           return (
             <div key={item.label} className="stat-card" style={{ textAlign: 'center', borderTop: `3px solid ${item.color}` }}>
-              <div style={{ fontSize: 32 }}>{item.icon}</div>
+              <div style={{ marginBottom: 8, color: 'var(--text-muted)' }}>{item.icon}</div>
               <div style={{ fontSize: 28, fontWeight: 900, color: item.color, fontFamily: 'Montserrat', lineHeight: 1 }}>
-                {days > 0 ? days : '✅'}
+                {days > 0 ? days : <Check size={28} />}
               </div>
-              <div style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 4 }}>
                 {days > 0 ? 'দিন বাকি' : 'সম্পন্ন'}
               </div>
-              <div style={{ fontSize: 13, color: 'var(--text-secondary)', fontWeight: 600 }}>{item.label}</div>
+              <div style={{ fontSize: 13, color: 'var(--text-secondary)', fontWeight: 600, marginTop: 4 }}>{item.label}</div>
             </div>
           );
         })}
@@ -37,7 +40,9 @@ const Milestones = () => {
 
       {/* Timeline */}
       <div className="card" style={{ marginBottom: 0 }}>
-        <div className="card-title" style={{ marginBottom: 24 }}>📅 ফেজ ভিত্তিক পরিকল্পনা</div>
+        <div className="card-title" style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Calendar size={20} color="var(--primary)" /> ফেজ ভিত্তিক পরিকল্পনা
+        </div>
         <div className="timeline">
           {milestones.map((m, i) => (
             <div key={i} className={`timeline-item${m.status === 'completed' ? ' completed' : m.status === 'active' ? ' active' : ''}`}>
@@ -45,14 +50,14 @@ const Milestones = () => {
                 <div>
                   <div className="timeline-phase">{m.phase}</div>
                   <div className="timeline-title">{m.title}</div>
-                  <div className="timeline-dates">
-                    📅 {m.start} {m.end && `→ ${m.end}`}
+                  <div className="timeline-dates" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <Calendar size={14} /> {m.start} {m.end && `→ ${m.end}`}
                   </div>
                 </div>
                 <div>
-                  {m.status === 'active' && <span style={{ background: 'rgba(255,184,0,0.15)', color: 'var(--secondary)', padding: '4px 12px', borderRadius: 20, fontSize: 11, fontWeight: 700, border: '1px solid rgba(255,184,0,0.3)' }}>🔥 চলমান</span>}
-                  {m.status === 'completed' && <span style={{ background: 'rgba(34,197,94,0.15)', color: 'var(--success)', padding: '4px 12px', borderRadius: 20, fontSize: 11, fontWeight: 700 }}>✅ সম্পন্ন</span>}
-                  {m.status === 'upcoming' && <span style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-muted)', padding: '4px 12px', borderRadius: 20, fontSize: 11, fontWeight: 600 }}>⏳ আসছে</span>}
+                  {m.status === 'active' && <span style={{ background: 'rgba(34, 197, 94, 0.15)', color: 'var(--secondary)', padding: '4px 12px', borderRadius: 20, fontSize: 11, fontWeight: 700, border: '1px solid var(--secondary)', display: 'flex', alignItems: 'center', gap: 4 }}><Flame size={12} /> চলমান</span>}
+                  {m.status === 'completed' && <span style={{ background: 'rgba(34,197,94,0.15)', color: 'var(--success)', padding: '4px 12px', borderRadius: 20, fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4 }}><Check size={12} /> সম্পন্ন</span>}
+                  {m.status === 'upcoming' && <span style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-muted)', padding: '4px 12px', borderRadius: 20, fontSize: 11, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}><Timer size={12} /> আসছে</span>}
                 </div>
               </div>
 
