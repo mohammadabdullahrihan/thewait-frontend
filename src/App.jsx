@@ -25,18 +25,12 @@ import Milestones from './pages/Milestones';
 import Analytics from './pages/Analytics';
 import Profile from './pages/Profile';
 import './index.css';
+import Loader from './components/Common/Loader';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
-  if (loading) {
-    return (
-      <div className="loading-screen" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
-        <Loader2 className="spin" size={48} color="var(--secondary)" />
-        <p style={{ color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>অপেক্ষা লোড হচ্ছে...</p>
-      </div>
-    );
-  }
+  if (loading) return <Loader full message="লোড হচ্ছে..." />;
   return user ? children : <Navigate to="/login" replace />;
 };
 

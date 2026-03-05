@@ -21,6 +21,7 @@ import { habitAPI } from '../utils/api';
 import { todayStr, getHabitEmoji, getHabitName } from '../utils/helpers';
 import { format, addDays, parseISO } from 'date-fns';
 import toast from 'react-hot-toast';
+import Loader from '../components/Common/Loader';
 
 const habitKeys = ['wakeUp6am', 'workout', 'study', 'noFap', 'noCartoon', 'sleep10pm', 'journal'];
 
@@ -61,11 +62,16 @@ const Habits = () => {
       setHabitScore(habitRes.data.habit.habitScore || 0);
       setStreak(streakRes.data.streak || { current: 0, longest: 0 });
       setHistory(historyRes.data.habits || []);
-    } catch (e) { console.error(e); }
-    finally { setLoading(false); }
+    } catch (e) { 
+      console.error(e); 
+    } finally { 
+      setLoading(false); 
+    }
   };
 
-  useEffect(() => { fetchData(date); }, [date]);
+  useEffect(() => { 
+    fetchData(date); 
+  }, [date]);
 
   const toggleHabit = async (key) => {
     const updated = { ...habits, [key]: !habits[key] };
@@ -90,101 +96,115 @@ const Habits = () => {
     { name: 'Streak Master', icon: 'Zap', color: '#22c55e', needed: 30, desc: '৩০ দিন নো-ফ্যাপ' },
   ];
 
+  if (loading && history.length === 0) return <Loader />;
+
   return (
-    <div className="fade-in">
-      <div className="page-header">
+    <div className="fade-in animate-in fade-in duration-700">
+      <div className="page-header mb-8">
         <div>
-          <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <Flame size={28} color="var(--primary)" /> হ্যাবিট ট্র্যাকার
+          <h1 className="text-3xl font-black mb-1 flex items-center gap-3" style={{ color: 'var(--text-primary)' }}>
+            <Flame size={32} className="text-orange-500 fill-orange-500" /> হ্যাবিট ট্র্যাকার
           </h1>
-          <p className="page-subtitle">ডোপামিন ডিটক্স · প্রতিদিনের ৭টি মূল হ্যাবিট</p>
+          <p className="text-sm font-medium" style={{ color: 'var(--text-muted)' }}>ডোপামিন ডিটক্স · প্রতিদিনের ৭টি মূল হ্যাবিট</p>
         </div>
       </div>
 
       {/* Streak */}
-      <div className="streak-display" style={{ marginBottom: 24, background: 'rgba(34, 197, 94, 0.05)', borderColor: 'rgba(34, 197, 94, 0.2)' }}>
-        <div className="streak-flame"><Flame size={40} fill="var(--secondary)" color="var(--secondary)" /></div>
-        <div className="streak-info">
-          <div className="streak-count">{streak.current || 0}</div>
-          <div className="streak-label">দিনের টানা স্ট্রিক</div>
+      <div className="card mb-8 flex items-center justify-between p-8" style={{ background: 'var(--bg-card)', borderColor: 'var(--border)' }}>
+        <div className="flex items-center gap-6">
+          <div className="bg-orange-50 p-4 rounded-2xl">
+            <Flame size={48} className="text-orange-500 fill-orange-500" />
+          </div>
+          <div>
+            <div className="text-5xl font-black" style={{ color: 'var(--text-primary)' }}>{streak.current || 0}</div>
+            <div className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--secondary)' }}>দিনের টানা স্ট্রিক</div>
+          </div>
         </div>
-        <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
-          <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 5 }}>
-            <Trophy size={20} color="var(--secondary)" />
+        <div className="text-right">
+          <div className="text-2xl font-black flex items-center justify-end gap-2" style={{ color: 'var(--text-primary)' }}>
+            <Trophy size={20} className="text-yellow-400" />
             {streak.longest || 0}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>সর্বোচ্চ</div>
+          <div className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>ব্যক্তিগত রেকর্ড</div>
         </div>
       </div>
 
       {/* Date Nav */}
-      <div className="date-nav" style={{ marginBottom: 20, display: 'inline-flex' }}>
-        <button className="date-nav-btn" onClick={() => changeDate(-1)}><ChevronLeft size={18} /></button>
-        <div className="date-nav-display">
-          {format(parseISO(date), 'EEEE, dd MMM')}
-          {date === todayStr() && <span style={{ color: 'var(--secondary)', marginLeft: 8, fontSize: 13 }}>আজ</span>}
+      <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-center bg-white rounded-2xl border shadow-sm p-1" style={{ borderColor: 'var(--border)' }}>
+          <button className="p-2 hover:bg-emerald-50 rounded-xl transition-colors" onClick={() => changeDate(-1)}><ChevronLeft size={20} /></button>
+          <div className="px-6 font-bold text-sm min-w-[160px] text-center">
+            {format(parseISO(date), 'EEEE, dd MMM')}
+            {date === todayStr() && <span className="ml-2 text-emerald-500">(আজ)</span>}
+          </div>
+          <button className="p-2 hover:bg-emerald-50 rounded-xl transition-colors disabled:opacity-30" onClick={() => changeDate(1)} disabled={date === todayStr()}><ChevronRight size={20} /></button>
         </div>
-        <button className="date-nav-btn" onClick={() => changeDate(1)} disabled={date === todayStr()}><ChevronRight size={18} /></button>
       </div>
 
-      {/* Habit Score */}
-      <div className="card" style={{ marginBottom: 24 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-          <span style={{ fontWeight: 600 }}>আজকের স্কোর</span>
-          <span style={{ color: 'var(--secondary)', fontWeight: 800, fontSize: 22 }}>{habitScore}/7</span>
+      {/* Habit Score Card */}
+      <div className="card mb-8">
+        <div className="flex justify-between items-center mb-4">
+          <span className="text-xs font-bold uppercase tracking-widest text-emerald-800/60">আজকের অগ্রগতি</span>
+          <span className="text-2xl font-black text-emerald-600">{habitScore}/7</span>
         </div>
-        <div className="progress-bar-wrap" style={{ height: 10 }}>
-          <div className="progress-bar-fill gold" style={{ width: `${(habitScore / 7) * 100}%` }} />
+        <div className="h-3 w-full bg-emerald-50 rounded-full overflow-hidden border border-emerald-100">
+          <div 
+            className="h-full bg-emerald-500 shadow-lg shadow-emerald-500/20 transition-all duration-700" 
+            style={{ width: `${(habitScore / 7) * 100}%` }} 
+          />
         </div>
-        <div style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 8 }}>
+        <p className="text-[10px] font-bold uppercase tracking-widest mt-4 text-emerald-500">
           {habitScore >= 7 ? 'সব হ্যাবিট সম্পন্ন! অসাধারণ!' : `আরও ${7 - habitScore}টি হ্যাবিট বাকি`}
-        </div>
+        </p>
       </div>
 
       {/* Habits Grid */}
-      <div className="habit-grid" style={{ marginBottom: 28 }}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
         {habitKeys.map(key => (
           <div
             key={key}
-            className={`habit-card${habits[key] ? ' completed' : ''}`}
             onClick={() => toggleHabit(key)}
-            style={habits[key] ? { background: 'rgba(34, 197, 94, 0.1)', borderColor: 'var(--secondary)' } : {}}
+            className={`group cursor-pointer p-6 rounded-3xl border transition-all duration-300 ${habits[key] ? 'shadow-md scale-[1.02]' : 'hover:shadow-sm hover:translate-y-[-2px]'}`}
+            style={{ 
+              background: habits[key] ? 'var(--bg-card-hover)' : 'var(--bg-card)', 
+              borderColor: habits[key] ? 'var(--secondary)' : 'var(--border)' 
+            }}
           >
-            <div className="habit-icon">
-              <HabitIcon name={getHabitEmoji(key)} size={24} color={habits[key] ? 'var(--secondary)' : 'var(--text-muted)'} />
+            <div className="flex items-center justify-between mb-4">
+              <div className={`p-3 rounded-2xl transition-colors ${habits[key] ? 'bg-emerald-500 text-white' : 'bg-emerald-50 text-emerald-600'}`}>
+                <HabitIcon name={getHabitEmoji(key)} size={24} />
+              </div>
+              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${habits[key] ? 'bg-emerald-500 border-emerald-500' : 'border-emerald-100'}`}>
+                {habits[key] && <Check size={14} className="text-white font-bold" />}
+              </div>
             </div>
-            <div className="habit-name" style={habits[key] ? { color: 'var(--secondary)' } : {}}>{getHabitName(key)}</div>
-            <div className="habit-check" style={habits[key] ? { background: 'var(--secondary)', borderColor: 'var(--secondary)' } : {}}>{habits[key] && <Check size={16} />}</div>
+            <div className={`text-sm font-bold transition-colors ${habits[key] ? 'text-emerald-900' : 'text-emerald-800/70 group-hover:text-emerald-900'}`}>{getHabitName(key)}</div>
           </div>
         ))}
       </div>
 
       {/* 30-day history view */}
-      <div className="card">
-        <div className="card-title" style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Calendar size={18} color="var(--primary)" /> ৩০ দিনের হিস্টোরি
-        </div>
+      <div className="card mb-8">
+        <h3 className="text-lg font-black mb-6 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+          <Calendar size={18} className="text-emerald-500" /> ৩০ দিনের ইতিহাস
+        </h3>
+        
         {loading ? (
-          <div style={{ padding: 20, textAlign: 'center' }}><Loader2 className="spin" size={24} color="var(--secondary)" /></div>
+          <div className="flex justify-center p-12"><Loader2 className="animate-spin text-emerald-500" /></div>
         ) : history.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-icon"><Calendar size={40} strokeWidth={1} /></div>
-            <div className="empty-title">ডেটা নেই</div>
-            <div className="empty-desc">হ্যাবিট ট্র্যাক করা শুরু করো</div>
+          <div className="p-12 text-center bg-emerald-50/50 rounded-2xl border border-dashed border-emerald-100">
+            <Calendar size={48} className="mx-auto mb-4 text-emerald-100" />
+            <p className="text-sm font-bold text-emerald-800/40 uppercase tracking-widest">No History Yet</p>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+          <div className="flex flex-wrap gap-2">
             {history.slice(0, 30).map((h, i) => (
               <div key={i} title={`${h.date}: ${h.habitScore}/7`}
+                className="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold border transition-all hover:scale-110"
                 style={{
-                  width: 36, height: 36,
-                  borderRadius: 8,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 11, fontWeight: 700,
-                  background: h.habitScore >= 6 ? 'rgba(34, 197, 94, 0.8)' : h.habitScore >= 4 ? 'rgba(34, 197, 94, 0.4)' : h.habitScore >= 1 ? 'rgba(34, 197, 94, 0.15)' : 'var(--bg-dark)',
+                  background: h.habitScore >= 6 ? 'var(--secondary)' : h.habitScore >= 4 ? 'var(--secondary-dark)' : h.habitScore >= 1 ? 'var(--bg-card-hover)' : 'var(--bg-dark)',
                   color: h.habitScore >= 4 ? 'white' : 'var(--text-primary)',
-                  border: '1px solid var(--border)',
-                  cursor: 'default'
+                  borderColor: 'var(--border)'
                 }}
               >
                 {h.habitScore}
@@ -195,25 +215,27 @@ const Habits = () => {
       </div>
 
       {/* Badges */}
-      <div className="card" style={{ marginTop: 20 }}>
-        <div className="card-title" style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Trophy size={18} color="var(--gold)" /> ব্যাজ সিস্টেম
-        </div>
-        <div className="badges-grid">
+      <div className="card">
+        <h3 className="text-lg font-black mb-6 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+          <Trophy size={18} className="text-yellow-500 fill-yellow-500" /> গ্লোরি ব্যাজসমূহ
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {allBadges.map((b, i) => (
-            <div key={i} className={`badge-item${streak.current < b.needed ? ' badge-locked' : ''}`}>
-              <div className="badge-icon">
-                <HabitIcon name={b.icon} size={24} color={streak.current >= b.needed ? b.color : 'var(--text-muted)'} />
+            <div key={i} className={`p-5 rounded-2xl border transition-all ${streak.current < b.needed ? 'opacity-40 grayscale blur-[1px]' : 'bg-emerald-50/30 border-emerald-100 shadow-sm'}`}>
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-white shadow-sm">
+                  <HabitIcon name={b.icon} size={24} color={streak.current >= b.needed ? b.color : '#94a3b8'} />
+                </div>
+                <div>
+                  <div className="text-sm font-black text-emerald-900">{b.name}</div>
+                  <div className="text-[10px] font-bold text-emerald-600/70 uppercase tracking-widest">{b.desc}</div>
+                </div>
               </div>
-              <div>
-                <div className="badge-name">{b.name}</div>
-                <div className="badge-desc">{b.desc}</div>
-                {streak.current < b.needed && (
-                  <div style={{ fontSize: 11, color: 'var(--secondary)', marginTop: 2 }}>
-                    আরও {b.needed - streak.current} দিন বাকি
-                  </div>
-                )}
-              </div>
+              {streak.current < b.needed && (
+                <div className="mt-3 text-[10px] font-black text-emerald-500 uppercase tracking-widest bg-emerald-50 py-1 px-2 rounded-lg inline-block">
+                  আরও {b.needed - streak.current} দিন বাকি
+                </div>
+              )}
             </div>
           ))}
         </div>

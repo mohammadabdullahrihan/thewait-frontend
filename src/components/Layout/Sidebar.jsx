@@ -39,7 +39,7 @@ const Sidebar = () => {
       <div className="sidebar-header">
         <NavLink to="/dashboard" className="sidebar-logo">
           <div className="sidebar-logo-icon">
-            <Swords size={24} color="var(--primary)" />
+            <Swords size={24} color="white" />
           </div>
           <div className="sidebar-logo-text">
             <span className="app-name">অপেক্ষা</span>
@@ -81,8 +81,8 @@ const Sidebar = () => {
               Level {xp.level} · {user.experience || 0} XP
             </div>
             <div style={{ marginTop: 6 }}>
-              <div className="progress-bar-wrap" style={{ height: 4 }}>
-                <div className="progress-bar-fill gold" style={{ width: `${xp.percentage}%` }} />
+              <div className="progress-bar-wrap" style={{ height: 4, background: 'var(--border-light)' }}>
+                <div className="progress-bar-fill" style={{ width: `${xp.percentage}%`, background: 'var(--secondary)' }} />
               </div>
             </div>
           </div>
