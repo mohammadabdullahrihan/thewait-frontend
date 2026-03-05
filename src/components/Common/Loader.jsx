@@ -1,9 +1,9 @@
 import React from 'react';
 import { Swords } from 'lucide-react';
 
-const Loader = ({ message = 'অপেক্ষা লোড হচ্ছে...', full = false }) => {
+const Loader = ({ message = '', full = false }) => {
   return (
-    <div className={`flex flex-col items-center justify-center gap-8 ${full ? 'fixed inset-0 z-[9999] bg-white' : 'min-h-[400px] w-full'}`} style={{ 
+    <div className={`flex flex-col items-center justify-center gap-8 ${full ? 'fixed inset-0 z-[9999]' : 'lg:min-h-[100vh] min-h-[105vh] w-full'}`} style={{ 
       background: full ? 'var(--bg-dark)' : 'transparent' 
     }}>
       <div className="relative">
@@ -17,8 +17,7 @@ const Loader = ({ message = 'অপেক্ষা লোড হচ্ছে...'
           <div className="bg-white p-5 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-emerald-50 relative z-10 transition-transform hover:scale-105 duration-500">
             <Swords 
               size={40} 
-              className="text-emerald-600 animate-bounce" 
-              style={{ animationDuration: '2s' }}
+              className="text-emerald-600" 
             />
           </div>
         </div>
@@ -26,18 +25,7 @@ const Loader = ({ message = 'অপেক্ষা লোড হচ্ছে...'
 
       <div className="flex flex-col items-center gap-3 animate-in fade-in slide-in-from-bottom-2 duration-1000">
         <h3 className="text-2xl font-black tracking-tight" style={{ color: 'var(--text-primary)' }}>{message}</h3>
-        <p className="text-sm font-medium opacity-60 italic" style={{ color: 'var(--text-muted)' }}>"শৃঙ্খলাই স্বাধীনতা"</p>
         <div className="flex items-center gap-2 mt-2">
-          {[0, 150, 300].map((delay) => (
-            <span 
-              key={delay}
-              className="w-2 h-2 rounded-full animate-bounce" 
-              style={{ 
-                background: 'var(--secondary)',
-                animationDelay: `${delay}ms`
-              }} 
-            />
-          ))}
         </div>
       </div>
     </div>

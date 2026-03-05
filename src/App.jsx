@@ -1,4 +1,6 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, NavLink, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, NavLink, Link, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import SEO from './components/Common/SEO';
 import { Toaster } from 'react-hot-toast';
 import { 
   Home, 
@@ -6,10 +8,17 @@ import {
   Flame, 
   BookOpen, 
   Book, 
-  Loader2,
   Check,
   AlertCircle,
-  Dumbbell
+  Dumbbell,
+  BarChart3,
+  Target,
+  User,
+  Activity,
+  PenTool,
+  MoreHorizontal,
+  X,
+  LogOut
 } from 'lucide-react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Sidebar from './components/Layout/Sidebar';
@@ -26,12 +35,100 @@ import Analytics from './pages/Analytics';
 import Profile from './pages/Profile';
 import './index.css';
 import Loader from './components/Common/Loader';
+import { useNavigate } from 'react-router-dom';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return <Loader full message="লোড হচ্ছে..." />;
   return user ? children : <Navigate to="/login" replace />;
+};
+
+// Mobile Nav Component
+const MobileNav = () => {
+  const [showMore, setShowMore] = useState(false);
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const primaryNav = [
+    { to: '/dashboard', icon: <Home size={22} />, label: 'হোম' },
+    { to: '/routine', icon: <ClipboardList size={22} />, label: 'রুটিন' },
+    { to: '/habits', icon: <Flame size={22} />, label: 'হ্যাবিট' },
+    { to: '/study', icon: <BookOpen size={22} />, label: 'পড়াশোনা' },
+  ];
+
+  const moreNav = [
+    { to: '/workout', icon: <Dumbbell size={20} />, label: 'ওয়ার্কআউট' },
+    { to: '/journal', icon: <PenTool size={20} />, label: 'জার্নাল' },
+    { to: '/milestones', icon: <Target size={20} />, label: 'মাইলস্টোন' },
+    { to: '/analytics', icon: <BarChart3 size={20} />, label: 'অ্যানালিটিক্স' },
+    { to: '/profile', icon: <User size={20} />, label: 'প্রোফাইল' },
+  ];
+
+  return (
+    <>
+      {/* More Drawer Overlay */}
+      {showMore && (
+        <div 
+          className="fixed inset-0 z-[998] bg-black/30 backdrop-blur-sm"
+          onClick={() => setShowMore(false)}
+        />
+      )}
+
+      {/* More Slide-Up Drawer */}
+      <div className={`mobile-more-drawer ${showMore ? 'open' : ''}`}>
+        <div className="flex items-center justify-between px-6 pt-5 pb-2">
+          <p className="text-[11px] font-black text-emerald-700 uppercase tracking-[0.2em]">আরো পেজ</p>
+          <button onClick={() => setShowMore(false)} className="p-2 rounded-xl bg-slate-50 text-slate-400">
+            <X size={18} />
+          </button>
+        </div>
+        <div className="grid grid-cols-3 gap-3 p-5">
+          {moreNav.map(item => (
+            <NavLink 
+              key={item.to} 
+              to={item.to} 
+              onClick={() => setShowMore(false)}
+              className={({ isActive }) => `mobile-drawer-item${isActive ? ' active' : ''}`}
+            >
+              <span className="mobile-drawer-icon">{item.icon}</span>
+              <span>{item.label}</span>
+            </NavLink>
+          ))}
+          <button 
+            className="mobile-drawer-item text-rose-500"
+            onClick={() => { logout(); navigate('/login'); setShowMore(false); }}
+          >
+            <span className="mobile-drawer-icon"><LogOut size={20} /></span>
+            <span>লগআউট</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Main Bottom Nav Bar */}
+      <nav className="mobile-nav">
+        {primaryNav.map(item => (
+          <NavLink 
+            key={item.to} 
+            to={item.to} 
+            className={({ isActive }) => `mobile-nav-item${isActive ? ' active' : ''}`}
+          >
+            <span className="mobile-nav-icon">{item.icon}</span>
+            {item.label}
+          </NavLink>
+        ))}
+        <button 
+          className={`mobile-nav-item${showMore ? ' active' : ''}`}
+          onClick={() => setShowMore(v => !v)}
+        >
+          <span className="mobile-nav-icon">
+            {showMore ? <X size={22} /> : <MoreHorizontal size={22} />}
+          </span>
+          আরো
+        </button>
+      </nav>
+    </>
+  );
 };
 
 // App Layout (with Sidebar)
@@ -41,30 +138,36 @@ const AppLayout = ({ children }) => (
     <main className="main-content">
       {children}
     </main>
-    {/* Mobile Bottom Nav */}
-    <nav className="mobile-nav">
-      {[
-        { to: '/dashboard', icon: <Home size={20} />, label: 'হোম' },
-        { to: '/routine', icon: <ClipboardList size={20} />, label: 'রুটিন' },
-        { to: '/workout', icon: <Dumbbell size={20} />, label: 'ব্যায়াম' },
-        { to: '/habits', icon: <Flame size={20} />, label: 'হ্যাবিট' },
-        { to: '/study', icon: <BookOpen size={20} />, label: 'পড়াশোনা' },
-        { to: '/journal', icon: <Book size={20} />, label: 'জার্নাল' },
-      ].map(item => (
-        <NavLink key={item.to} to={item.to} className={({ isActive }) => `mobile-nav-item${isActive ? ' active' : ''}`}>
-          <span className="mobile-nav-icon">{item.icon}</span>
-          {item.label}
-        </NavLink>
-      ))}
-    </nav>
+    <MobileNav />
   </div>
 );
+
+function RouteSEO() {
+  const location = useLocation();
+  const path = location.pathname;
+
+  let title = "লগইন";
+  if (path.includes("dashboard")) title = "ড্যাশবোর্ড";
+  else if (path.includes("routine")) title = "রুটিন";
+  else if (path.includes("habits")) title = "হ্যাবিট লিস্ট";
+  else if (path.includes("study")) title = "স্টাডি ট্র্যাকার";
+  else if (path.includes("workout")) title = "ওয়ার্কআউট";
+  else if (path.includes("journal")) title = "জার্নাল";
+  else if (path.includes("milestones")) title = "মাইলস্টোন";
+  else if (path.includes("analytics")) title = "অ্যানালিটিক্স";
+  else if (path.includes("profile")) title = "প্রোফাইল";
+  else if (path.includes("register")) title = "রেজিস্ট্রেশন";
+
+  return <SEO title={title} />;
+}
 
 function AppContent() {
   const { user } = useAuth();
 
   return (
-    <Routes>
+    <>
+      <RouteSEO />
+      <Routes>
       {/* Public Routes */}
       <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
       <Route path="/register" element={user ? <Navigate to="/dashboard" /> : <Register />} />
@@ -120,6 +223,7 @@ function AppContent() {
       <Route path="/" element={<Navigate to={user ? "/dashboard" : "/login"} replace />} />
       <Route path="*" element={<Navigate to={user ? "/dashboard" : "/login"} replace />} />
     </Routes>
+    </>
   );
 }
 

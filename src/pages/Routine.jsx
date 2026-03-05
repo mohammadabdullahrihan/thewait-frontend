@@ -69,14 +69,28 @@ const Routine = () => {
     fetchRoutineData(date, activeName);
   }, [date, activeName]);
 
-  const toggleTask = async (taskId, completed) => {
+  const toggleTask = async (taskId, completed, index) => {
     try {
       if (!routine._id) {
-        // Not saved yet, save the whole thing
-        const res = await routineAPI.save({ date, name: activeName, tasks: routine.tasks });
+        // Not saved yet (using template), toggle locally and save the whole thing
+        const updatedTasks = [...routine.tasks];
+        updatedTasks[index].completed = !completed;
+        const res = await routineAPI.save({ date, name: activeName, tasks: updatedTasks });
         setRoutine(res.data.routine);
+        if (!completed) toast.success('+5 XP অর্জিত! 🔥', { position: 'bottom-center' });
         return;
       }
+      
+      // If routine exists but taskId is somehow missing (fallback to index-based update)
+      if (!taskId) {
+        const updatedTasks = [...routine.tasks];
+        updatedTasks[index].completed = !completed;
+        const res = await routineAPI.save({ date, name: activeName, tasks: updatedTasks });
+        setRoutine(res.data.routine);
+        if (!completed) toast.success('+5 XP অর্জিত! 🔥', { position: 'bottom-center' });
+        return;
+      }
+
       const res = await routineAPI.toggleTask(date, taskId, !completed, activeName);
       setRoutine(res.data.routine);
       if (!completed) toast.success('+5 XP অর্জিত! 🔥', { position: 'bottom-center' });
@@ -96,6 +110,24 @@ const Routine = () => {
       toast.success('টাস্ক যোগ হয়েছে');
     } catch (e) {
       toast.error('টাস্ক যোগ করা যায়নি');
+    }
+  };
+
+  const deleteTask = async (taskId, index) => {
+    try {
+      if (!routine._id) {
+        // Not saved yet, just remove locally
+        const updatedTasks = routine.tasks.filter((_, i) => i !== index);
+        setRoutine({ ...routine, tasks: updatedTasks });
+        toast.success('টাস্ক মুছে ফেলা হয়েছে');
+        return;
+      }
+      
+      const res = await routineAPI.deleteTask(date, taskId, activeName);
+      setRoutine(res.data.routine);
+      toast.success('টাস্ক মুছে ফেলা হয়েছে');
+    } catch (e) {
+      toast.error('মুছে ফেলা ব্যর্থ');
     }
   };
 
@@ -291,11 +323,11 @@ const Routine = () => {
                   return (
                     <div 
                       key={task._id || i} 
-                      className={`p-6 rounded-[2.5rem] bg-white border border-emerald-50 shadow-sm flex items-center gap-6 group transition-all hover:translate-x-2 ${task.completed ? 'opacity-50 grayscale' : ''}`}
+                      onClick={() => toggleTask(task._id, task.completed, i)}
+                      className={`p-6 rounded-[2.5rem] bg-white border border-emerald-50 shadow-sm flex items-center gap-6 group transition-all hover:translate-x-2 cursor-pointer ${task.completed ? 'opacity-50 grayscale' : ''}`}
                     >
                        <div 
-                         onClick={() => task._id && toggleTask(task._id, task.completed)}
-                         className={`w-12 h-12 rounded-2xl border-2 flex items-center justify-center cursor-pointer transition-all ${task.completed ? 'bg-emerald-500 border-emerald-500 text-white rotate-[360deg]' : 'border-emerald-100 text-transparent hover:border-emerald-400 group-hover:scale-105 shadow-sm bg-gray-50/30'}`}
+                         className={`w-12 h-12 rounded-2xl border-2 flex items-center justify-center transition-all ${task.completed ? 'bg-emerald-500 border-emerald-500 text-white rotate-[360deg]' : 'border-emerald-100 text-transparent hover:border-emerald-400 group-hover:scale-105 shadow-sm bg-gray-50/30'}`}
                        >
                          <Check size={20} className={task.completed ? 'scale-100' : 'scale-0'} />
                        </div>
@@ -312,8 +344,11 @@ const Routine = () => {
                           {meta.icon} {task.category}
                        </div>
                        
-                       <button className="p-3 rounded-2xl hover:bg-gray-50 text-emerald-900/10 group-hover:text-emerald-900/40 transition-all">
-                          <MoreVertical size={18} />
+                       <button 
+                         onClick={(e) => { e.stopPropagation(); deleteTask(task._id, i); }}
+                         className="p-3 rounded-2xl hover:bg-rose-50 text-rose-500/20 hover:text-rose-500 transition-all"
+                       >
+                          <X size={18} />
                        </button>
                     </div>
                   );
@@ -373,19 +408,51 @@ const Routine = () => {
               </div>
            </div>
 
-           {/* Active Members/Inspiration */}
+           {/* Today's Task Breakdown - Real Data */}
            <div className="p-8 rounded-[3rem] bg-white border border-emerald-100 shadow-sm space-y-6">
-              <h4 className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest">BATTLE SQUAD</h4>
-              <div className="space-y-4">
-                 {[1,2,3].map(i => (
-                    <div key={i} className="flex items-center gap-4">
-                       <div className="w-10 h-10 rounded-xl bg-gray-100 border border-emerald-50" />
-                       <div className="flex-1">
-                          <p className="text-xs font-black text-emerald-950">Warrior #{i+124}</p>
-                          <p className="text-[9px] font-bold text-emerald-400 uppercase tracking-widest">Completed Morning Routine</p>
-                       </div>
+              <h4 className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest">আজকের রিয়েল ব্রেকডাউন</h4>
+              <div className="space-y-5">
+                 {/* Completion Rate Visual */}
+                 <div className="flex items-center justify-between p-5 bg-emerald-50 rounded-2xl border border-emerald-100">
+                    <div>
+                       <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1">TODAY'S SCORE</p>
+                       <p className="text-3xl font-black text-emerald-950 leading-none">{completedCount}<span className="text-base text-emerald-400">/{totalCount}</span></p>
+                       <p className="text-[9px] font-bold text-emerald-400/60 uppercase tracking-widest mt-1">Tasks Done</p>
                     </div>
-                 ))}
+                    <div className="w-20 h-20 relative flex items-center justify-center">
+                       <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                          <circle cx="18" cy="18" r="15.9" fill="none" stroke="#ecfdf5" strokeWidth="3" />
+                          <circle cx="18" cy="18" r="15.9" fill="none" stroke="#10b981" strokeWidth="3"
+                            strokeDasharray={`${completionRate} ${100 - completionRate}`}
+                            strokeLinecap="round"
+                          />
+                       </svg>
+                       <span className="absolute text-sm font-black text-emerald-600">{completionRate}%</span>
+                    </div>
+                 </div>
+
+                 {/* Pending tasks count */}
+                 <div className="flex items-center gap-4 p-4 rounded-2xl bg-amber-50 border border-amber-100">
+                    <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600">
+                       <Clock size={18} />
+                    </div>
+                    <div>
+                       <p className="text-xs font-black text-amber-700">{totalCount - completedCount} টি টাস্ক বাকি</p>
+                       <p className="text-[9px] font-bold text-amber-500/60 uppercase tracking-widest">Remaining Today</p>
+                    </div>
+                 </div>
+
+                 {/* Routine name tag */}
+                 <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600">
+                       <Layers size={18} />
+                    </div>
+                    <div>
+                       <p className="text-xs font-black text-slate-700">{activeName} রুটিন</p>
+                       <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Active Module</p>
+                    </div>
+                 </div>
+
               </div>
            </div>
         </div>

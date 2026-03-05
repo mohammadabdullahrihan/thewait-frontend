@@ -39,6 +39,8 @@ export const routineAPI = {
   save: (data) => API.post("/routines", data),
   toggleTask: (date, taskId, completed, name = "Daily") =>
     API.put(`/routines/${date}/task/${taskId}`, { completed, name }),
+  deleteTask: (date, taskId, name = "Daily") =>
+    API.delete(`/routines/${date}/task/${taskId}?name=${name}`),
   getWeek: (startDate) => API.get(`/routines/week/${startDate}`),
   getAllForDate: (date) => API.get(`/routines/${date}/list/all`),
 };
