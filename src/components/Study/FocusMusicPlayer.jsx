@@ -7,140 +7,69 @@ import {
 } from 'lucide-react';
 
 const TRACKS = [
-  // Lo-Fi Category
   {
     id: 1,
     name: 'Deep Focus Lo-Fi',
-    artist: 'WarriorBeats',
-    category: 'lofi',
+    artist: 'SoundHelix',
     emoji: '🎧',
     color: 'from-indigo-600 to-indigo-900',
     accent: '#6366f1',
-    url: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3',
+    url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
   },
   {
     id: 2,
-    name: 'Chill Lo-Fi Study',
+    name: 'Patience (Lo-Fi Beat)',
     artist: 'Serene Minds',
-    category: 'lofi',
     emoji: '☕',
     color: 'from-amber-600 to-amber-900',
     accent: '#d97706',
-    url: 'https://cdn.pixabay.com/download/audio/2022/03/15/audio_10fc1bb271.mp3?filename=lofi-chill-medium-version-11317.mp3',
+    url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
   },
   {
     id: 3,
-    name: 'Lofi Hip Hop Rain',
+    name: 'Chill Lo-Fi Song',
     artist: 'RainyFocus',
-    category: 'lofi',
-    emoji: '🌧️',
+    emoji: '🎵',
     color: 'from-slate-600 to-slate-900',
     accent: '#64748b',
-    url: 'https://cdn.pixabay.com/download/audio/2023/06/07/audio_7b8f7b9e91.mp3?filename=lofi-study-calm-112191.mp3',
+    url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-13.mp3',
   },
-  // Binaural Beats Category
   {
     id: 4,
-    name: 'Alpha Waves - Deep Concentration',
-    artist: 'BioSync',
-    category: 'binaural',
-    emoji: '🧠',
-    color: 'from-emerald-600 to-emerald-900',
-    accent: '#10b981',
-    url: 'https://cdn.pixabay.com/download/audio/2022/08/25/audio_51929064b4.mp3?filename=meditation-music-ambient-10038.mp3',
+    name: 'Aesthetic Chill',
+    artist: 'Lofi Vibes',
+    emoji: '🌆',
+    color: 'from-fuchsia-600 to-fuchsia-900',
+    accent: '#d946ef',
+    url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-14.mp3',
   },
   {
     id: 5,
-    name: 'Theta Healing Tones',
-    artist: 'NeuroPulse',
-    category: 'binaural',
-    emoji: '🌊',
-    color: 'from-cyan-600 to-cyan-900',
-    accent: '#06b6d4',
-    url: 'https://cdn.pixabay.com/download/audio/2022/03/10/audio_cee94c98f1.mp3?filename=healing-meditation-112343.mp3',
+    name: 'Midnight Relaxing LoFi',
+    artist: 'Night Owl Beats',
+    emoji: '🌙',
+    color: 'from-blue-600 to-blue-900',
+    accent: '#3b82f6',
+    url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3',
   },
-  // Ambient / Nature Category
   {
     id: 6,
-    name: 'Forest Rain Ambience',
-    artist: 'Nature Sounds',
-    category: 'nature',
-    emoji: '🌿',
-    color: 'from-green-600 to-green-900',
-    accent: '#22c55e',
-    url: 'https://cdn.pixabay.com/download/audio/2022/03/10/audio_270f9f4e8e.mp3?filename=rain-and-thunder-16705.mp3',
+    name: 'Smooth Study Beat',
+    artist: 'Focus Lab',
+    emoji: '📚',
+    color: 'from-emerald-600 to-emerald-900',
+    accent: '#10b981',
+    url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-16.mp3',
   },
   {
     id: 7,
-    name: 'Ocean Waves Focus',
-    artist: 'Deep Waters',
-    category: 'nature',
-    emoji: '🌊',
-    color: 'from-blue-600 to-blue-900',
-    accent: '#3b82f6',
-    url: 'https://cdn.pixabay.com/download/audio/2021/09/06/audio_3b47561a64.mp3?filename=ocean-waves-112906.mp3',
-  },
-  {
-    id: 8,
-    name: 'Campfire Crackling',
-    artist: 'Warmth Sounds',
-    category: 'nature',
-    emoji: '🔥',
-    color: 'from-orange-600 to-red-900',
+    name: 'Morning Coffee Chill',
+    artist: 'Cafe Sounds',
+    emoji: '🍩',
+    color: 'from-orange-500 to-orange-800',
     accent: '#f97316',
-    url: 'https://cdn.pixabay.com/download/audio/2022/10/30/audio_c4b2e1b6a7.mp3?filename=fireplace-crackle-6854.mp3',
-  },
-  // Instrumental Category
-  {
-    id: 9,
-    name: 'Epic Study Session',
-    artist: 'Warrior Orchestra',
-    category: 'instrumental',
-    emoji: '🎹',
-    color: 'from-purple-600 to-purple-900',
-    accent: '#8b5cf6',
-    url: 'https://cdn.pixabay.com/download/audio/2022/10/25/audio_d1b1fa3f3a.mp3?filename=motivational-background-music-116194.mp3',
-  },
-  {
-    id: 10,
-    name: 'Piano Concentration',
-    artist: 'Classical Focus',
-    category: 'instrumental',
-    emoji: '🎼',
-    color: 'from-rose-600 to-rose-900',
-    accent: '#f43f5e',
-    url: 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_92425cbfa1.mp3?filename=night-city-with-cars-10023.mp3',
-  },
-  {
-    id: 11,
-    name: 'Jazz Study Cafe',
-    artist: 'Midnight Jazz',
-    category: 'instrumental',
-    emoji: '🎷',
-    color: 'from-yellow-600 to-yellow-900',
-    accent: '#eab308',
-    url: 'https://cdn.pixabay.com/download/audio/2022/03/24/audio_6ca51e4eec.mp3?filename=jazz-background-music-116193.mp3',
-  },
-  // Whitenoise Category
-  {
-    id: 12,
-    name: 'Pure White Noise',
-    artist: 'Focus Lab',
-    category: 'whitenoise',
-    emoji: '📡',
-    color: 'from-gray-600 to-gray-900',
-    accent: '#6b7280',
-    url: 'https://cdn.pixabay.com/download/audio/2022/03/09/audio_9fc6f1d73a.mp3?filename=white-noise-16775.mp3',
-  },
-];
-
-const CATEGORIES = [
-  { id: 'all', label: 'সব', icon: <Music size={14} />, color: 'bg-white text-emerald-700' },
-  { id: 'lofi', label: 'Lo-Fi', icon: <Headphones size={14} />, color: 'bg-indigo-100 text-indigo-700' },
-  { id: 'binaural', label: 'Binaural', icon: <Brain size={14} />, color: 'bg-emerald-100 text-emerald-700' },
-  { id: 'nature', label: 'প্রকৃতি', icon: <Wind size={14} />, color: 'bg-green-100 text-green-700' },
-  { id: 'instrumental', label: 'Instrumental', icon: <Radio size={14} />, color: 'bg-purple-100 text-purple-700' },
-  { id: 'whitenoise', label: 'White Noise', icon: <Waves size={14} />, color: 'bg-gray-100 text-gray-700' },
+    url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3',
+  }
 ];
 
 // Animated visualizer bars
@@ -174,14 +103,21 @@ const FocusMusicPlayer = () => {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [volume, setVolume] = useState(0.5);
   const [isMuted, setIsMuted] = useState(false);
-  const [category, setCategory] = useState('all');
   const [showPlaylist, setShowPlaylist] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [played, setPlayed] = useState(0);
+  const [duration, setDuration] = useState(0);
   const audioRef = useRef(null);
 
-  // Filtered tracks
-  const filteredTracks = category === 'all' ? TRACKS : TRACKS.filter(t => t.category === category);
   const currentTrack = TRACKS[currentTrackIndex];
+
+  // Helper formatting mm:ss
+  const formatTime = (seconds) => {
+    if (!seconds || isNaN(seconds)) return '0:00';
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
+  };
 
   // Init audio
   useEffect(() => {
@@ -191,10 +127,18 @@ const FocusMusicPlayer = () => {
     audioRef.current.src = TRACKS[0].url;
 
     const handleEnded = () => setIsPlaying(false);
+    const handleTimeUpdate = () => setPlayed(audioRef.current.currentTime);
+    const handleLoadedMetadata = () => setDuration(audioRef.current.duration);
+
     audioRef.current.addEventListener('ended', handleEnded);
+    audioRef.current.addEventListener('timeupdate', handleTimeUpdate);
+    audioRef.current.addEventListener('loadedmetadata', handleLoadedMetadata);
+
     return () => {
       audioRef.current?.pause();
       audioRef.current?.removeEventListener('ended', handleEnded);
+      audioRef.current?.removeEventListener('timeupdate', handleTimeUpdate);
+      audioRef.current?.removeEventListener('loadedmetadata', handleLoadedMetadata);
     };
   }, []);
 
@@ -202,8 +146,13 @@ const FocusMusicPlayer = () => {
   useEffect(() => {
     if (!audioRef.current) return;
     setIsLoading(true);
+    setPlayed(0);
     audioRef.current.pause();
-    audioRef.current.src = TRACKS[currentTrackIndex].url;
+    
+    // Safety check just in case we get an out-of-bounds index due to filtered categories
+    const validTrack = TRACKS[currentTrackIndex] || TRACKS[0];
+    
+    audioRef.current.src = validTrack.url;
     audioRef.current.load();
     audioRef.current.volume = isMuted ? 0 : volume;
     if (isPlaying) {
@@ -253,6 +202,13 @@ const FocusMusicPlayer = () => {
   const stepVolume = (delta) => {
     setVolume(prev => Math.min(1, Math.max(0, parseFloat((prev + delta).toFixed(2)))));
     setIsMuted(false);
+  };
+
+  const seekAudio = (e) => {
+    if (!audioRef.current) return;
+    const newTime = parseFloat(e.target.value);
+    audioRef.current.currentTime = newTime;
+    setPlayed(newTime);
   };
 
   return (
@@ -309,29 +265,32 @@ const FocusMusicPlayer = () => {
           <div className="flex items-end justify-between gap-3">
             <div className="min-w-0 flex-1">
               <p className="text-xs font-black text-white/50 uppercase tracking-widest mb-1">
-                {currentTrack?.emoji} {CATEGORIES.find(c => c.id === currentTrack?.category)?.label}
+                {currentTrack?.emoji} LO-FI AUDIO
               </p>
               <h3 className="text-lg md:text-xl font-black leading-tight truncate">{currentTrack?.name}</h3>
             </div>
             <Visualizer isPlaying={isPlaying} accent={currentTrack?.accent} />
           </div>
-        </div>
 
-        {/* Category Filter */}
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none -mx-1 px-1">
-          {CATEGORIES.map(cat => (
-            <button
-              key={cat.id}
-              onClick={() => setCategory(cat.id)}
-              className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all ${
-                category === cat.id
-                  ? 'bg-white text-gray-900 shadow-lg shadow-white/20'
-                  : 'bg-white/10 text-white/60 hover:bg-white/20'
-              }`}
-            >
-              {cat.icon} {cat.label}
-            </button>
-          ))}
+          {/* Progress Bar */}
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-bold text-white/50 w-8">{formatTime(played)}</span>
+            <div className="flex-1 relative h-1.5 bg-white/20 rounded-full cursor-pointer group flex items-center">
+              <div 
+                className="absolute h-full rounded-full pointer-events-none transition-all duration-75"
+                style={{ width: `${(played / (duration || 1)) * 100}%`, backgroundColor: currentTrack?.accent || 'white' }}
+              />
+              <input 
+                type="range"
+                min={0}
+                max={duration || 100}
+                value={played}
+                onChange={seekAudio}
+                className="absolute inset-0 w-full opacity-0 cursor-pointer h-full"
+              />
+            </div>
+            <span className="text-[10px] font-bold text-white/50 w-8 text-right">{formatTime(duration)}</span>
+          </div>
         </div>
 
         {/* Controls + Volume */}
@@ -422,7 +381,7 @@ const FocusMusicPlayer = () => {
         <div className="flex items-center justify-between px-6 pt-5 pb-3 border-b border-white/10">
           <div>
             <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40">PLAYLIST</p>
-            <h4 className="text-base font-black text-white">{filteredTracks.length} Tracks</h4>
+            <h4 className="text-base font-black text-white">{TRACKS.length} Tracks</h4>
           </div>
           <button
             onClick={() => setShowPlaylist(false)}
@@ -432,24 +391,9 @@ const FocusMusicPlayer = () => {
           </button>
         </div>
 
-        {/* Category filter inside playlist */}
-        <div className="flex gap-2 overflow-x-auto px-4 py-3 scrollbar-none border-b border-white/10">
-          {CATEGORIES.map(cat => (
-            <button
-              key={cat.id}
-              onClick={() => setCategory(cat.id)}
-              className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all ${
-                category === cat.id ? 'bg-white text-gray-900' : 'bg-white/10 text-white/50 hover:bg-white/20'
-              }`}
-            >
-              {cat.icon} {cat.label}
-            </button>
-          ))}
-        </div>
-
         {/* Track list */}
         <div className="flex-1 overflow-y-auto px-3 py-3 space-y-1">
-          {filteredTracks.map((track) => {
+          {TRACKS.map((track) => {
             const isActive = track.id === currentTrack?.id;
             return (
               <button
