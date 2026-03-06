@@ -56,6 +56,7 @@ import {
 } from 'recharts';
 import { format } from 'date-fns';
 import Loader from '../components/Common/Loader';
+import { DashboardSkeleton } from '../components/Common/SkeletonLoader';
 import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
@@ -139,7 +140,7 @@ const Dashboard = () => {
     return 'Supreme Overlord';
   };
 
-  if (loading) return <Loader />;
+  if (loading) return <DashboardSkeleton />;
 
   // Mental state helpers
   const happyDaysPercent = charts?.moodTrend?.length 

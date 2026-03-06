@@ -41,7 +41,7 @@ import { journalAPI, analyticsAPI } from '../utils/api';
 import { todayStr, moodLabel } from '../utils/helpers';
 import { format, addDays, parseISO, subDays } from 'date-fns';
 import toast from 'react-hot-toast';
-import Loader from '../components/Common/Loader';
+import { JournalSkeleton } from '../components/Common/SkeletonLoader';
 import { 
   AreaChart, 
   Area, 
@@ -153,7 +153,7 @@ const Journal = () => {
     mood: m.mood
   }));
 
-  if (loading && recentEntries.length === 0) return <Loader />;
+  if (loading && recentEntries.length === 0) return <JournalSkeleton />;
 
   return (
     <div className="animate-in fade-in duration-700 space-y-8 pb-24">

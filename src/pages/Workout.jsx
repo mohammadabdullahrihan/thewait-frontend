@@ -28,7 +28,7 @@ import { workoutAPI, analyticsAPI } from '../utils/api';
 import { todayStr } from '../utils/helpers';
 import { format, addDays, parseISO, subDays } from 'date-fns';
 import toast from 'react-hot-toast';
-import Loader from '../components/Common/Loader';
+import { ChartSkeleton } from '../components/Common/SkeletonLoader';
 import { 
   AreaChart, 
   Area, 
@@ -168,7 +168,12 @@ const Workout = () => {
 
   const chartData = getChartData();
 
-  if (loading && history.length === 0) return <Loader />;
+  if (loading && history.length === 0) return (
+    <div className="space-y-8 animate-in fade-in duration-500">
+      <ChartSkeleton />
+      <ChartSkeleton />
+    </div>
+  );
 
   return (
     <div className="animate-in fade-in duration-700 space-y-8 pb-24">

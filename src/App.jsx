@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, NavLink, Link, useLocation } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import GlobalSearch from './components/Common/GlobalSearch';
 import SEO from './components/Common/SEO';
 import { Toaster } from 'react-hot-toast';
 import { 
@@ -18,7 +19,8 @@ import {
   PenTool,
   MoreHorizontal,
   X,
-  LogOut
+  LogOut,
+  Search
 } from 'lucide-react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Sidebar from './components/Layout/Sidebar';
@@ -185,10 +187,41 @@ function RouteSEO() {
 
 function AppContent() {
   const { user } = useAuth();
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  // Global Ctrl+K / Cmd+K shortcut
+  const handleKeyDown = useCallback((e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      setSearchOpen(prev => !prev);
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
 
   return (
     <>
       <RouteSEO />
+      
+      {/* Global Search Modal */}
+      {user && <GlobalSearch isOpen={searchOpen} onClose={() => setSearchOpen(false)} />}
+
+      {/* Floating Search Button (visible when logged in, top-right on desktop) */}
+      {user && !searchOpen && (
+        <button
+          onClick={() => setSearchOpen(true)}
+          className="fixed bottom-24 right-4 md:bottom-auto md:top-6 md:right-6 z-[999] flex items-center gap-2 px-4 py-3 md:py-2.5 bg-white border border-emerald-100 shadow-lg hover:shadow-xl rounded-2xl text-emerald-700 font-black text-[10px] uppercase tracking-widest transition-all hover:scale-105 active:scale-95 hover:border-emerald-300 group"
+          title="গ্লোবাল সার্চ (Ctrl+K)"
+        >
+          <Search size={16} className="text-emerald-500" />
+          <span className="hidden md:inline">খুঁজুন</span>
+          <span className="hidden md:inline px-1.5 py-0.5 bg-gray-100 text-gray-400 rounded-md text-[9px] font-black">⌘K</span>
+        </button>
+      )}
+
       <Routes>
       {/* Public Routes */}
       <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />

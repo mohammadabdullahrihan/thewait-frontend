@@ -31,7 +31,8 @@ import { useAuth } from '../context/AuthContext';
 import { todayStr } from '../utils/helpers';
 import { format, addDays, parseISO } from 'date-fns';
 import toast from 'react-hot-toast';
-import Loader from '../components/Common/Loader';
+import { TaskSkeleton, HeaderSkeleton } from '../components/Common/SkeletonLoader';
+import EmptyState from '../components/Common/EmptyState';
 import confetti from 'canvas-confetti';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, arrayMove, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -276,7 +277,12 @@ const Routine = () => {
      }
   };
 
-  if (loading && !routine) return <Loader />;
+  if (loading && !routine) return (
+    <div className="animate-in fade-in duration-500 space-y-8 pb-24">
+      <HeaderSkeleton />
+      <TaskSkeleton count={5} />
+    </div>
+  );
 
   return (
     <div className="animate-in fade-in duration-700 pb-24 space-y-8">
@@ -480,18 +486,9 @@ const Routine = () => {
                     })}
                   </SortableContext>
                 </DndContext>
-              ) : (
-                <div className="p-20 flex flex-col items-center justify-center text-center space-y-6 bg-emerald-50/20 rounded-[4rem] border-2 border-dashed border-emerald-100/50">
-                   <div className="w-24 h-24 rounded-[2.5rem] bg-emerald-50 flex items-center justify-center text-emerald-200">
-                      <ClipboardList size={48} strokeWidth={1} />
-                   </div>
-                   <div className="space-y-2">
-                       <h4 className="text-xl font-black text-emerald-950">শূন্য রুটিন!</h4>
-                       <p className="max-w-xs text-xs font-bold text-emerald-900/30">একটি মজবুত রুটিনই পারে তোমার দিনটিকে বদলে দিতে। আজই নতুন টাস্ক যোগ করো।</p>
-                   </div>
-                   <button onClick={() => setShowAdd(true)} className="px-8 py-3 bg-white border border-emerald-100 rounded-2xl text-[10px] font-black text-emerald-500 uppercase tracking-widest hover:bg-emerald-50 transition-all">শুরু করো <ChevronRight size={14} className="inline ml-1" /></button>
-                </div>
-              )}
+               ) : (
+                 <EmptyState type="routine" onAction={() => setShowAdd(true)} />
+               )}
            </div>
         </div>
 

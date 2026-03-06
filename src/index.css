@@ -93,6 +93,39 @@ body {
   display: none;
 }
 
+/* ===== SKELETON SHIMMER ===== */
+@keyframes shimmer {
+  0% { background-position: -400% 0; }
+  100% { background-position: 400% 0; }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #f3f4f6 25%, #e9eded 50%, #f3f4f6 75%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+/* ===== MICRO ANIMATION UTILITIES ===== */
+@keyframes float-up {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-30px); opacity: 0; }
+}
+
+@keyframes pop-in {
+  0% { transform: scale(0.5); opacity: 0; }
+  70% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes slide-up-fade {
+  0% { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.animate-float-up { animation: float-up 0.8s ease forwards; }
+.animate-pop-in { animation: pop-in 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards; }
+.animate-slide-up { animation: slide-up-fade 0.4s ease forwards; }
+
 /* Slow spin for Compass icon */
 @keyframes spin-slow {
   from {

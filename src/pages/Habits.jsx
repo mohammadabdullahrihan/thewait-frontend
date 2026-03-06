@@ -30,7 +30,7 @@ import { habitAPI, analyticsAPI } from '../utils/api';
 import { todayStr, getHabitEmoji, getHabitName } from '../utils/helpers';
 import { format, addDays, parseISO } from 'date-fns';
 import toast from 'react-hot-toast';
-import Loader from '../components/Common/Loader';
+import { HabitSkeleton } from '../components/Common/SkeletonLoader';
 import confetti from 'canvas-confetti';
 import { 
   AreaChart, 
@@ -148,7 +148,12 @@ const Habits = () => {
     return null;
   };
 
-  if (loading && history.length === 0) return <Loader />;
+  if (loading && history.length === 0) return (
+    <div className="space-y-8 animate-in fade-in duration-500">
+      <div className="p-8 rounded-[3rem] bg-white border border-gray-100 shadow-sm h-40 animate-pulse bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100" />
+      <HabitSkeleton count={7} />
+    </div>
+  );
 
   return (
     <div className="animate-in fade-in duration-700 space-y-8 pb-24">
