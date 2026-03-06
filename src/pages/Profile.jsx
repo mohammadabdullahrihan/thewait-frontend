@@ -99,7 +99,7 @@ const Profile = () => {
                {[
                  { label: 'EXPERIENCE', val: user?.experience || 0, sub: 'XP Points', icon: <Zap size={16} className="text-emerald-400" /> },
                  { label: 'LEVEL', val: xp.level, sub: 'Rank Up', icon: <TrendingUp size={16} className="text-blue-400" /> },
-                 { label: 'BADGES', val: earnedBadgeNames.length, sub: 'Achievements', icon: <Award size={16} className="text-purple-400" /> },
+                 { label: 'BADGES', val: user?.badges?.length || 0, sub: 'Achievements', icon: <Award size={16} className="text-purple-400" /> },
                  { label: 'STREAK', val: user?.streak?.current || 0, sub: 'Current', icon: <Flame size={16} className="text-orange-400" /> }
                ].map((s, i) => (
                  <div key={i} className="bg-white/5 border border-white/5 rounded-3xl p-5 space-y-1 group hover:bg-white/[0.08] transition-all">

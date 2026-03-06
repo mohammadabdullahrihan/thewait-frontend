@@ -72,7 +72,7 @@ const GamificationProfile = ({ user }) => {
             <div className="space-y-2 max-w-sm">
               <div className="flex justify-between text-xs font-black uppercase text-slate-300">
                 <span>XP Progress</span>
-                <span className="text-emerald-400">{xpData.currentLevelXp} / {xpData.xpRequired}</span>
+                <span className="text-emerald-400">{xpData.progress} / {xpData.needed}</span>
               </div>
               <div className="h-3 w-full bg-slate-800 rounded-full overflow-hidden border border-slate-700">
                 <div 
