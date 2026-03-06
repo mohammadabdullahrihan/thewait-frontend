@@ -137,11 +137,20 @@ export const SortableTask = ({ task, id, toggleTask, deleteTask, index, meta }) 
               </motion.span>
             )}
           </div>
-          <p className={`text-sm md:text-base font-black text-emerald-950 truncate transition-all ${
-            task.completed ? 'line-through text-emerald-900/40' : ''
-          }`}>
-            {task.task}
-          </p>
+          <div className="relative inline-block w-full">
+            <p className={`text-sm md:text-base font-black text-emerald-950 truncate transition-colors ${
+              task.completed ? 'text-emerald-900/40' : ''
+            }`}>
+              {task.task}
+            </p>
+            <motion.div
+              className="absolute top-1/2 left-0 h-[2px] bg-emerald-900/40 origin-left"
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: task.completed ? 1 : 0 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+              style={{ width: '100%', maxWidth: 'max-content' }}
+            />
+          </div>
         </div>
 
         {/* Category Badge - Desktop only */}

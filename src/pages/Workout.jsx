@@ -38,6 +38,12 @@ import {
   Tooltip, 
   ResponsiveContainer 
 } from 'recharts';
+import { motion } from 'framer-motion';
+
+const chartVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, type: 'spring' } }
+};
 
 const WORKOUT_TYPES = [
   { type: 'Cardio', icon: <Activity size={20} />, color: 'text-rose-500', bg: 'bg-rose-50', border: 'border-rose-100' },
@@ -335,25 +341,28 @@ const Workout = () => {
                  <div className="space-y-3">
                     {exercises.map((ex, i) => (
                        <div key={i} className="flex flex-col md:flex-row gap-3 p-4 md:p-5 bg-emerald-50/50 rounded-2xl md:rounded-[2.5rem] border border-emerald-100 relative">
-                          <input 
-                            type="text" 
-                            placeholder="Exercise Name" 
-                            className="flex-1 bg-white rounded-xl md:rounded-2xl px-4 md:px-5 py-3 text-xs md:text-sm font-bold focus:outline-none border border-emerald-100"
-                            value={ex.name} 
-                            onChange={e => updateExercise(i, 'name', e.target.value)} 
-                          />
+                           <motion.input 
+                             type="text" 
+                             placeholder="Exercise Name" 
+                             whileFocus={{ scale: 1.02, boxShadow: '0 0 0 2px rgba(16,185,129,0.2)' }}
+                             className="flex-1 bg-white rounded-xl md:rounded-2xl px-4 md:px-5 py-3 text-xs md:text-sm font-bold focus:outline-none border border-emerald-100 transition-shadow"
+                             value={ex.name} 
+                             onChange={e => updateExercise(i, 'name', e.target.value)} 
+                           />
                           <div className="flex gap-2">
-                             <input 
+                             <motion.input 
                                type="number" 
                                placeholder="Sets" 
-                               className="flex-1 md:w-20 bg-white rounded-xl md:rounded-2xl px-3 py-3 text-xs md:text-sm font-bold text-center border border-emerald-100 min-w-0"
+                               whileFocus={{ scale: 1.05, boxShadow: '0 0 0 2px rgba(16,185,129,0.2)' }}
+                               className="flex-1 md:w-20 bg-white rounded-xl md:rounded-2xl px-3 py-3 text-xs md:text-sm font-bold text-center border border-emerald-100 min-w-0 transition-shadow"
                                value={ex.sets || ''} 
                                onChange={e => updateExercise(i, 'sets', +e.target.value)} 
                              />
-                             <input 
+                             <motion.input 
                                type="number" 
                                placeholder="Reps" 
-                               className="flex-1 md:w-20 bg-white rounded-xl md:rounded-2xl px-3 py-3 text-xs md:text-sm font-bold text-center border border-emerald-100 min-w-0"
+                               whileFocus={{ scale: 1.05, boxShadow: '0 0 0 2px rgba(16,185,129,0.2)' }}
+                               className="flex-1 md:w-20 bg-white rounded-xl md:rounded-2xl px-3 py-3 text-xs md:text-sm font-bold text-center border border-emerald-100 min-w-0 transition-shadow"
                                value={ex.reps || ''} 
                                onChange={e => updateExercise(i, 'reps', +e.target.value)} 
                              />
@@ -413,7 +422,13 @@ const Workout = () => {
            <div className="space-y-6 md:space-y-8">
               
               {/* Performance Curve */}
-              <div className="p-6 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] border border-emerald-100 shadow-sm bg-white space-y-6 md:space-y-8">
+              <motion.div 
+                 initial="hidden" 
+                 whileInView="visible" 
+                 viewport={{ once: true, margin: "-50px" }}
+                 variants={chartVariants}
+                 className="p-6 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] border border-emerald-100 shadow-sm bg-white space-y-6 md:space-y-8"
+              >
                  <div className="flex items-center justify-between">
                     <div className="space-y-1">
                        <h3 className="text-xl md:text-2xl font-black text-emerald-950 tracking-tight">ট্রেনিং ভলিউম</h3>
@@ -447,11 +462,17 @@ const Workout = () => {
                        </AreaChart>
                     </ResponsiveContainer>
                  </div>
-              </div>
+              </motion.div>
 
                {/* Muscle Focus Chart & Rest Timer */}
                <div className="space-y-6 md:space-y-8">
-                  <div className="p-6 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] border border-emerald-100 shadow-sm bg-white space-y-6">
+                  <motion.div 
+                     initial="hidden" 
+                     whileInView="visible" 
+                     viewport={{ once: true, margin: "-50px" }}
+                     variants={chartVariants}
+                     className="p-6 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] border border-emerald-100 shadow-sm bg-white space-y-6"
+                  >
                      <div className="flex justify-between items-center">
                         <div className="space-y-1">
                            <h3 className="text-lg md:text-xl font-black text-emerald-950 tracking-tight">মাসল ফোকাস (৭ দিন)</h3>
@@ -467,9 +488,12 @@ const Workout = () => {
                                     <span className="text-rose-500">{m.sessions} Sessions</span>
                                  </div>
                                  <div className="h-2.5 w-full bg-rose-50 rounded-full overflow-hidden">
-                                    <div 
-                                      className="h-full bg-rose-500 rounded-full shadow-[0_0_10px_rgba(244,63,94,0.3)] transition-all duration-1000" 
-                                      style={{ width: `${Math.min(100, (m.sessions / Math.max(...muscleStats.map(x=>x.sessions))) * 100)}%` }} 
+                                    <motion.div 
+                                      initial={{ width: 0 }}
+                                      whileInView={{ width: `${Math.min(100, (m.sessions / Math.max(...muscleStats.map(x=>x.sessions))) * 100)}%` }}
+                                      transition={{ duration: 1, ease: 'easeOut' }}
+                                      viewport={{ once: true }}
+                                      className="h-full bg-rose-500 rounded-full shadow-[0_0_10px_rgba(244,63,94,0.3)]" 
                                     />
                                  </div>
                               </div>
@@ -478,7 +502,7 @@ const Workout = () => {
                            <p className="text-xs text-emerald-900/40 italic text-center py-6">এখনো নির্দিষ্ট কোনো মাসল টার্গেট করা হয়নি</p>
                         )}
                      </div>
-                  </div>
+                  </motion.div>
 
                   {/* Rest Timer Widget */}
                   <div className="p-6 md:p-8 rounded-[2.5rem] bg-indigo-950 text-white flex flex-col items-center gap-4 text-center relative overflow-hidden shadow-2xl">

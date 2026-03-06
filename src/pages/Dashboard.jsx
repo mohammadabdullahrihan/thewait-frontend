@@ -58,6 +58,20 @@ import { format } from 'date-fns';
 import Loader from '../components/Common/Loader';
 import { DashboardSkeleton } from '../components/Common/SkeletonLoader';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+};
 
 const Dashboard = () => {
   const { user, isFocusMode, toggleFocusMode } = useAuth();
@@ -175,10 +189,16 @@ const Dashboard = () => {
   };
 
   return (
-    <div id="dashboard-content" className="animate-in fade-in duration-700 space-y-8 pb-20 bg-slate-50/50 p-2 md:p-0">
+    <motion.div 
+      id="dashboard-content" 
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+      className="space-y-8 pb-20 bg-slate-50/50 p-2 md:p-0"
+    >
       
       {/* 🚀 Dynamic Header: High Fidelity */}
-      <div className="relative overflow-hidden rounded-[3rem] p-1 shadow-sm border border-emerald-100 bg-white">
+      <motion.div variants={itemVariants} className="relative overflow-hidden rounded-[3rem] p-1 shadow-sm border border-emerald-100 bg-white">
         <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-50 rounded-full blur-[80px] -mr-32 -mt-32 opacity-60" />
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-orange-50 rounded-full blur-[60px] -ml-24 -mb-24 opacity-40" />
         
@@ -251,10 +271,10 @@ const Dashboard = () => {
              <p className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest text-center">XP: {user?.experience || 0}</p>
           </div>
         </div>
-     </div>
+     </motion.div>
 
       {aiInsight && (
-        <div className="p-5 rounded-[2rem] bg-gradient-to-r from-emerald-600 to-emerald-800 text-white shadow-lg flex items-center justify-between gap-4 animate-in slide-in-from-bottom-4 duration-500">
+        <motion.div variants={itemVariants} className="p-5 rounded-[2rem] bg-gradient-to-r from-emerald-600 to-emerald-800 text-white shadow-lg flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-md">
               <Brain size={24} className="text-emerald-100" />
@@ -269,11 +289,11 @@ const Dashboard = () => {
           <button onClick={() => setAiInsight(null)} className="p-2 hover:bg-white/20 rounded-xl transition-colors">
             <X size={20} />
           </button>
-        </div>
+        </motion.div>
       )}
 
       {/* 🔮 Warrior Quote & Life Progress */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 p-6 md:p-8 rounded-[2.5rem] bg-emerald-950 text-white relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-6 opacity-10">
             <Target size={120} />
@@ -319,10 +339,10 @@ const Dashboard = () => {
             <p className="text-[10px] md:text-xs font-bold text-indigo-400/60 uppercase tracking-widest bg-slate-800/50 px-4 py-2 rounded-xl inline-block border border-slate-700">Deadline: <span className="text-indigo-200">March 2027</span></p>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* 🧭 Quick Vitals: 4-Column Summary */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { icon: <ClipboardList size={22} />, label: "TODAY'S ROUTINE", value: 'ডেইলি চেকলিস্ট', color: 'bg-emerald-50 text-emerald-600', link: '/routine', status: format(new Date(), 'dd MMM') },
           { icon: <Dumbbell size={22} />, label: 'WORKOUT RECORD', value: todayWorkout ? 'ব্যায়াম শেষ' : 'ব্যায়াম বাকি', color: 'bg-rose-50 text-rose-600', link: '/workout', status: stats?.totalWorkouts + ' TOTAL' },
@@ -344,10 +364,10 @@ const Dashboard = () => {
             </div>
           </Link>
         ))}
-      </div>
+      </motion.div>
 
       {/* 🛡️ Performance Grid: Level & Analytics */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
         
         {/* Warrior Statistics: Real Metrics */}
         <div className="lg:col-span-8 flex flex-col gap-6">
@@ -485,10 +505,10 @@ const Dashboard = () => {
              </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* 🚀 Active Modules Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+      <motion.div variants={itemVariants} className="grid grid-cols-1 xl:grid-cols-2 gap-8">
         
         {/* Study Portal */}
         <div className="p-8 md:p-10 rounded-[3rem] border border-emerald-100 shadow-sm bg-white space-y-8 group transition-all">
@@ -616,9 +636,9 @@ const Dashboard = () => {
           </div>
 
         </div>
-      </div>
+      </motion.div>
 
-    </div>
+    </motion.div>
   );
 };
 

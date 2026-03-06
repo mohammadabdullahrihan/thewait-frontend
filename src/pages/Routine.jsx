@@ -37,6 +37,7 @@ import confetti from 'canvas-confetti';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, arrayMove, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableTask } from '../components/Routine/SortableTask';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const categoryMeta = {
   Discipline: { icon: <Target size={14} />, color: 'bg-orange-50 text-orange-600', border: 'border-orange-100' },
@@ -408,62 +409,72 @@ const Routine = () => {
            </div>
 
            {/* Add Task Form (Expanded) */}
-           {showAdd && (
-             <div className="p-8 rounded-[3rem] bg-emerald-50 border border-emerald-200 shadow-sm animate-in slide-in-from-top-4 duration-300">
-                <div className="flex items-center justify-between mb-8">
-                   <h3 className="text-xl font-black text-emerald-950 flex items-center gap-2">
-                     <Plus className="text-emerald-500" /> নতুন টাস্ক যোগ করো
-                   </h3>
-                   <div className="p-2 bg-white rounded-xl text-emerald-900/20"><Settings size={16} /></div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                   <div className="space-y-2">
-                      <label className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest ml-4">সময় নির্ধারণ (ঐচ্ছিক)</label>
-                      <div className="relative">
-                         <div className="absolute left-5 top-1/2 -translate-y-1/2 text-emerald-400"><Clock size={16} /></div>
-                         <input 
-                           type="time" 
-                           className="w-full bg-white rounded-2xl px-12 py-4 border border-emerald-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-sm font-bold text-emerald-950" 
-                           value={newTask.time} 
-                           onChange={e => setNewTask({...newTask, time: e.target.value})} 
-                         />
-                      </div>
-                   </div>
-                   <div className="space-y-2 lg:col-span-2">
-                      <label className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest ml-4">টাস্কের নাম</label>
-                      <input 
-                        type="text" 
-                        placeholder="কি অর্জন করতে চাও আজ?" 
-                        className="w-full bg-white rounded-2xl px-6 py-4 border border-emerald-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-sm font-bold text-emerald-950" 
-                        value={newTask.task} 
-                        onChange={e => setNewTask({...newTask, task: e.target.value})} 
-                      />
-                   </div>
-                </div>
-
-                <div className="mt-8 flex flex-wrap items-center justify-between gap-6">
-                    <div className="flex items-center gap-3 bg-white p-2 rounded-2xl border border-emerald-100 flex-wrap">
-                       {['Discipline', 'Study', 'Health', 'Mindfulness', 'Ibadat'].map(cat => (
-                          <button 
-                            key={cat}
-                            type="button"
-                            onClick={() => setNewTask({...newTask, category: cat})}
-                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${newTask.category === cat ? 'bg-emerald-500 text-white shadow-md' : 'text-emerald-900/40 hover:text-emerald-600'}`}
-                          >
-                            {cat}
-                          </button>
-                       ))}
+           <AnimatePresence>
+             {showAdd && (
+               <motion.div
+                 initial={{ height: 0, opacity: 0, scale: 0.95 }}
+                 animate={{ height: 'auto', opacity: 1, scale: 1 }}
+                 exit={{ height: 0, opacity: 0, scale: 0.95 }}
+                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                 className="overflow-hidden"
+               >
+                 <div className="p-8 rounded-[3rem] bg-emerald-50 border border-emerald-200 shadow-sm mb-6">
+                    <div className="flex items-center justify-between mb-8">
+                       <h3 className="text-xl font-black text-emerald-950 flex items-center gap-2">
+                         <Plus className="text-emerald-500" /> নতুন টাস্ক যোগ করো
+                       </h3>
+                       <div className="p-2 bg-white rounded-xl text-emerald-900/20"><Settings size={16} /></div>
                     </div>
-                   <button 
-                     onClick={addTask}
-                     className="px-10 py-4 bg-emerald-600 text-white rounded-[1.8rem] font-black text-xs uppercase tracking-widest hover:bg-emerald-700 shadow-xl shadow-emerald-600/20 transition-all flex items-center gap-3"
-                   >
-                     <Check size={18} /> রুটিন আপডেট করো
-                   </button>
-                </div>
-             </div>
-           )}
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                       <div className="space-y-2">
+                          <label className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest ml-4">সময় নির্ধারণ (ঐচ্ছিক)</label>
+                          <div className="relative">
+                             <div className="absolute left-5 top-1/2 -translate-y-1/2 text-emerald-400"><Clock size={16} /></div>
+                             <input 
+                               type="time" 
+                               className="w-full bg-white rounded-2xl px-12 py-4 border border-emerald-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-sm font-bold text-emerald-950" 
+                               value={newTask.time} 
+                               onChange={e => setNewTask({...newTask, time: e.target.value})} 
+                             />
+                          </div>
+                       </div>
+                       <div className="space-y-2 lg:col-span-2">
+                          <label className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest ml-4">টাস্কের নাম</label>
+                          <input 
+                            type="text" 
+                            placeholder="কি অর্জন করতে চাও আজ?" 
+                            className="w-full bg-white rounded-2xl px-6 py-4 border border-emerald-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-sm font-bold text-emerald-950" 
+                            value={newTask.task} 
+                            onChange={e => setNewTask({...newTask, task: e.target.value})} 
+                          />
+                       </div>
+                    </div>
+
+                    <div className="mt-8 flex flex-wrap items-center justify-between gap-6">
+                        <div className="flex items-center gap-3 bg-white p-2 rounded-2xl border border-emerald-100 flex-wrap">
+                           {['Discipline', 'Study', 'Health', 'Mindfulness', 'Ibadat'].map(cat => (
+                              <button 
+                                key={cat}
+                                type="button"
+                                onClick={() => setNewTask({...newTask, category: cat})}
+                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${newTask.category === cat ? 'bg-emerald-500 text-white shadow-md' : 'text-emerald-900/40 hover:text-emerald-600'}`}
+                              >
+                                {cat}
+                              </button>
+                           ))}
+                        </div>
+                       <button 
+                         onClick={addTask}
+                         className="px-10 py-4 bg-emerald-600 text-white rounded-[1.8rem] font-black text-xs uppercase tracking-widest hover:bg-emerald-700 shadow-xl shadow-emerald-600/20 transition-all flex items-center gap-3"
+                       >
+                         <Check size={18} /> রুটিন আপডেট করো
+                       </button>
+                    </div>
+                 </div>
+               </motion.div>
+             )}
+           </AnimatePresence>
 
            {/* Task List Grid */}
            <div className="space-y-4">

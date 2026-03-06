@@ -44,6 +44,20 @@ import {
   Bar,
   Cell
 } from 'recharts';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, scale: 0.9, y: 15 },
+  show: { opacity: 1, scale: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+};
 
 const habitKeys = ['wakeUp6am', 'workout', 'study', 'noFap', 'noCartoon', 'sleep10pm', 'journal'];
 
@@ -253,11 +267,19 @@ const Habits = () => {
       </div>
 
       {/* 🏹 Habits Battle Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4"
+      >
         {habitKeys.map(key => {
           const isCompleted = habits[key];
           return (
-            <div
+            <motion.div
+              variants={itemVariants}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.95 }}
               key={key}
               onClick={() => toggleHabit(key)}
               className={`p-4 md:p-6 rounded-[2rem] md:rounded-[2.5rem] border group transition-all duration-500 cursor-pointer flex flex-col justify-between min-h-[140px] md:min-h-[180px] relative overflow-hidden ${isCompleted ? 'bg-emerald-600 border-emerald-600 text-white shadow-xl shadow-emerald-600/20' : 'bg-white border-emerald-50 hover:border-emerald-200'}`}
@@ -277,12 +299,12 @@ const Habits = () => {
                 <p className={`text-[7px] md:text-[9px] font-black uppercase tracking-[0.2em] transition-colors ${isCompleted ? 'text-emerald-100/50' : 'text-emerald-900/30'}`}>HABIT MODULE</p>
                 <p className={`text-sm md:text-lg font-black leading-tight transition-colors ${isCompleted ? 'text-white' : 'text-emerald-950'}`}>{getHabitName(key)}</p>
               </div>
-            </div>
+            </motion.div>
           );
         })}
         
         {/* Info Card */}
-        <div className="col-span-2 sm:col-span-1 p-4 md:p-6 rounded-[2rem] md:rounded-[2.5rem] bg-emerald-950 text-white flex flex-col justify-between border border-white/10 group cursor-help transition-all min-h-[140px] md:min-h-[180px]">
+        <motion.div variants={itemVariants} className="col-span-2 sm:col-span-1 p-4 md:p-6 rounded-[2rem] md:rounded-[2.5rem] bg-emerald-950 text-white flex flex-col justify-between border border-white/10 group cursor-help transition-all min-h-[140px] md:min-h-[180px]">
            <div className="flex justify-between items-start">
               <div className="p-3 bg-white/10 rounded-xl md:rounded-2xl border border-white/5">
                  <Info size={20} className="text-emerald-400 md:w-5 md:h-5" />
@@ -293,8 +315,8 @@ const Habits = () => {
               <p className="text-[8px] md:text-[10px] font-black text-emerald-400 uppercase tracking-widest">HABIT CODE</p>
               <p className="text-xs md:text-sm font-black italic group-hover:text-emerald-300 transition-colors leading-snug">"আমরা যা বারবার করি তাই আমাদের চরিত্র।"</p>
            </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* 📊 Historical Analytics Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">

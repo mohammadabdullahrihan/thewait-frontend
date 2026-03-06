@@ -3,8 +3,9 @@ import {
   Play, Pause, SkipForward, SkipBack, Music, 
   Volume2, VolumeX, Volume1, ChevronDown, ChevronUp,
   Radio, Headphones, Brain, Wind, Waves, Coffee, Zap,
-  List, X
+  List, X, Disc
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const TRACKS = [
   {
@@ -241,12 +242,14 @@ const FocusMusicPlayer = () => {
         {/* Header row */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div
-              className={`p-2.5 rounded-2xl border border-white/20 backdrop-blur-md transition-all ${isPlaying ? 'shadow-lg' : 'opacity-60'}`}
-              style={{ backgroundColor: `${currentTrack?.accent}33` }}
+            <motion.div
+              animate={isPlaying ? { rotate: 360 } : { rotate: 0 }}
+              transition={{ repeat: isPlaying ? Infinity : 0, duration: 4, ease: 'linear' }}
+              className={`p-2.5 rounded-full border border-white/20 backdrop-blur-md transition-all ${isPlaying ? 'shadow-[0_0_20px_rgba(255,255,255,0.3)] opacity-100 scale-105' : 'opacity-60'}`}
+              style={{ backgroundColor: `${currentTrack?.accent}55` }}
             >
-              <Music size={18} className={isPlaying ? 'animate-bounce' : ''} />
-            </div>
+              <Disc size={20} className={isPlaying ? 'text-white' : 'text-white/70'} />
+            </motion.div>
             <div>
               <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/50">FOCUS AUDIO</p>
               <p className="text-[10px] font-black text-white/70">{currentTrack?.artist}</p>

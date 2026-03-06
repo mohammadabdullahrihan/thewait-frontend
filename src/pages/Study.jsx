@@ -47,6 +47,17 @@ import {
   ResponsiveContainer 
 } from 'recharts';
 import { format, subDays, parseISO } from 'date-fns';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+};
 
 const SUBJECT_META = {
   Math: { icon: <Calculator size={20} />, color: 'text-blue-500', bg: 'bg-blue-50', border: 'border-blue-100' },
@@ -304,7 +315,11 @@ const Study = () => {
                 </div>
              </div>
 
-             <div className="relative group cursor-pointer">
+             <motion.div 
+                className="relative group cursor-pointer"
+                animate={timeLeft === 0 && !pomRunning ? { scale: [1, 1.1, 1], filter: ['brightness(1)', 'brightness(1.3)', 'brightness(1)'] } : { scale: 1 }}
+                transition={{ duration: 0.6 }}
+             >
                 <svg className="w-48 h-48 md:w-56 md:h-56 transform -rotate-90">
                    <circle cx="96" cy="96" r="86" stroke="currentColor" strokeWidth="10" fill="transparent" className="text-emerald-50 md:hidden" />
                    <circle 
@@ -330,7 +345,7 @@ const Study = () => {
                      {pomMode === 'work' ? 'পড়াশোনা' : 'বিরতি'}
                   </span>
                 </div>
-             </div>
+             </motion.div>
 
              <div className="flex gap-2 w-full">
                 {[['work', 'WORK'], ['short', 'SHORT'], ['long', 'LONG']].map(([mode, label]) => (
@@ -408,7 +423,12 @@ const Study = () => {
            </div>
 
            {/* Subjects Grid (Updated to 2 columns on mobile) */}
-           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+           <motion.div 
+             variants={containerVariants}
+             initial="hidden"
+             animate="show"
+             className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6"
+           >
               {Object.keys(SUBJECT_META).filter(k => k !== 'Other').map(sub => {
                 const meta = SUBJECT_META[sub];
                 const active = selected === sub;
@@ -418,9 +438,12 @@ const Study = () => {
                 const progPerc = totalTopics ? (completedCount / totalTopics) * 100 : 0;
 
                 return (
-                  <div 
+                  <motion.div 
+                    variants={itemVariants}
                     key={sub}
                     onClick={() => selectSubject(sub)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     className={`p-4 md:p-6 rounded-[2rem] md:rounded-[2.5rem] border transition-all duration-300 cursor-pointer flex flex-col justify-between h-[130px] md:h-[160px] ${active ? 'bg-emerald-950 border-emerald-950 text-white shadow-2xl scale-[1.02]' : 'bg-white border-emerald-50 hover:border-emerald-200'}`}
                   >
                      <div className="flex justify-between items-start">
@@ -437,10 +460,10 @@ const Study = () => {
                         <p className={`text-[8px] md:text-[10px] font-black uppercase tracking-widest ${active ? 'text-emerald-400' : 'text-emerald-900/30'}`}>{sub}</p>
                         <p className="text-xs md:text-base font-black truncate">{progressData?.totalHours?.toFixed(1) || 0}h Logged</p>
                      </div>
-                  </div>
+                  </motion.div>
                 );
               })}
-           </div>
+           </motion.div>
         </div>
       </div>
 

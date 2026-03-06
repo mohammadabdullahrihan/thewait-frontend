@@ -39,6 +39,7 @@ import { daysUntil } from '../utils/helpers';
 import { format, parseISO } from 'date-fns';
 import toast from 'react-hot-toast';
 import Loader from '../components/Common/Loader';
+import { motion } from 'framer-motion';
 
 const CATEGORY_META = {
   education: { icon: <GraduationCap size={20} />, color: 'text-blue-500', bg: 'bg-blue-50', border: 'border-blue-100' },
@@ -292,7 +293,7 @@ const Milestones = () => {
          {/* The Vertical Line */}
          <div className="absolute left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-emerald-100 via-blue-100 to-emerald-50 rounded-full hidden lg:block" />
 
-         <div className="space-y-12 relative z-10">
+          <div className="space-y-12 relative z-10">
             {milestones.length > 0 ? (
               milestones.map((m, idx) => {
                 const meta = CATEGORY_META[m.category] || CATEGORY_META.personal;
@@ -300,7 +301,14 @@ const Milestones = () => {
                 const isCompleted = m.status === 'completed';
 
                 return (
-                  <div key={m._id} className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start group">
+                  <motion.div 
+                    key={m._id} 
+                    initial={{ opacity: 0, y: 30, rotateX: isCompleted ? -15 : 0 }}
+                    animate={{ opacity: 1, y: 0, rotateX: 0 }}
+                    transition={{ duration: 0.5, delay: idx * 0.1, type: 'spring' }}
+                    whileHover={{ scale: 1.01, rotateY: isCompleted ? 2 : 0 }}
+                    className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start group perspective-1000"
+                  >
                      
                      {/* Horizontal Connector (Hidden on Mobile) */}
                      <div className="hidden lg:flex lg:col-span-1 justify-center relative pt-10">
@@ -308,7 +316,7 @@ const Milestones = () => {
                         <div className="absolute right-0 top-13 w-full h-[2px] bg-emerald-50" />
                      </div>
 
-                     <div className="lg:col-span-11">
+                     <div className="lg:col-span-11 preserve-3d">
                         <div className={`p-6 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] bg-white border transition-all duration-500 flex flex-col md:flex-row xl:flex-row gap-6 md:gap-10 items-start ${isActive ? 'border-emerald-200 shadow-2xl scale-[1.01] ring-1 ring-emerald-100' : 'border-emerald-50 shadow-sm hover:border-emerald-100'}`}>
                            
                            {/* Info Section */}
@@ -369,7 +377,7 @@ const Milestones = () => {
                            </div>
                         </div>
                      </div>
-                  </div>
+                  </motion.div>
                 );
               })
             ) : (

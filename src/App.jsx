@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, NavLink, Link, useLocation } from 'react-router-dom';
 import { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import GlobalSearch from './components/Common/GlobalSearch';
 import SEO from './components/Common/SEO';
 import { Toaster } from 'react-hot-toast';
@@ -32,6 +33,7 @@ import Habits from './pages/Habits';
 import Study from './pages/Study';
 import Workout from './pages/Workout';
 import Journal from './pages/Journal';
+import JournalArchives from './pages/JournalArchives';
 import Milestones from './pages/Milestones';
 import Analytics from './pages/Analytics';
 import Profile from './pages/Profile';
@@ -69,43 +71,58 @@ const MobileNav = () => {
 
   return (
     <>
-      {/* More Drawer Overlay */}
-      {showMore && (
-        <div 
-          className="fixed inset-0 z-[998] bg-black/30 backdrop-blur-sm"
-          onClick={() => setShowMore(false)}
-        />
-      )}
+      <AnimatePresence>
+        {/* More Drawer Overlay */}
+        {showMore && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[998] bg-black/30 backdrop-blur-sm"
+            onClick={() => setShowMore(false)}
+          />
+        )}
+      </AnimatePresence>
 
-      {/* More Slide-Up Drawer */}
-      <div className={`mobile-more-drawer ${showMore ? 'open' : ''}`}>
-        <div className="flex items-center justify-between px-6 pt-5 pb-2">
-          <p className="text-[11px] font-black text-emerald-700 uppercase tracking-[0.2em]">আরো পেজ</p>
-          <button onClick={() => setShowMore(false)} className="p-2 rounded-xl bg-slate-50 text-slate-400">
-            <X size={18} />
-          </button>
-        </div>
-        <div className="grid grid-cols-3 gap-3 p-5">
-          {moreNav.map(item => (
-            <NavLink 
-              key={item.to} 
-              to={item.to} 
-              onClick={() => setShowMore(false)}
-              className={({ isActive }) => `mobile-drawer-item${isActive ? ' active' : ''}`}
-            >
-              <span className="mobile-drawer-icon">{item.icon}</span>
-              <span>{item.label}</span>
-            </NavLink>
-          ))}
-          <button 
-            className="mobile-drawer-item text-rose-500"
-            onClick={() => { logout(); navigate('/login'); setShowMore(false); }}
+      <AnimatePresence>
+        {/* More Slide-Up Drawer */}
+        {showMore && (
+          <motion.div 
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="mobile-more-drawer open"
           >
-            <span className="mobile-drawer-icon"><LogOut size={20} /></span>
-            <span>লগআউট</span>
-          </button>
-        </div>
-      </div>
+            <div className="flex items-center justify-between px-6 pt-5 pb-2">
+              <p className="text-[11px] font-black text-emerald-700 uppercase tracking-[0.2em]">আরো পেজ</p>
+              <button onClick={() => setShowMore(false)} className="p-2 rounded-xl bg-slate-50 text-slate-400">
+                <X size={18} />
+              </button>
+            </div>
+            <div className="grid grid-cols-3 gap-3 p-5">
+              {moreNav.map(item => (
+                <NavLink 
+                  key={item.to} 
+                  to={item.to} 
+                  onClick={() => setShowMore(false)}
+                  className={({ isActive }) => `mobile-drawer-item${isActive ? ' active' : ''}`}
+                >
+                  <span className="mobile-drawer-icon">{item.icon}</span>
+                  <span>{item.label}</span>
+                </NavLink>
+              ))}
+              <button 
+                className="mobile-drawer-item text-rose-500"
+                onClick={() => { logout(); navigate('/login'); setShowMore(false); }}
+              >
+                <span className="mobile-drawer-icon"><LogOut size={20} /></span>
+                <span>লগআউট</span>
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Main Bottom Nav Bar */}
       <nav className="mobile-nav">
@@ -123,9 +140,12 @@ const MobileNav = () => {
           className={`mobile-nav-item${showMore ? ' active' : ''}`}
           onClick={() => setShowMore(v => !v)}
         >
-          <span className="mobile-nav-icon">
+          <motion.span 
+            className="mobile-nav-icon"
+            whileTap={{ scale: 0.9 }}
+          >
             {showMore ? <X size={22} /> : <MoreHorizontal size={22} />}
-          </span>
+          </motion.span>
           আরো
         </button>
       </nav>
@@ -136,6 +156,7 @@ const MobileNav = () => {
 // App Layout (with Sidebar)
 const AppLayout = ({ children }) => {
   const { isFocusMode, toggleFocusMode } = useAuth();
+  const location = useLocation();
   
   // Custom style when Focus Mode hides sidebars
   const focusMainStyle = { marginLeft: 0, paddingBottom: '2rem' };
@@ -143,9 +164,21 @@ const AppLayout = ({ children }) => {
   return (
     <div className={`app-layout ${isFocusMode ? 'bg-[#05110d]' : ''}`}>
       {!isFocusMode && <Sidebar />}
-      <main className="main-content relative z-10 transition-all duration-700" style={isFocusMode ? focusMainStyle : {}}>
-        {children}
-      </main>
+      
+      <AnimatePresence mode="wait">
+        <motion.main 
+          key={location.pathname}
+          initial={{ opacity: 0, y: 15, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -15, scale: 0.98 }}
+          transition={{ duration: 0.3, ease: 'easeOut' }}
+          className="main-content relative z-10" 
+          style={isFocusMode ? focusMainStyle : {}}
+        >
+          {children}
+        </motion.main>
+      </AnimatePresence>
+      
       {!isFocusMode && <MobileNav />}
 
       {/* Extreme Focus Mode Underlay Overlay to dim non-timer parts */}
@@ -176,6 +209,7 @@ function RouteSEO() {
   else if (path.includes("habits")) title = "হ্যাবিট লিস্ট";
   else if (path.includes("study")) title = "স্টাডি ট্র্যাকার";
   else if (path.includes("workout")) title = "ওয়ার্কআউট";
+  else if (path.includes("journal-archives")) title = "জার্নাল আর্কাইভ";
   else if (path.includes("journal")) title = "জার্নাল";
   else if (path.includes("milestones")) title = "মাইলস্টোন";
   else if (path.includes("analytics")) title = "অ্যানালিটিক্স";
@@ -251,6 +285,11 @@ function AppContent() {
       <Route path="/workout" element={
         <ProtectedRoute>
           <AppLayout><Workout /></AppLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/journal-archives" element={
+        <ProtectedRoute>
+          <AppLayout><JournalArchives /></AppLayout>
         </ProtectedRoute>
       } />
       <Route path="/journal" element={

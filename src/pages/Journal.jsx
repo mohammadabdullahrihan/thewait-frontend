@@ -42,6 +42,8 @@ import { todayStr, moodLabel } from '../utils/helpers';
 import { format, addDays, parseISO, subDays } from 'date-fns';
 import toast from 'react-hot-toast';
 import { JournalSkeleton } from '../components/Common/SkeletonLoader';
+import JournalViewerModal from '../components/Journal/JournalViewerModal';
+import { Link } from 'react-router-dom';
 import { 
   AreaChart, 
   Area, 
@@ -51,6 +53,17 @@ import {
   Tooltip, 
   ResponsiveContainer 
 } from 'recharts';
+import { motion } from 'framer-motion';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, x: -20 },
+  show: { opacity: 1, x: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+};
 
 const MOOD_ICONS = [
   { score: 1, icon: <CloudRain size={20} />, label: 'Deeply Low', color: 'text-slate-400', bg: 'bg-slate-50' },
@@ -72,6 +85,7 @@ const Journal = () => {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [tagInput, setTagInput] = useState('');
+  const [selectedEntry, setSelectedEntry] = useState(null);
   const photoInputRef = useRef(null);
 
   const fetchData = async (d) => {
@@ -277,8 +291,10 @@ const Journal = () => {
 
               <div className="grid grid-cols-3 md:flex md:flex-wrap gap-2 md:gap-3">
                  {MOOD_ICONS.map((m) => (
-                    <button 
+                    <motion.button 
                       key={m.score}
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      whileTap={{ scale: 0.95 }}
                       onClick={() => setEntry({...entry, mood: m.score})}
                       className={`p-3 md:p-4 rounded-2xl md:rounded-[2rem] border transition-all flex flex-col items-center gap-2 group ${entry.mood === m.score ? 'bg-emerald-950 border-emerald-950 text-white shadow-xl scale-[1.05]' : 'bg-white border-emerald-50 text-emerald-900/40 hover:border-emerald-200'}`}
                     >
@@ -288,7 +304,7 @@ const Journal = () => {
                           </div>
                        </div>
                        <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest whitespace-nowrap overflow-hidden text-ellipsis w-full text-center">{m.label}</span>
-                    </button>
+                    </motion.button>
                  ))}
               </div>
            </div>
@@ -483,15 +499,23 @@ const Journal = () => {
                  <History size={18} className="text-emerald-300 md:w-5 md:h-5" />
               </div>
 
-              <div className="space-y-3 md:space-y-4">
+              <motion.div 
+                 variants={containerVariants}
+                 initial="hidden"
+                 animate="show"
+                 className="space-y-3 md:space-y-4"
+              >
                  {recentEntries.length > 0 ? (
                    recentEntries.map((e, i) => {
                      const isCurrent = date === e.date;
                      const mIcon = MOOD_ICONS.find(m => e.mood <= m.score) || MOOD_ICONS[2];
                      return (
-                       <div 
+                       <motion.div 
+                         variants={itemVariants}
                          key={i} 
-                         onClick={() => setDate(e.date)}
+                         onClick={() => setSelectedEntry(e)}
+                         whileHover={{ scale: 1.02, x: 5 }}
+                         whileTap={{ scale: 0.98 }}
                          className={`p-4 md:p-5 rounded-[1.8rem] md:rounded-[2rem] border transition-all cursor-pointer group flex items-center justify-between ${isCurrent ? 'bg-emerald-50 border-emerald-200 shadow-inner' : 'bg-white border-emerald-50 hover:bg-gray-50'}`}
                        >
                           <div className="flex items-center gap-3 md:gap-4 truncate">
@@ -504,21 +528,28 @@ const Journal = () => {
                              </div>
                           </div>
                           <ChevronRight size={14} className={`transition-all shrink-0 ${isCurrent ? 'text-emerald-600 translate-x-1' : 'text-gray-200 group-hover:text-emerald-200'}`} />
-                       </div>
+                       </motion.div>
                      );
                    })
                  ) : (
                     <div className="py-8 text-center opacity-20 italic text-[10px]">কোনো এন্ট্রি নেই</div>
                  )}
-              </div>
+              </motion.div>
 
-              <button className="w-full py-4 rounded-xl md:rounded-2xl border-2 border-dashed border-emerald-100 text-emerald-400 text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-emerald-50 transition-all">
+              <Link to="/journal-archives" className="w-full py-4 rounded-xl md:rounded-2xl border-2 border-dashed border-emerald-100 text-emerald-400 text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-emerald-50 transition-all block text-center">
                  VIEW ALL ARCHIVES <ArrowRight size={10} className="inline ml-1" />
-              </button>
+              </Link>
            </div>
         </div>
 
       </div>
+
+      {selectedEntry && (
+        <JournalViewerModal 
+          entry={selectedEntry} 
+          onClose={() => setSelectedEntry(null)} 
+        />
+      )}
 
     </div>
   );

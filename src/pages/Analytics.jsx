@@ -46,6 +46,12 @@ import {
   Cell
 } from 'recharts';
 import Loader from '../components/Common/Loader';
+import { motion } from 'framer-motion';
+
+const chartVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, type: 'spring' } }
+};
 
 const Analytics = () => {
   const [data, setData] = useState(null);
@@ -184,7 +190,7 @@ const Analytics = () => {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         
         {/* Habit Intensity (Area Chart) */}
-        <div className="xl:col-span-2 bg-white rounded-[2.5rem] p-6 md:p-10 border border-emerald-50 shadow-sm overflow-hidden">
+        <motion.div variants={chartVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} className="xl:col-span-2 bg-white rounded-[2.5rem] p-6 md:p-10 border border-emerald-50 shadow-sm overflow-hidden">
            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
               <div className="space-y-1">
                  <h3 className="text-xl font-black text-emerald-950 tracking-tight">শৃঙ্খলা ইনটেনসিটি</h3>
@@ -234,10 +240,10 @@ const Analytics = () => {
                  </AreaChart>
               </ResponsiveContainer>
            </div>
-        </div>
+        </motion.div>
 
         {/* Radar: Strategic Balance */}
-        <div className="bg-white rounded-[2.5rem] p-6 md:p-8 border border-emerald-50 shadow-sm flex flex-col items-center overflow-hidden">
+        <motion.div variants={chartVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} className="bg-white rounded-[2.5rem] p-6 md:p-8 border border-emerald-50 shadow-sm flex flex-col items-center overflow-hidden">
            <div className="w-full space-y-1 mb-6">
               <h3 className="text-xl font-black text-emerald-950 tracking-tight">ব্যালেন্স অডিট</h3>
               <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">৫টি প্রধান ক্যারেক্টারিস্টিকস</p>
@@ -269,14 +275,14 @@ const Analytics = () => {
                 </div>
               ))}
            </div>
-        </div>
+        </motion.div>
 
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         
         {/* Study Map (By Subject) */}
-        <div className="bg-white rounded-[2.5rem] p-6 md:p-10 border border-emerald-50 shadow-sm space-y-8">
+        <motion.div variants={chartVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} className="bg-white rounded-[2.5rem] p-6 md:p-10 border border-emerald-50 shadow-sm space-y-8">
            <div className="flex items-center justify-between">
               <div className="space-y-1">
                  <h3 className="text-xl font-black text-emerald-950 tracking-tight">অ্যাকাডেমিক গ্রাফ</h3>
@@ -314,10 +320,10 @@ const Analytics = () => {
                 </div>
               )}
            </div>
-        </div>
+        </motion.div>
 
         {/* Milestone Card */}
-        <div className="bg-emerald-950 rounded-[2.5rem] p-6 md:p-10 shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center gap-8">
+        <motion.div variants={chartVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} className="bg-emerald-950 rounded-[2.5rem] p-6 md:p-10 shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center gap-8">
             <div className="absolute top-0 right-0 p-6 opacity-[0.05]">
                <Map size={200} />
             </div>
@@ -378,12 +384,12 @@ const Analytics = () => {
                   <span className="text-[8px] font-black text-emerald-500 uppercase tracking-widest">Progress</span>
                </div>
             </div>
-        </div>
+        </motion.div>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
          {/* Mental Health & Mood */}
-         <div className="bg-white rounded-[2.5rem] p-6 md:p-8 border border-emerald-50 shadow-sm">
+         <motion.div variants={chartVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} className="bg-white rounded-[2.5rem] p-6 md:p-8 border border-emerald-50 shadow-sm">
             <div className="space-y-1 mb-6">
                <h3 className="text-xl font-black text-emerald-950 tracking-tight">মেন্টাল স্ট্যাবিলিটি</h3>
                <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">মুড ট্র্যান্ড অডিট</p>
@@ -411,10 +417,10 @@ const Analytics = () => {
                </div>
                <TrendingUp size={20} className="text-emerald-400" />
             </div>
-         </div>
+         </motion.div>
 
          {/* Workout Recap */}
-         <div className="xl:col-span-2 bg-white rounded-[2.5rem] p-6 md:p-10 border border-emerald-50 shadow-sm">
+         <motion.div variants={chartVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} className="xl:col-span-2 bg-white rounded-[2.5rem] p-6 md:p-10 border border-emerald-50 shadow-sm">
             <div className="flex items-center justify-between mb-6">
                <div className="space-y-1">
                   <h3 className="text-xl font-black text-emerald-950 tracking-tight">ওয়ার্কআউট লগ</h3>
@@ -451,11 +457,11 @@ const Analytics = () => {
                 </div>
                )}
             </div>
-         </div>
+         </motion.div>
       </div>
 
       {/* 🧩 Heatmap Section */}
-      <div className="bg-white rounded-[2.5rem] p-6 md:p-10 border border-emerald-50 shadow-sm space-y-8">
+      <motion.div variants={chartVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} className="bg-white rounded-[2.5rem] p-6 md:p-10 border border-emerald-50 shadow-sm space-y-8">
          <div className="flex items-center justify-between">
             <div className="space-y-1">
                <h3 className="text-xl font-black text-emerald-950 tracking-tight">ডিসিপ্লিন গ্রিড</h3>
@@ -525,7 +531,7 @@ const Analytics = () => {
               </div>
             )}
           </div>
-        </div>
+        </motion.div>
 
     </div>
   );
