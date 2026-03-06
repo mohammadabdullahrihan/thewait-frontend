@@ -95,8 +95,12 @@ body {
 
 /* Slow spin for Compass icon */
 @keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 .animate-spin-slow {
   animation: spin-slow 8s linear infinite;
@@ -1436,7 +1440,7 @@ h6 {
 .mobile-nav {
   display: none;
   position: fixed;
-  bottom: max(35px, env(safe-area-inset-bottom, 35px));
+  bottom: max(16px, env(safe-area-inset-bottom, 16px));
   left: 20px;
   right: 20px;
   background: rgba(255, 255, 255, 0.92);
