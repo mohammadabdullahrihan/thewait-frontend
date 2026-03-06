@@ -25,12 +25,19 @@ API.interceptors.response.use(
   },
 );
 
-// Auth
+// Auth & Gamification
 export const authAPI = {
   register: (data) => API.post("/auth/register", data),
   login: (data) => API.post("/auth/login", data),
   getMe: () => API.get("/auth/me"),
   updateProfile: (data) => API.put("/auth/profile", data),
+};
+
+export const awardAPI = {
+  toggleFocusMode: (active, minutes = 0) =>
+    API.post("/auth/focus-mode", { active, minutes }),
+  awardBadge: (badgeId) => API.post("/auth/award-badge", { badgeId }),
+  getBadges: () => API.get("/auth/badges"),
 };
 
 // Routines
@@ -61,6 +68,7 @@ export const journalAPI = {
   save: (date, data) => API.post(`/journal/${date}`, data),
   list: (limit) => API.get(`/journal/list/${limit}`),
   moodTrend: () => API.get("/journal/mood/trend"),
+  getPopularTags: () => API.get("/journal/tags/popular"),
 };
 
 // Study
@@ -80,6 +88,7 @@ export const workoutAPI = {
   log: (data) => API.post("/workout", data),
   history: (days) => API.get(`/workout/history/${days}`),
   delete: (id) => API.delete(`/workout/${id}`),
+  getMuscleStats: () => API.get("/workout/muscle/stats"),
 };
 
 // Milestones

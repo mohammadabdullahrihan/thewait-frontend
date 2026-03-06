@@ -36,6 +36,7 @@ import { studyAPI } from '../utils/api';
 import { todayStr } from '../utils/helpers';
 import toast from 'react-hot-toast';
 import Loader from '../components/Common/Loader';
+import FocusMusicPlayer from '../components/Study/FocusMusicPlayer';
 import { 
   AreaChart, 
   Area, 
@@ -362,6 +363,8 @@ const Study = () => {
         {/* Analytics & Subjects */}
         <div className="lg:col-span-8 space-y-6 md:space-y-8">
            
+           <FocusMusicPlayer />
+
            {/* Productivity Chart */}
            <div className="p-6 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] border border-emerald-100 shadow-sm bg-white space-y-6 md:space-y-8">
               <div className="flex items-center justify-between">

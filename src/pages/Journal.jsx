@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
   PenTool, 
   ChevronLeft, 
@@ -29,10 +29,13 @@ import {
   Layout,
   Clock,
   MessageSquare,
-  Quote,
   Star,
   Wind,
-  ArrowRight
+  ArrowRight,
+  Tag,
+  X,
+  Camera,
+  Image
 } from 'lucide-react';
 import { journalAPI, analyticsAPI } from '../utils/api';
 import { todayStr, moodLabel } from '../utils/helpers';
@@ -58,14 +61,18 @@ const MOOD_ICONS = [
   { score: 10, icon: <Flame size={20} />, label: 'unstoppable', color: 'text-rose-500', bg: 'bg-rose-50' },
 ];
 
+const PRESET_TAGS = ['success', 'learning', 'struggle', 'grateful', 'motivated', 'tired', 'focused', 'breakthrough'];
+
 const Journal = () => {
   const [date, setDate] = useState(todayStr());
-  const [entry, setEntry] = useState({ goodThings: '', learned: '', improvements: '', gratitude: '', mood: 5, freeWrite: '' });
+  const [entry, setEntry] = useState({ goodThings: '', learned: '', improvements: '', gratitude: '', mood: 5, freeWrite: '', tags: [], photoUrl: '' });
   const [recentEntries, setRecentEntries] = useState([]);
   const [moodTrend, setMoodTrend] = useState([]);
   const [stats, setStats] = useState(null);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [tagInput, setTagInput] = useState('');
+  const photoInputRef = useRef(null);
 
   const fetchData = async (d) => {
     try {
@@ -75,7 +82,8 @@ const Journal = () => {
         journalAPI.moodTrend(),
         analyticsAPI.getDashboard()
       ]);
-      setEntry(entryRes.data.entry);
+      const e = entryRes.data.entry;
+      setEntry({ ...e, tags: e.tags || [], photoUrl: e.photoUrl || '' });
       setRecentEntries(listRes.data.entries || []);
       setMoodTrend(trendRes.data.moodData || []);
       setStats(analyticsRes.data.stats);
@@ -109,6 +117,27 @@ const Journal = () => {
     } finally { 
       setSaving(false); 
     }
+  };
+
+  const addTag = (tag) => {
+    const clean = tag.replace(/^#/, '').trim().toLowerCase();
+    if (!clean) return;
+    if ((entry.tags || []).includes(clean)) return;
+    setEntry(prev => ({ ...prev, tags: [...(prev.tags || []), clean] }));
+    setTagInput('');
+  };
+
+  const removeTag = (tag) => {
+    setEntry(prev => ({ ...prev, tags: (prev.tags || []).filter(t => t !== tag) }));
+  };
+
+  const handlePhoto = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { toast.error('ছবির সাইজ ২MB এর বেশি নয়'); return; }
+    const reader = new FileReader();
+    reader.onload = (ev) => setEntry(prev => ({ ...prev, photoUrl: ev.target.result }));
+    reader.readAsDataURL(file);
   };
 
   const prompts = [
@@ -294,10 +323,86 @@ const Journal = () => {
               </div>
               <textarea 
                 className="w-full bg-slate-50/30 rounded-[1.8rem] md:rounded-[2.5rem] px-6 md:px-8 py-6 md:py-8 border border-slate-100 focus:bg-white focus:border-emerald-200 focus:ring-4 md:focus:ring-8 focus:ring-emerald-500/5 transition-all text-sm md:text-base font-medium text-emerald-950 min-h-[250px] md:min-h-[300px] outline-none leading-relaxed"
-                placeholder="आज আপনার মনে কী চলছে? আপনার চিন্তাগুলো এখানে বিস্তারিত লিখুন..."
+                placeholder="আজ আপনার মনে কী চলছে? আপনার চিন্তাগুলো এখানে বিস্তারিত লিখুন..."
                 value={entry.freeWrite || ''}
                 onChange={e => setEntry({...entry, freeWrite: e.target.value})}
               />
+           </div>
+
+           {/* 🏷️ Tags Section */}
+           <div className="p-6 md:p-8 rounded-[2rem] md:rounded-[3rem] bg-white border border-emerald-100 shadow-sm space-y-5">
+              <div className="flex items-center gap-3">
+                 <div className="p-2 bg-emerald-50 text-emerald-600 rounded-xl">
+                    <Tag size={18} />
+                 </div>
+                 <h4 className="text-[10px] md:text-xs font-black text-emerald-950 uppercase tracking-widest">ট্যাগ করো এই দিনটিকে</h4>
+              </div>
+              {/* Preset tags */}
+              <div className="flex flex-wrap gap-2">
+                 {PRESET_TAGS.map(tag => (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => addTag(tag)}
+                      className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all border ${(entry.tags || []).includes(tag) ? 'bg-emerald-950 text-white border-emerald-950' : 'bg-emerald-50 text-emerald-600 border-emerald-100 hover:border-emerald-300'}`}
+                    >
+                      #{tag}
+                    </button>
+                 ))}
+              </div>
+              {/* Custom tag input */}
+              <div className="flex gap-2">
+                 <input
+                   className="flex-1 bg-gray-50 rounded-xl px-4 py-3 border border-transparent focus:bg-white focus:border-emerald-100 text-sm font-bold text-emerald-950 outline-none"
+                   placeholder="কাস্টম ট্যাগ লিখুন (Enter চাপুন)..."
+                   value={tagInput}
+                   onChange={e => setTagInput(e.target.value)}
+                   onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTag(tagInput); }}}
+                 />
+                 <button onClick={() => addTag(tagInput)} className="p-3 bg-emerald-950 text-white rounded-xl hover:bg-black transition-all active:scale-95"><Tag size={16} /></button>
+              </div>
+              {/* Active tags display */}
+              {(entry.tags || []).length > 0 && (
+                 <div className="flex flex-wrap gap-2 pt-1">
+                    {(entry.tags || []).map(tag => (
+                       <span key={tag} className="px-3 py-1.5 bg-emerald-100 text-emerald-700 rounded-xl text-[10px] font-black flex items-center gap-1.5 border border-emerald-200">
+                          #{tag}
+                          <button onClick={() => removeTag(tag)} className="hover:text-rose-500 transition-colors"><X size={10} /></button>
+                       </span>
+                    ))}
+                 </div>
+              )}
+           </div>
+
+           {/* 📸 Photo Attachment */}
+           <div className="p-6 md:p-8 rounded-[2rem] md:rounded-[3rem] bg-white border border-emerald-100 shadow-sm space-y-5">
+              <div className="flex items-center justify-between">
+                 <div className="flex items-center gap-3">
+                    <div className="p-2 bg-emerald-50 text-emerald-600 rounded-xl">
+                       <Camera size={18} />
+                    </div>
+                    <h4 className="text-[10px] md:text-xs font-black text-emerald-950 uppercase tracking-widest">আজকের ছবি (ঐচ্ছিক)</h4>
+                 </div>
+                 {entry.photoUrl && (
+                    <button onClick={() => setEntry(p => ({...p, photoUrl: ''}))} className="p-2 text-rose-400 hover:text-rose-600 transition-colors">
+                       <X size={18} />
+                    </button>
+                 )}
+              </div>
+              {entry.photoUrl ? (
+                 <div className="relative rounded-[1.5rem] overflow-hidden border border-emerald-100">
+                    <img src={entry.photoUrl} alt="Journal Photo" className="w-full max-h-64 object-cover" />
+                 </div>
+              ) : (
+                 <button
+                   onClick={() => photoInputRef.current?.click()}
+                   className="w-full py-10 rounded-[1.8rem] border-2 border-dashed border-emerald-100 text-emerald-300 flex flex-col items-center justify-center gap-3 hover:border-emerald-300 hover:text-emerald-500 transition-all"
+                 >
+                    <Image size={32} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">ছবি আপলোড করুন (max 2MB)</span>
+                 </button>
+              )}
+              <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhoto} />
            </div>
 
            <button 
@@ -356,7 +461,7 @@ const Journal = () => {
 
            {/* Quotes / Motivational Card */}
            <div className="p-6 md:p-8 rounded-[2.5rem] md:rounded-[3rem] bg-gradient-to-br from-emerald-600 to-emerald-900 text-white space-y-6 relative overflow-hidden shadow-2xl">
-              <Quote size={40} className="absolute -top-2 -right-2 opacity-10" />
+             <MessageSquare size={40} className="absolute -top-2 -right-2 opacity-10" />
               <p className="text-sm font-medium italic leading-relaxed relative z-10">
                  {entry.mood >= 8 ? '"তুমি আজ দুর্দান্ত ছিলে! এই পজিটিভ এনার্জি তোমার আগামীকালের সাফল্যের জ্বালানি হবে। লিখে রাখো এটি।"' :
                   entry.mood >= 6 ? '"তুমি সঠিক পথে আছো। ছোট ছোট জয়গুলোই একদিন বড় সাফল্যে রূপ নেবে। হার মানবে না।"' :

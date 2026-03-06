@@ -62,23 +62,42 @@ const Workout = () => {
   const [workouts, setWorkouts] = useState([]);
   const [history, setHistory] = useState([]);
   const [stats, setStats] = useState(null);
+  const [muscleStats, setMuscleStats] = useState([]);
   const [selectedType, setSelectedType] = useState('Calisthenics');
+  const [muscleGroup, setMuscleGroup] = useState('None');
   const [exercises, setExercises] = useState(DEFAULT_EXERCISES['Calisthenics']);
   const [duration, setDuration] = useState(30);
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(true);
   const [logging, setLogging] = useState(false);
+  const [restTimer, setRestTimer] = useState(0);
+
+  const MUSCLE_GROUPS = ['Chest', 'Back', 'Legs', 'Shoulders', 'Arms', 'Core', 'Full Body', 'None'];
+
+  useEffect(() => {
+    let interval;
+    if (restTimer > 0) {
+      interval = setInterval(() => setRestTimer(t => t - 1), 1000);
+    } else if (restTimer === 0 && interval) {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [restTimer]);
+
+  const startRestTimer = (seconds = 60) => setRestTimer(seconds);
 
   const fetchData = async (d) => {
     try {
-      const [workoutRes, historyRes, analyticsRes] = await Promise.all([
+      const [workoutRes, historyRes, analyticsRes, muscleRes] = await Promise.all([
         workoutAPI.get(d),
         workoutAPI.history(30),
-        analyticsAPI.getDashboard()
+        analyticsAPI.getDashboard(),
+        workoutAPI.getMuscleStats()
       ]);
       setWorkouts(workoutRes.data.workouts || []);
       setHistory(historyRes.data.workouts || []);
       setStats(analyticsRes.data.stats);
+      setMuscleStats(muscleRes.data.muscleStats || []);
     } catch (e) {
       console.error(e);
     } finally {
@@ -111,7 +130,7 @@ const Workout = () => {
   const logWorkout = async () => {
     setLogging(true);
     try {
-      const res = await workoutAPI.log({ date, type: selectedType, exercises, totalDuration: duration, notes });
+      const res = await workoutAPI.log({ date, type: selectedType, muscleGroup, exercises, totalDuration: duration, notes });
       setWorkouts([...workouts, res.data.workout]);
       toast.success('ওয়ার্কআউট লগ করা হয়েছে! 🔥', {
         icon: '💪',
@@ -265,24 +284,44 @@ const Workout = () => {
                     <Plus size={20} className="md:w-6 md:h-6" />
                  </div>
               </div>
-
-              {/* Type Grid */}
-              <div className="grid grid-cols-3 gap-2 md:gap-3">
-                 {WORKOUT_TYPES.map((t) => (
-                    <button 
-                      key={t.type}
-                      onClick={() => selectType(t.type)}
-                      className={`p-3 md:p-4 rounded-2xl md:rounded-[2rem] border transition-all flex flex-col items-center gap-2 group ${selectedType === t.type ? 'bg-emerald-950 border-emerald-950 text-white shadow-xl scale-[1.05]' : 'bg-white border-emerald-50 text-emerald-900/40 hover:border-emerald-200'}`}
-                    >
-                       <div className={`p-2 md:p-3 rounded-xl md:rounded-2xl transition-all ${selectedType === t.type ? 'bg-white/10' : `${t.bg} ${t.color}`}`}>
-                          {/* Scale icon for mobile */}
-                          <div className="md:scale-100 scale-75">
-                             {t.icon}
+              {/* Options Grid */}
+              <div className="space-y-4">
+                 <h4 className="text-[9px] md:text-[10px] font-black text-emerald-900/40 uppercase tracking-widest ml-4">WORKOUT TYPE</h4>
+                 <div className="grid grid-cols-3 gap-2 md:gap-3">
+                    {WORKOUT_TYPES.map((t) => (
+                       <button 
+                         key={t.type}
+                         onClick={() => selectType(t.type)}
+                         className={`p-3 md:p-4 rounded-2xl md:rounded-[2rem] border transition-all flex flex-col items-center gap-2 group ${selectedType === t.type ? 'bg-emerald-950 border-emerald-950 text-white shadow-xl scale-[1.05]' : 'bg-white border-emerald-50 text-emerald-900/40 hover:border-emerald-200'}`}
+                       >
+                          <div className={`p-2 md:p-3 rounded-xl md:rounded-2xl transition-all ${selectedType === t.type ? 'bg-white/10' : `${t.bg} ${t.color}`}`}>
+                             <div className="md:scale-100 scale-75">
+                                {t.icon}
+                             </div>
                           </div>
-                       </div>
-                       <span className="text-[8px] md:text-[10px] font-black uppercase tracking-widest whitespace-nowrap overflow-hidden text-ellipsis w-full text-center">{t.type}</span>
-                    </button>
-                 ))}
+                          <span className="text-[8px] md:text-[10px] font-black uppercase tracking-widest whitespace-nowrap overflow-hidden text-ellipsis w-full text-center">{t.type}</span>
+                       </button>
+                    ))}
+                 </div>
+              </div>
+
+              <div className="space-y-4">
+                 <h4 className="text-[9px] md:text-[10px] font-black text-emerald-900/40 uppercase tracking-widest ml-4">PRIMARY MUSCLE GROUP</h4>
+                 <div className="flex flex-wrap gap-2">
+                    {MUSCLE_GROUPS.map(mg => (
+                       <button
+                         key={mg}
+                         onClick={() => setMuscleGroup(mg)}
+                         className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${
+                           muscleGroup === mg 
+                             ? 'bg-rose-600 text-white border-rose-600 shadow-md' 
+                             : 'bg-white text-emerald-900/60 border-emerald-100 hover:border-emerald-300 hover:bg-emerald-50'
+                         }`}
+                       >
+                         {mg}
+                       </button>
+                    ))}
+                 </div>
               </div>
 
               {/* Exercises Management */}
@@ -404,6 +443,57 @@ const Workout = () => {
                     </ResponsiveContainer>
                  </div>
               </div>
+
+               {/* Muscle Focus Chart & Rest Timer */}
+               <div className="space-y-6 md:space-y-8">
+                  <div className="p-6 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] border border-emerald-100 shadow-sm bg-white space-y-6">
+                     <div className="flex justify-between items-center">
+                        <div className="space-y-1">
+                           <h3 className="text-lg md:text-xl font-black text-emerald-950 tracking-tight">মাসল ফোকাস (৭ দিন)</h3>
+                           <p className="text-[9px] md:text-[10px] font-black text-emerald-900/30 uppercase tracking-widest">কিভাবে পেশী কাজ করছে</p>
+                        </div>
+                     </div>
+                     <div className="flex flex-col gap-4">
+                        {muscleStats.length > 0 ? (
+                           muscleStats.filter(m => m.group !== 'None').map(m => (
+                              <div key={m.group} className="space-y-2">
+                                 <div className="flex justify-between text-xs font-black text-emerald-950">
+                                    <span>{m.group}</span>
+                                    <span className="text-rose-500">{m.sessions} Sessions</span>
+                                 </div>
+                                 <div className="h-2.5 w-full bg-rose-50 rounded-full overflow-hidden">
+                                    <div 
+                                      className="h-full bg-rose-500 rounded-full shadow-[0_0_10px_rgba(244,63,94,0.3)] transition-all duration-1000" 
+                                      style={{ width: `${Math.min(100, (m.sessions / Math.max(...muscleStats.map(x=>x.sessions))) * 100)}%` }} 
+                                    />
+                                 </div>
+                              </div>
+                           ))
+                        ) : (
+                           <p className="text-xs text-emerald-900/40 italic text-center py-6">এখনো নির্দিষ্ট কোনো মাসল টার্গেট করা হয়নি</p>
+                        )}
+                     </div>
+                  </div>
+
+                  {/* Rest Timer Widget */}
+                  <div className="p-6 md:p-8 rounded-[2.5rem] bg-indigo-950 text-white flex flex-col items-center gap-4 text-center relative overflow-hidden shadow-2xl">
+                     <div className="absolute top-0 right-0 p-4 opacity-10"><Timer size={80} /></div>
+                     <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400">REST TIMER</p>
+                     {restTimer > 0 ? (
+                        <>
+                           <h2 className="text-5xl md:text-6xl font-black text-white tracking-tighter">{Math.floor(restTimer/60)}:{(restTimer%60).toString().padStart(2, '0')}</h2>
+                           <button onClick={() => setRestTimer(0)} className="px-5 py-2.5 mt-2 bg-rose-500/20 text-rose-300 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-rose-500 hover:text-white transition-all active:scale-95 border border-rose-500/30">Stop Timer</button>
+                        </>
+                     ) : (
+                        <div className="flex gap-2 w-full max-w-[240px]">
+                           <button onClick={() => startRestTimer(30)} className="flex-1 py-3.5 bg-white/5 rounded-xl text-xs font-black hover:bg-white/10 transition-all active:scale-95 border border-white/10 text-indigo-200">30s</button>
+                           <button onClick={() => startRestTimer(60)} className="flex-1 py-3.5 bg-white/5 rounded-xl text-xs font-black hover:bg-white/10 transition-all active:scale-95 border border-white/10 text-indigo-200">60s</button>
+                           <button onClick={() => startRestTimer(90)} className="flex-1 py-3.5 bg-white/5 rounded-xl text-xs font-black hover:bg-white/10 transition-all active:scale-95 border border-white/10 text-indigo-200">90s</button>
+                        </div>
+                     )}
+                     <p className="text-[8px] md:text-[9px] font-bold text-indigo-300 mt-2">সেটের মাঝে পর্যাপ্ত রেস্ট নিন</p>
+                  </div>
+               </div>
 
               {/* Today's Stats Cards */}
               <div className="grid grid-cols-2 gap-3 md:gap-4">

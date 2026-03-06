@@ -196,6 +196,55 @@ const Dashboard = () => {
              <p className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest text-center">XP: {user?.experience || 0}</p>
           </div>
         </div>
+     </div>
+
+      {/* 🔮 Warrior Quote & Life Progress */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 p-6 md:p-8 rounded-[2.5rem] bg-emerald-950 text-white relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-6 opacity-10">
+            <Target size={120} />
+          </div>
+          <div className="relative z-10 flex flex-col justify-between h-full space-y-4">
+          <div className="flex items-center gap-2 text-emerald-400">
+            <MessageSquare size={18} />
+            <span className="text-[10px] font-black uppercase tracking-widest">Warrior Strategy</span>
+          </div>
+            <p className="text-xl md:text-2xl font-black leading-tight">"{quote.text}"</p>
+            <p className="text-sm font-bold text-emerald-400/80">— {quote.author}</p>
+          </div>
+        </div>
+        
+        <div className="p-6 md:p-8 rounded-[2.5rem] bg-gradient-to-br from-indigo-950 to-slate-900 text-white shadow-2xl flex flex-col justify-between relative overflow-hidden group">
+          <div className="absolute -top-10 -right-10 w-40 h-40 bg-indigo-500 rounded-full blur-[60px] opacity-30 group-hover:opacity-50 transition-all duration-700" />
+          
+          <div className="relative z-10 flex items-center gap-3 mb-6">
+            <div className="p-3 bg-indigo-500/20 text-indigo-400 rounded-2xl border border-indigo-400/30">
+              <Milestone size={24} />
+            </div>
+            <div>
+               <h3 className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-indigo-300">MISSION</h3>
+               <p className="font-black text-lg md:text-xl">Journey to EU</p>
+            </div>
+          </div>
+          
+          <div className="relative z-10 space-y-5">
+            <div>
+              <div className="flex justify-between items-end mb-3">
+                <span className="text-4xl md:text-5xl font-black tracking-tighter shadow-indigo-500/50 drop-shadow-md">{daysToEU}</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400 mb-1">Days Left</span>
+              </div>
+              <div className="h-3 w-full bg-slate-800 rounded-full overflow-hidden border border-slate-700 shadow-inner">
+                <div 
+                  className="h-full bg-gradient-to-r from-indigo-500 to-indigo-400 rounded-full shadow-[0_0_15px_rgba(99,102,241,0.6)] relative overflow-hidden" 
+                  style={{ width: `${Math.min(100, Math.max(0, 100 - (daysToEU / 365) * 100))}%` }} 
+                >
+                  <div className="absolute inset-0 bg-white/20 animate-pulse" />
+                </div>
+              </div>
+            </div>
+            <p className="text-[10px] md:text-xs font-bold text-indigo-400/60 uppercase tracking-widest bg-slate-800/50 px-4 py-2 rounded-xl inline-block border border-slate-700">Deadline: <span className="text-indigo-200">March 2027</span></p>
+          </div>
+        </div>
       </div>
 
       {/* 🧭 Quick Vitals: 4-Column Summary */}

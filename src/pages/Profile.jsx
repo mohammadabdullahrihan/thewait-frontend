@@ -28,6 +28,7 @@ import { authAPI } from '../utils/api';
 import { xpToNextLevel } from '../utils/helpers';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
+import GamificationProfile from '../components/Gamification/Profile';
 
 const Profile = () => {
   const { user, updateUser } = useAuth();
@@ -50,15 +51,6 @@ const Profile = () => {
       setSaving(false); 
     }
   };
-
-  const badgeAll = [
-    { name: 'Bronze Warrior', icon: <Medal size={28} className="text-amber-600" />, needed: 7, description: '৭ দিনের স্ট্রিক', color: 'bg-amber-50', border: 'border-amber-100' },
-    { name: 'Silver Warrior', icon: <Medal size={28} className="text-slate-400" />, needed: 30, description: '৩০ দিনের স্ট্রিক', color: 'bg-slate-50', border: 'border-slate-100' },
-    { name: 'Gold Warrior', icon: <Trophy size={28} className="text-yellow-500" />, needed: 90, description: '৯০ দিনের স্ট্রিক', color: 'bg-yellow-50', border: 'border-yellow-100' },
-    { name: 'Streak Master', icon: <Zap size={28} className="text-emerald-500" />, needed: 30, description: '৩০ দিন নো-ফ্যাপ', color: 'bg-emerald-50', border: 'border-emerald-100' },
-  ];
-
-  const earnedBadgeNames = user?.badges?.map(b => b.name) || [];
 
   return (
     <div className="animate-in fade-in duration-700 space-y-10 pb-24">
@@ -177,80 +169,8 @@ const Profile = () => {
               </button>
            </div>
         </div>
-
-        {/* 🎖️ Achievements & Progress */}
-        <div className="xl:col-span-2 bg-white rounded-[3.5rem] p-12 border border-emerald-50 shadow-sm space-y-10 h-full">
-           <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                 <h3 className="text-2xl font-black text-emerald-950 tracking-tight">অর্জিত সম্মাননা (Badges)</h3>
-                 <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">আপনার শৃঙ্খলার পুরস্কার</p>
-              </div>
-              <div className="p-4 bg-orange-50 rounded-2xl text-orange-500 border border-orange-100 shadow-inner">
-                 <Trophy size={24} />
-              </div>
-           </div>
-
-           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {badgeAll.map((b, i) => {
-    const earned = earnedBadgeNames.some(name => name.toLowerCase() === b.name.toLowerCase());
-                 return (
-                    <div key={i} className={`p-8 rounded-[3rem] border transition-all flex items-center gap-6 group relative overflow-hidden ${earned ? `${b.color} ${b.border} shadow-md` : 'bg-gray-50/50 border-gray-100 grayscale opacity-60'}`}>
-                       {earned && (
-                         <div className="absolute top-2 right-4 flex items-center gap-1">
-                            <Star size={12} className="text-yellow-500 fill-yellow-500 animate-pulse" />
-                            <span className="text-[8px] font-black text-emerald-600 uppercase">অর্জিত (EARNED)</span>
-                         </div>
-                       )}
-                       
-                       <div className={`w-20 h-20 rounded-[1.8rem] bg-white shadow-lg flex items-center justify-center border border-white/50 group-hover:scale-110 transition-transform ${earned ? 'shadow-emerald-500/10' : ''}`}>
-                          {earned ? b.icon : <Lock size={32} className="text-gray-200" />}
-                       </div>
-                       
-                       <div className="space-y-1 flex-1">
-                          <h4 className="text-lg font-black text-emerald-950 leading-tight">{b.name}</h4>
-                          <p className="text-xs font-bold text-gray-500 uppercase tracking-tight">{b.description}</p>
-                          {!earned && (
-                             <div className="mt-2 h-1.5 w-full bg-gray-200 rounded-full overflow-hidden">
-                                <div className="h-full bg-emerald-400 rounded-full" style={{ width: `${Math.min(100, (user?.streak?.current / b.needed) * 100)}%` }} />
-                             </div>
-                          )}
-                       </div>
-                    </div>
-                 );
-              })}
-           </div>
-
-           {/* Stats Summary Deck */}
-           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
-              {[
-                { label: 'LONGEST STREAK', value: user?.streak?.longest || 0, sub: 'Days', icon: <History size={20} />, color: 'text-blue-500' },
-                { 
-                  label: 'WARRIOR RANK', 
-                  value: xp.level <= 5 ? 'Novice' : xp.level <= 15 ? 'Elite' : 'Legend', 
-                  sub: `Level ${xp.level} status`, 
-                  icon: <Map size={20} />, 
-                  color: 'text-emerald-500' 
-                },
-                { 
-                  label: 'POWER SCORE', 
-                  value: (user?.experience || 0) + (user?.streak?.current * 50 || 0), 
-                  sub: 'Total Power', 
-                  icon: <Shield size={20} />, 
-                  color: 'text-rose-500' 
-                }
-              ].map((item, i) => (
-                <div key={i} className="flex items-center gap-4 p-6 rounded-[2.5rem] bg-slate-50 border border-slate-100 shadow-sm group hover:scale-[1.02] transition-all">
-                   <div className={`p-4 rounded-2xl bg-white shadow-sm transition-all ${item.color}`}>
-                      {item.icon}
-                   </div>
-                   <div>
-                      <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">{item.label}</p>
-                      <h5 className="text-2xl font-black text-emerald-950">{item.value}</h5>
-                      <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">{item.sub}</span>
-                   </div>
-                </div>
-              ))}
-           </div>
+        <div className="xl:col-span-2">
+           <GamificationProfile user={user} />
         </div>
 
       </div>
