@@ -20,9 +20,14 @@ import {
   Coffee,
   Brain,
   Dumbbell,
-  Target
+  Target,
+  Star,
+  Activity,
+  Smile,
+  BookOpen
 } from 'lucide-react';
-import { routineAPI } from '../utils/api';
+import { routineAPI, authAPI } from '../utils/api';
+import { useAuth } from '../context/AuthContext';
 import { todayStr } from '../utils/helpers';
 import { format, addDays, parseISO } from 'date-fns';
 import toast from 'react-hot-toast';
@@ -33,13 +38,15 @@ const categoryMeta = {
   Study: { icon: <Brain size={14} />, color: 'bg-sky-50 text-sky-600', border: 'border-sky-100' },
   Health: { icon: <Dumbbell size={14} />, color: 'bg-rose-50 text-rose-600', border: 'border-rose-100' },
   Mindfulness: { icon: <Sparkles size={14} />, color: 'bg-purple-50 text-purple-600', border: 'border-purple-100' },
+  Ibadat: { icon: <Moon size={14} />, color: 'bg-amber-50 text-amber-600', border: 'border-amber-100' },
   Other: { icon: <Layout size={14} />, color: 'bg-gray-50 text-gray-600', border: 'border-gray-100' }
 };
 
 const Routine = () => {
+  const { user, updateUser } = useAuth();
   const [date, setDate] = useState(todayStr());
-  const [activeName, setActiveName] = useState('Daily');
-  const [routineNames, setRoutineNames] = useState(['Daily']);
+  const [activeName, setActiveName] = useState(user?.activeRoutineName || 'Daily');
+  const [routineNames, setRoutineNames] = useState(['Daily', 'Ramadan']);
   const [routine, setRoutine] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
@@ -55,9 +62,20 @@ const Routine = () => {
         routineAPI.getAllForDate(d)
       ]);
       setRoutine(routineRes.data.routine);
-      const names = allRes.data.routines.map(r => r.name);
+      const names = allRes.data.routines?.map(r => r.name) || [];
       if (!names.includes('Daily')) names.unshift('Daily');
+      if (!names.includes('Ramadan')) names.push('Ramadan');
+      if (user?.activeRoutineName && !names.includes(user.activeRoutineName)) names.push(user.activeRoutineName);
       setRoutineNames([...new Set(names)]);
+
+      // Special Ramadan Toast Notification
+      const rName = routineRes.data.routineName || name;
+      if ((rName === 'Ramadan' || rName === 'রমজান') && routineRes.data.routine?.tasks?.length > 0) {
+        toast('🌙 আপনার জন্য রমজানের বিশেষ রুটিন লোড করা হয়েছে!', {
+          icon: '✨',
+          style: { borderRadius: '2rem', background: '#064e3b', color: '#fff', border: '1px solid #10b981' }
+        });
+      }
     } catch (e) {
       toast.error('ডেটা লোড করা যায়নি');
     } finally {
@@ -71,10 +89,10 @@ const Routine = () => {
 
   const toggleTask = async (taskId, completed, index) => {
     try {
-      if (!routine._id) {
+      if (!routine?._id) {
         // Not saved yet (using template), toggle locally and save the whole thing
-        const updatedTasks = [...routine.tasks];
-        updatedTasks[index].completed = !completed;
+        const updatedTasks = [...(routine?.tasks || [])];
+        if (updatedTasks[index]) updatedTasks[index].completed = !completed;
         const res = await routineAPI.save({ date, name: activeName, tasks: updatedTasks });
         setRoutine(res.data.routine);
         if (!completed) toast.success('+5 XP অর্জিত! 🔥', { position: 'bottom-center' });
@@ -83,8 +101,8 @@ const Routine = () => {
       
       // If routine exists but taskId is somehow missing (fallback to index-based update)
       if (!taskId) {
-        const updatedTasks = [...routine.tasks];
-        updatedTasks[index].completed = !completed;
+        const updatedTasks = [...(routine?.tasks || [])];
+        if (updatedTasks[index]) updatedTasks[index].completed = !completed;
         const res = await routineAPI.save({ date, name: activeName, tasks: updatedTasks });
         setRoutine(res.data.routine);
         if (!completed) toast.success('+5 XP অর্জিত! 🔥', { position: 'bottom-center' });
@@ -115,9 +133,9 @@ const Routine = () => {
 
   const deleteTask = async (taskId, index) => {
     try {
-      if (!routine._id) {
+      if (!routine?._id) {
         // Not saved yet, just remove locally
-        const updatedTasks = routine.tasks.filter((_, i) => i !== index);
+        const updatedTasks = (routine?.tasks || []).filter((_, i) => i !== index);
         setRoutine({ ...routine, tasks: updatedTasks });
         toast.success('টাস্ক মুছে ফেলা হয়েছে');
         return;
@@ -128,6 +146,17 @@ const Routine = () => {
       toast.success('টাস্ক মুছে ফেলা হয়েছে');
     } catch (e) {
       toast.error('মুছে ফেলা ব্যর্থ');
+    }
+  };
+
+  const deleteFullRoutine = async () => {
+    if (!window.confirm(`আপনি কি নিশ্চিতভাবে এই (${activeName}) রুটিনটি আজ থেকে ডিলিট করতে চান?`)) return;
+    try {
+      await routineAPI.deleteRoutine(date, activeName);
+      fetchRoutineData(date, activeName);
+      toast.success('রুটিন পুরোপুরি ডিলিট করা হয়েছে');
+    } catch (e) {
+      toast.error('ডিলিট করা সম্ভব হয়নি');
     }
   };
 
@@ -151,6 +180,17 @@ const Routine = () => {
   const completedCount = routine?.tasks?.filter(t => t.completed).length || 0;
   const totalCount = routine?.tasks?.length || 0;
   const completionRate = totalCount ? Math.round((completedCount / totalCount) * 100) : 0;
+
+  const handleRoutineChange = async (name) => {
+    setActiveName(name);
+    try {
+      // Persist active routine choice to user profile
+      const res = await authAPI.updateProfile({ activeRoutineName: name });
+      updateUser(res.data.user);
+    } catch (e) {
+      console.error('Failed to save active routine preference');
+    }
+  };
 
   if (loading && !routine) return <Loader />;
 
@@ -185,6 +225,16 @@ const Routine = () => {
              {showAdd ? <X size={18} /> : <Plus size={18} />}
              {showAdd ? 'বাতিল' : 'নতুন টাস্ক'}
            </button>
+           
+           {routine?._id && (
+             <button 
+               onClick={deleteFullRoutine}
+               className="p-4 bg-rose-50 border border-rose-100 text-rose-500 rounded-3xl hover:bg-rose-100 transition-all shadow-sm"
+               title="আজকের রুটিন মুছুন"
+             >
+               <X size={20} />
+             </button>
+           )}
         </div>
       </div>
 
@@ -209,7 +259,7 @@ const Routine = () => {
               {routineNames.map(name => (
                 <button
                   key={name}
-                  onClick={() => setActiveName(name)}
+                  onClick={() => handleRoutineChange(name)}
                   className={`px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeName === name ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'text-emerald-900/50 hover:text-emerald-700'}`}
                 >
                   <div className="flex items-center gap-2">
@@ -294,17 +344,18 @@ const Routine = () => {
                 </div>
 
                 <div className="mt-8 flex flex-wrap items-center justify-between gap-6">
-                   <div className="flex items-center gap-3 bg-white p-2 rounded-2xl border border-emerald-100">
-                      {['Discipline', 'Study', 'Health', 'Mindfulness'].map(cat => (
-                         <button 
-                           key={cat}
-                           onClick={() => setNewTask({...newTask, category: cat})}
-                           className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${newTask.category === cat ? 'bg-emerald-500 text-white' : 'text-emerald-900/40 hover:text-emerald-600'}`}
-                         >
-                           {cat}
-                         </button>
-                      ))}
-                   </div>
+                    <div className="flex items-center gap-3 bg-white p-2 rounded-2xl border border-emerald-100 flex-wrap">
+                       {['Discipline', 'Study', 'Health', 'Mindfulness', 'Ibadat'].map(cat => (
+                          <button 
+                            key={cat}
+                            type="button"
+                            onClick={() => setNewTask({...newTask, category: cat})}
+                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${newTask.category === cat ? 'bg-emerald-500 text-white shadow-md' : 'text-emerald-900/40 hover:text-emerald-600'}`}
+                          >
+                            {cat}
+                          </button>
+                       ))}
+                    </div>
                    <button 
                      onClick={addTask}
                      className="px-10 py-4 bg-emerald-600 text-white rounded-[1.8rem] font-black text-xs uppercase tracking-widest hover:bg-emerald-700 shadow-xl shadow-emerald-600/20 transition-all flex items-center gap-3"
@@ -375,21 +426,21 @@ const Routine = () => {
            <div className="p-8 rounded-[3rem] bg-white border border-emerald-100 shadow-sm space-y-6">
               <h4 className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest">CATEGORICAL LOAD</h4>
               <div className="space-y-4">
-                 {['Discipline', 'Study', 'Health', 'Mindfulness'].map(cat => {
-                   const count = routine?.tasks?.filter(t => t.category === cat).length || 0;
-                   const meta = categoryMeta[cat];
-                   return (
-                     <div key={cat} className="space-y-2">
-                        <div className="flex justify-between items-center text-[10px] font-black">
-                           <span className="flex items-center gap-2 text-emerald-950 uppercase">{meta.icon} {cat}</span>
-                           <span className="text-emerald-400">{count} Tasks</span>
-                        </div>
-                        <div className="h-1.5 w-full bg-gray-50 rounded-full overflow-hidden p-[2px]">
-                           <div className={`h-full rounded-full ${meta.color.split(' ')[1]}`} style={{ width: `${totalCount ? (count/totalCount)*100 : 0}%` }} />
-                        </div>
-                     </div>
-                   );
-                 })}
+                  {['Discipline', 'Study', 'Health', 'Mindfulness', 'Ibadat'].map(cat => {
+                    const count = routine?.tasks?.filter(t => t.category === cat).length || 0;
+                    const meta = categoryMeta[cat] || categoryMeta.Other;
+                    return (
+                      <div key={cat} className="space-y-2">
+                         <div className="flex justify-between items-center text-[10px] font-black">
+                            <span className="flex items-center gap-2 text-emerald-950 uppercase">{meta.icon} {cat}</span>
+                            <span className="text-emerald-400">{count} Tasks</span>
+                         </div>
+                         <div className="h-1.5 w-full bg-gray-50 rounded-full overflow-hidden p-[2px]">
+                            <div className={`h-full rounded-full ${meta.color.split(' ')[1]}`} style={{ width: `${totalCount ? (count/totalCount)*100 : 0}%` }} />
+                         </div>
+                      </div>
+                    );
+                  })}
               </div>
            </div>
 
@@ -471,15 +522,37 @@ const Routine = () => {
               </div>
               
               <div className="space-y-4">
+                 <div className="space-y-4 pt-4 border-t border-emerald-50">
+                    <p className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest text-center">দ্রুত সাজেশন</p>
+                    <div className="flex flex-wrap gap-2 justify-center">
+                       {['Ramadan', 'Morning', 'Study Focus', 'Weekend'].map(s => (
+                          <button 
+                            key={s}
+                            onClick={() => { setNewRoutineName(s); }}
+                            className="px-4 py-2 bg-emerald-50 text-[10px] font-black text-emerald-600 rounded-xl hover:bg-emerald-100 transition-all uppercase tracking-widest border border-emerald-100"
+                          >
+                             {s === 'Ramadan' ? '🌙 Ramadan' : s}
+                          </button>
+                       ))}
+                    </div>
+                 </div>
+
                  <div className="space-y-2">
                     <label className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest ml-4">রুটিনের নাম</label>
-                    <input 
-                      type="text" 
-                      placeholder="যেমন: Work Focus" 
-                      className="w-full bg-emerald-50/50 rounded-2xl px-6 py-4 border border-emerald-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-sm font-bold text-emerald-950" 
-                      value={newRoutineName} 
-                      onChange={e => setNewRoutineName(e.target.value)} 
-                    />
+                    <div className="relative">
+                       <input 
+                         type="text" 
+                         placeholder="যেমন: Work Focus" 
+                         className="w-full bg-emerald-50/50 rounded-2xl px-6 py-4 border border-emerald-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-sm font-bold text-emerald-950" 
+                         value={newRoutineName} 
+                         onChange={e => setNewRoutineName(e.target.value)} 
+                       />
+                       {newRoutineName === 'Ramadan' && (
+                         <div className="absolute right-4 top-1/2 -translate-y-1/2 text-emerald-500 animate-pulse">
+                            <Moon size={16} />
+                         </div>
+                       )}
+                    </div>
                  </div>
               </div>
 

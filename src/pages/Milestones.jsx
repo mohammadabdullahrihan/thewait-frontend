@@ -361,8 +361,8 @@ const Milestones = () => {
                                  <button onClick={() => handleDelete(m._id)} className="flex-1 p-5 rounded-[1.8rem] bg-white border border-rose-50 text-rose-500 hover:bg-rose-50 transition-all flex items-center justify-center">
                                     <Trash2 size={18} />
                                  </button>
-                                 <button onClick={() => openView(m)} className="flex-1 p-5 rounded-[1.8rem] bg-emerald-600 text-white hover:bg-emerald-700 transition-all flex items-center justify-center shadow-lg shadow-emerald-600/10 active:scale-95">
-                                    <ChevronRight size={18} />
+                                 <button onClick={() => openView(m)} className="flex-1 p-5 rounded-[1.8rem] bg-emerald-600 text-white hover:bg-emerald-700 transition-all flex items-center justify-center shadow-lg shadow-emerald-600/20 active:scale-95 group/btn">
+                                    <Eye size={20} className="group-hover/btn:scale-110 transition-transform" />
                                  </button>
                               </div>
                            </div>

@@ -1436,9 +1436,9 @@ h6 {
 .mobile-nav {
   display: none;
   position: fixed;
-  bottom: max(25px, env(safe-area-inset-bottom, 25px));
-  left: 12px;
-  right: 12px;
+  bottom: max(35px, env(safe-area-inset-bottom, 35px));
+  left: 20px;
+  right: 20px;
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -1463,7 +1463,7 @@ h6 {
   }
   .main-content {
     margin-left: 0 !important;
-    padding: 16px 16px 120px 16px !important;
+    padding: 16px 16px 160px 16px !important; /* Increased bottom padding */
   }
 }
 
@@ -1534,10 +1534,16 @@ h6 {
   box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
   transform: translateY(110%);
   transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
-  padding-bottom: 110px; /* Space for the bottom nav bar */
+  padding-top: 15px;
+  padding-bottom: 180px; /* More space for mobile bottom nav bar */
   display: none;
-  max-height: 85vh;
+  max-height: 92vh;
   overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.mobile-more-drawer::-webkit-scrollbar {
+  display: none;
 }
 
 .mobile-more-drawer.open {
