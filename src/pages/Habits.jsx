@@ -31,6 +31,7 @@ import { todayStr, getHabitEmoji, getHabitName } from '../utils/helpers';
 import { format, addDays, parseISO } from 'date-fns';
 import toast from 'react-hot-toast';
 import Loader from '../components/Common/Loader';
+import confetti from 'canvas-confetti';
 import { 
   AreaChart, 
   Area, 
@@ -99,6 +100,7 @@ const Habits = () => {
   }, [date]);
 
   const toggleHabit = async (key) => {
+    if (navigator.vibrate) navigator.vibrate(50);
     const updated = { ...habits, [key]: !habits[key] };
     const score = Object.values(updated).filter(Boolean).length;
     
@@ -109,6 +111,7 @@ const Habits = () => {
     try {
       await habitAPI.save(date, { habits: updated });
       if (updated[key]) {
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
         toast.success(`+10 XP অর্জিত! 🔥`, { 
           icon: '🔥',
           style: { borderRadius: '15px', background: '#064e3b', color: '#fff', fontWeight: 'bold' } 

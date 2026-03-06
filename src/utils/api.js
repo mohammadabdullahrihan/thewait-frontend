@@ -52,6 +52,7 @@ export const routineAPI = {
     API.delete(`/routines/${date}?name=${name}`),
   getWeek: (startDate) => API.get(`/routines/week/${startDate}`),
   getAllForDate: (date) => API.get(`/routines/${date}/list/all`),
+  copy: (data) => API.post("/routines/copy", data),
 };
 
 // Habits
@@ -103,6 +104,7 @@ export const milestoneAPI = {
 export const analyticsAPI = {
   getDashboard: () => API.get("/analytics/dashboard"),
   heatmap: () => API.get("/analytics/heatmap"),
+  getAIInsights: () => API.get("/analytics/ai-insights"),
 };
 
 export default API;

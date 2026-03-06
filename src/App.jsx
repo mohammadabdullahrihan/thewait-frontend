@@ -132,15 +132,37 @@ const MobileNav = () => {
 };
 
 // App Layout (with Sidebar)
-const AppLayout = ({ children }) => (
-  <div className="app-layout">
-    <Sidebar />
-    <main className="main-content">
-      {children}
-    </main>
-    <MobileNav />
-  </div>
-);
+const AppLayout = ({ children }) => {
+  const { isFocusMode, toggleFocusMode } = useAuth();
+  
+  // Custom style when Focus Mode hides sidebars
+  const focusMainStyle = { marginLeft: 0, paddingBottom: '2rem' };
+
+  return (
+    <div className={`app-layout ${isFocusMode ? 'bg-[#05110d]' : ''}`}>
+      {!isFocusMode && <Sidebar />}
+      <main className="main-content relative z-10 transition-all duration-700" style={isFocusMode ? focusMainStyle : {}}>
+        {children}
+      </main>
+      {!isFocusMode && <MobileNav />}
+
+      {/* Extreme Focus Mode Underlay Overlay to dim non-timer parts */}
+      {isFocusMode && (
+         <div className="fixed inset-0 pointer-events-none z-0 bg-[#05110d] animate-in fade-in duration-1000" />
+      )}
+
+      {/* Focus Mode Exit UI */}
+      {isFocusMode && (
+        <button 
+          onClick={toggleFocusMode}
+          className="fixed top-6 right-6 z-[9999] px-5 py-3 md:px-6 md:py-4 bg-rose-600/90 hover:bg-rose-500 text-white rounded-2xl md:rounded-[1.5rem] font-black text-[10px] md:text-xs uppercase tracking-[0.2em] shadow-2xl backdrop-blur-md flex items-center gap-2 border border-rose-500/50 transition-all hover:scale-105"
+        >
+          <X size={16} /> Exit Warrior Mode
+        </button>
+      )}
+    </div>
+  );
+};
 
 function RouteSEO() {
   const location = useLocation();

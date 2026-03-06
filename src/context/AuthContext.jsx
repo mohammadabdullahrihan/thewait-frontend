@@ -7,6 +7,7 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isFocusMode, setIsFocusMode] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -22,6 +23,11 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   }, []);
+
+  const toggleFocusMode = () => {
+    setIsFocusMode(!isFocusMode);
+    toast(isFocusMode ? 'Normal Mode Restored' : 'Warrior Focus Mode Activated! 🛡️', { icon: isFocusMode ? '🌤️' : '⚔️', style: { background: isFocusMode ? '#fff' : '#000', color: isFocusMode ? '#000' : '#fff' } });
+  };
 
   const register = async (data) => {
     const res = await authAPI.register(data);
@@ -54,7 +60,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, register, login, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, loading, isFocusMode, toggleFocusMode, register, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

@@ -32,6 +32,10 @@ import { todayStr } from '../utils/helpers';
 import { format, addDays, parseISO } from 'date-fns';
 import toast from 'react-hot-toast';
 import Loader from '../components/Common/Loader';
+import confetti from 'canvas-confetti';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, arrayMove, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { SortableTask } from '../components/Routine/SortableTask';
 
 const categoryMeta = {
   Discipline: { icon: <Target size={14} />, color: 'bg-orange-50 text-orange-600', border: 'border-orange-100' },
@@ -127,29 +131,27 @@ const Routine = () => {
 
   const toggleTask = async (taskId, completed, index) => {
     try {
-      if (!routine?._id) {
-        // Not saved yet (using template), toggle locally and save the whole thing
-        const updatedTasks = [...(routine?.tasks || [])];
-        if (updatedTasks[index]) updatedTasks[index].completed = !completed;
-        const res = await routineAPI.save({ date, name: activeName, tasks: updatedTasks });
-        setRoutine(res.data.routine);
-        if (!completed) toast.success('+5 XP অর্জিত! 🔥', { position: 'bottom-center' });
-        return;
-      }
+      if (navigator.vibrate) navigator.vibrate(50);
       
-      // If routine exists but taskId is somehow missing (fallback to index-based update)
-      if (!taskId) {
+      if (!routine?._id || !taskId) {
+        // Not saved yet or ID missing, toggle locally and save
         const updatedTasks = [...(routine?.tasks || [])];
         if (updatedTasks[index]) updatedTasks[index].completed = !completed;
         const res = await routineAPI.save({ date, name: activeName, tasks: updatedTasks });
         setRoutine(res.data.routine);
-        if (!completed) toast.success('+5 XP অর্জিত! 🔥', { position: 'bottom-center' });
+        if (!completed) {
+           confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+           toast.success('+5 XP অর্জিত! 🔥', { position: 'bottom-center' });
+        }
         return;
       }
 
       const res = await routineAPI.toggleTask(date, taskId, !completed, activeName);
       setRoutine(res.data.routine);
-      if (!completed) toast.success('+5 XP অর্জিত! 🔥', { position: 'bottom-center' });
+      if (!completed) {
+         confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+         toast.success('+5 XP অর্জিত! 🔥', { position: 'bottom-center' });
+      }
     } catch (e) {
       toast.error('আপডেট ব্যর্থ');
     }
@@ -221,7 +223,6 @@ const Routine = () => {
 
   const handleRoutineChange = async (name) => {
     setActiveName(name);
-    // Show special toast only when manually switching to Ramadan
     if (name === 'Ramadan' || name === 'রমজান') {
       toast('🌙 রমজান রুটিন সক্রিয় করা হয়েছে!', {
         icon: '✨',
@@ -229,12 +230,50 @@ const Routine = () => {
       });
     }
     try {
-      // Persist active routine choice to user profile
       const res = await authAPI.updateProfile({ activeRoutineName: name });
       updateUser(res.data.user);
     } catch (e) {
       console.error('Failed to save active routine preference');
     }
+  };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const handleDragEnd = async (event) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+       const oldIndex = routine.tasks.findIndex((t, i) => (t._id || `task-${i}`) === active.id);
+       const newIndex = routine.tasks.findIndex((t, i) => (t._id || `task-${i}`) === over.id);
+       const newTasks = arrayMove(routine.tasks, oldIndex, newIndex);
+       setRoutine({ ...routine, tasks: newTasks });
+       
+       if (navigator.vibrate) navigator.vibrate(20);
+       
+       if (routine?._id) {
+         try {
+           await routineAPI.save({ date, name: activeName, tasks: newTasks });
+         } catch(e) {
+           toast.error('ক্রম সেভ ব্যর্থ হয়েছে');
+           setRoutine(routine); // revert
+         }
+       }
+    }
+  };
+
+  const copyRoutineToTarget = async () => {
+     const targetDate = prompt('কোন তারিখে এই রুটিনটি কপি করতে চান? (Format: YYYY-MM-DD)', todayStr());
+     if (!targetDate) return;
+     try {
+       await routineAPI.copy({ sourceDate: date, targetDate, name: activeName });
+       toast.success(`রুটিনটি ${targetDate} তারিখে কপি করা হয়েছে!`);
+       if(targetDate === todayStr()) changeDate(0); // refresh if today
+     } catch(e) {
+       toast.error('কপি ব্যর্থ হয়েছে');
+     }
   };
 
   if (loading && !routine) return <Loader />;
@@ -272,13 +311,22 @@ const Routine = () => {
            </button>
            
            {routine?._id && (
-             <button 
-               onClick={deleteFullRoutine}
-               className="p-4 bg-rose-50 border border-rose-100 text-rose-500 rounded-3xl hover:bg-rose-100 transition-all shadow-sm"
-               title="আজকের রুটিন মুছুন"
-             >
-               <X size={20} />
-             </button>
+             <>
+               <button 
+                 onClick={copyRoutineToTarget}
+                 className="p-4 bg-emerald-50 border border-emerald-100 text-emerald-600 rounded-3xl hover:bg-emerald-100 transition-all shadow-sm hidden md:flex"
+                 title="অন্য দিনে কপি করুন"
+               >
+                 <Layers size={20} />
+               </button>
+               <button 
+                 onClick={deleteFullRoutine}
+                 className="p-4 bg-rose-50 border border-rose-100 text-rose-500 rounded-3xl hover:bg-rose-100 transition-all shadow-sm"
+                 title="আজকের রুটিন মুছুন"
+               >
+                 <X size={20} />
+               </button>
+             </>
            )}
         </div>
       </div>
@@ -414,41 +462,24 @@ const Routine = () => {
            {/* Task List Grid */}
            <div className="space-y-4">
               {routine?.tasks?.length > 0 ? (
-                routine.tasks.map((task, i) => {
-                  const meta = categoryMeta[task.category] || categoryMeta.Other;
-                  return (
-                    <div 
-                      key={task._id || i} 
-                      onClick={() => toggleTask(task._id, task.completed, i)}
-                      className={`p-6 rounded-[2.5rem] bg-white border border-emerald-50 shadow-sm flex items-center gap-6 group transition-all hover:translate-x-2 cursor-pointer ${task.completed ? 'opacity-50 grayscale' : ''}`}
-                    >
-                       <div 
-                         className={`w-12 h-12 rounded-2xl border-2 flex items-center justify-center transition-all ${task.completed ? 'bg-emerald-500 border-emerald-500 text-white rotate-[360deg]' : 'border-emerald-100 text-transparent hover:border-emerald-400 group-hover:scale-105 shadow-sm bg-gray-50/30'}`}
-                       >
-                         <Check size={20} className={task.completed ? 'scale-100' : 'scale-0'} />
-                       </div>
-                       
-                       <div className="flex-1 space-y-1">
-                          <div className="flex items-center gap-3">
-                             <span className="text-xs font-black text-emerald-950/30 font-mono tracking-widest">{task.time || 'ANY TIME'}</span>
-                             {task.completed && <span className="px-2 py-0.5 bg-emerald-100 text-[8px] font-black text-emerald-600 rounded-md uppercase tracking-widest">VICTORY</span>}
-                          </div>
-                          <p className={`text-base font-black text-emerald-950 ${task.completed ? 'line-through' : ''}`}>{task.task}</p>
-                       </div>
-
-                       <div className={`hidden md:flex items-center gap-2 px-4 py-1.5 rounded-xl border ${meta.color} ${meta.border} text-[10px] font-black uppercase tracking-widest shadow-sm`}>
-                          {meta.icon} {task.category}
-                       </div>
-                       
-                       <button 
-                         onClick={(e) => { e.stopPropagation(); deleteTask(task._id, i); }}
-                         className="p-3 rounded-2xl hover:bg-rose-50 text-rose-500/20 hover:text-rose-500 transition-all"
-                       >
-                          <X size={18} />
-                       </button>
-                    </div>
-                  );
-                })
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                  <SortableContext items={routine.tasks.map((t, i) => t._id || `task-${i}`)} strategy={verticalListSortingStrategy}>
+                    {routine.tasks.map((task, i) => {
+                      const meta = categoryMeta[task.category] || categoryMeta.Other;
+                      return (
+                        <SortableTask 
+                          key={task._id || i}
+                          id={task._id || `task-${i}`}
+                          task={task}
+                          index={i}
+                          toggleTask={toggleTask}
+                          deleteTask={deleteTask}
+                          meta={meta}
+                        />
+                      );
+                    })}
+                  </SortableContext>
+                </DndContext>
               ) : (
                 <div className="p-20 flex flex-col items-center justify-center text-center space-y-6 bg-emerald-50/20 rounded-[4rem] border-2 border-dashed border-emerald-100/50">
                    <div className="w-24 h-24 rounded-[2.5rem] bg-emerald-50 flex items-center justify-center text-emerald-200">

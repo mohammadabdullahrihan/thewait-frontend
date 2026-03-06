@@ -29,11 +29,17 @@ import {
   Milestone,
   Brain,
   Rocket,
-  Heart
+  Heart,
+  Download,
+  Sparkles,
+  X
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { analyticsAPI, habitAPI, routineAPI, journalAPI, studyAPI, workoutAPI } from '../utils/api';
 import { getTodayQuote, xpToNextLevel, todayStr, daysUntil } from '../utils/helpers';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
+import toast from 'react-hot-toast';
 import { 
   BarChart, 
   Bar, 
@@ -53,7 +59,7 @@ import Loader from '../components/Common/Loader';
 import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { user, isFocusMode, toggleFocusMode } = useAuth();
   const [stats, setStats] = useState(null);
   const [charts, setCharts] = useState(null);
   const [streak, setStreak] = useState({ current: 0, longest: 0 });
@@ -62,6 +68,8 @@ const Dashboard = () => {
   const [todayHabits, setTodayHabits] = useState([]);
   const [studySubjects, setStudySubjects] = useState([]);
   const [todayWorkout, setTodayWorkout] = useState(null);
+  const [aiInsight, setAiInsight] = useState(null);
+  const [todayRoutine, setTodayRoutine] = useState(null);
   
   const quote = getTodayQuote();
   const xp = xpToNextLevel(user?.experience || 0);
@@ -69,13 +77,15 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [analyticsRes, streakRes, journalRes, habitRes, studyRes, workoutRes] = await Promise.all([
+        const [analyticsRes, streakRes, journalRes, habitRes, studyRes, workoutRes, aiRes, routineRes] = await Promise.all([
           analyticsAPI.getDashboard(),
           habitAPI.getStreak(),
           journalAPI.list(1),
           habitAPI.get(todayStr()),
           studyAPI.getAll(),
-          workoutAPI.get(todayStr())
+          workoutAPI.get(todayStr()),
+          analyticsAPI.getAIInsights().catch(() => ({ data: { insight: null } })),
+          routineAPI.get(todayStr(), user?.activeRoutineName || 'Daily').catch(() => ({ data: { routine: null } }))
         ]);
         
         setStats(analyticsRes.data.stats);
@@ -89,6 +99,9 @@ const Dashboard = () => {
         setTodayHabits(habitRes.data.habits || []);
         setStudySubjects(studyRes.data.subjects || []);
         setTodayWorkout(workoutRes.data.workout);
+        setAiInsight(aiRes.data.insight);
+        setTodayRoutine(routineRes.data.routine);
+        
         
       } catch (e) {
         console.error(e);
@@ -133,8 +146,35 @@ const Dashboard = () => {
     ? Math.round((charts.moodTrend.filter(m => m.mood > 5).length / charts.moodTrend.length) * 100) 
     : 0;
 
+  const exportPDF = async () => {
+    const dashboardElement = document.getElementById('dashboard-content');
+    if (!dashboardElement) return;
+    
+    try {
+      toast.loading('PDF তৈরি হচ্ছে...', { id: 'pdf' });
+      // Temporary style adjustments for PDF
+      const originalStyle = dashboardElement.style.cssText;
+      dashboardElement.style.width = '1200px'; 
+      dashboardElement.style.maxWidth = '1200px';
+      
+      const canvas = await html2canvas(dashboardElement, { scale: 2, useCORS: true, windowWidth: 1200 });
+      dashboardElement.style.cssText = originalStyle;
+      
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`warrior-progress-${todayStr()}.pdf`);
+      toast.success('PDF ডাউনলোড সম্পন্ন', { id: 'pdf' });
+    } catch(e) {
+      toast.error('PDF তৈরি করতে ব্যর্থ', { id: 'pdf' });
+    }
+  };
+
   return (
-    <div className="animate-in fade-in duration-700 space-y-8 pb-20">
+    <div id="dashboard-content" className="animate-in fade-in duration-700 space-y-8 pb-20 bg-slate-50/50 p-2 md:p-0">
       
       {/* 🚀 Dynamic Header: High Fidelity */}
       <div className="relative overflow-hidden rounded-[3rem] p-1 shadow-sm border border-emerald-100 bg-white">
@@ -150,6 +190,20 @@ const Dashboard = () => {
               <span className="px-3 py-1 bg-white border border-emerald-100 text-[10px] font-black text-emerald-600 rounded-full uppercase tracking-[0.2em]">
                 {format(new Date(), 'MMMM yyyy')}
               </span>
+              <button 
+                onClick={exportPDF} 
+                className="px-3 py-1 bg-indigo-50 text-indigo-600 border border-indigo-100 text-[10px] font-black rounded-full uppercase tracking-[0.2em] hover:bg-indigo-100 flex items-center gap-1 transition-all"
+                title="Download Progress Report as PDF"
+              >
+                <Download size={12} /> Export Profile
+              </button>
+              <button 
+                onClick={toggleFocusMode} 
+                className={`px-3 py-1 text-[10px] font-black rounded-full uppercase tracking-[0.2em] flex items-center gap-1 transition-all border ${isFocusMode ? 'bg-rose-500 text-white border-rose-500 shadow-rose-500/30 shadow-lg' : 'bg-orange-50 text-orange-600 border-orange-100 hover:bg-orange-100'}`}
+                title="Toggle Warrior Focus Mode"
+              >
+                <Zap size={12} fill={isFocusMode ? 'currentColor' : 'none'} /> {isFocusMode ? 'Focus ON' : 'Warrior Mode'}
+              </button>
             </div>
             
             <div className="space-y-1">
@@ -197,6 +251,25 @@ const Dashboard = () => {
           </div>
         </div>
      </div>
+
+      {aiInsight && (
+        <div className="p-5 rounded-[2rem] bg-gradient-to-r from-emerald-600 to-emerald-800 text-white shadow-lg flex items-center justify-between gap-4 animate-in slide-in-from-bottom-4 duration-500">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-md">
+              <Brain size={24} className="text-emerald-100" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-emerald-200 mb-1 flex items-center gap-1">
+                <Sparkles size={12} /> AI Coach Insight
+              </p>
+              <p className="text-sm font-bold leading-tight md:text-base">{aiInsight}</p>
+            </div>
+          </div>
+          <button onClick={() => setAiInsight(null)} className="p-2 hover:bg-white/20 rounded-xl transition-colors">
+            <X size={20} />
+          </button>
+        </div>
+      )}
 
       {/* 🔮 Warrior Quote & Life Progress */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -414,7 +487,7 @@ const Dashboard = () => {
       </div>
 
       {/* 🚀 Active Modules Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
         
         {/* Study Portal */}
         <div className="p-8 md:p-10 rounded-[3rem] border border-emerald-100 shadow-sm bg-white space-y-8 group transition-all">
@@ -455,47 +528,92 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Action Feed / Battles */}
-        <div className="p-8 md:p-10 rounded-[3rem] border border-emerald-100 shadow-sm bg-white space-y-8">
-          <div className="flex items-center justify-between">
-            <div className="space-y-1">
-               <h3 className="text-xl font-black text-orange-950">ব্যাটল ফিল্ড</h3>
-               <p className="text-[10px] font-black text-orange-900/30 uppercase tracking-widest">প্রতিদিনের চ্যালেঞ্জ</p>
+        {/* Action Feed / Battles & Routines */}
+        <div className="flex flex-col gap-8">
+          
+          {/* Quick Task Widget */}
+          <div className="p-8 md:p-10 rounded-[3rem] border border-emerald-100 shadow-sm bg-white space-y-8">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                 <h3 className="text-xl font-black text-emerald-950">কুইক টাস্ক উইজেট</h3>
+                 <p className="text-[10px] font-black text-emerald-900/30 uppercase tracking-widest">আজকের গুরুত্বপূর্ণ কাজ</p>
+              </div>
+              <Link to="/routine" className="p-4 bg-emerald-50 rounded-[2rem] text-emerald-600 hover:scale-105 transition-transform">
+                 <ClipboardList size={24} />
+              </Link>
             </div>
-            <Link to="/habits" className="p-4 bg-orange-50 rounded-[2rem] text-orange-600 hover:scale-105 transition-transform">
-               <Swords size={24} />
+
+            <div className="space-y-3">
+               {todayRoutine?.tasks?.length > 0 ? (
+                  todayRoutine.tasks.filter(t => !t.completed).slice(0, 3).map((t, i) => (
+                     <div key={i} className="flex items-center justify-between p-4 rounded-[1.8rem] bg-gray-50/50 border border-gray-100 group hover:bg-emerald-50 transition-all cursor-pointer">
+                        <div className="flex items-center gap-4">
+                           <div className={`p-3 rounded-2xl bg-white text-emerald-400 shadow-sm transition-colors`}>
+                              <Clock size={18} />
+                           </div>
+                           <div>
+                              <p className="text-sm font-black text-emerald-950 truncate max-w-[200px]">{t.task}</p>
+                              <p className="text-[9px] font-black text-emerald-400/60 uppercase tracking-widest">{t.time || 'ANY TIME'}</p>
+                           </div>
+                        </div>
+                     </div>
+                  ))
+               ) : (
+                  <div className="py-12 flex flex-col items-center justify-center text-center opacity-30 italic">
+                     <Shield size={48} className="mb-4" />
+                     <p className="text-sm">সব কাজ শেষ বা রুটিন নেই!</p>
+                  </div>
+               )}
+            </div>
+
+            <Link to="/routine" className="block w-full text-center py-4 rounded-[1.8rem] border-2 border-dashed border-emerald-100 text-emerald-500 text-xs font-black uppercase tracking-widest hover:bg-emerald-50 transition-all">
+               সম্পূর্ণ রুটিন দেখুন
             </Link>
           </div>
 
-          <div className="space-y-3">
-             {todayHabits.length > 0 ? (
-                todayHabits.slice(0, 3).map((h, i) => (
-                   <div key={i} className="flex items-center justify-between p-4 rounded-[1.8rem] bg-gray-50/50 border border-gray-100 group hover:bg-orange-50 transition-all cursor-pointer">
-                      <div className="flex items-center gap-4">
-                         <div className={`p-3 rounded-2xl ${h.completed ? 'bg-emerald-100 text-emerald-600' : 'bg-white text-gray-400 shadow-sm'} transition-colors`}>
-                            <Zap size={18} fill={h.completed ? "currentColor" : "none"} />
-                         </div>
-                         <div>
-                            <p className="text-sm font-black text-emerald-950">{h.name}</p>
-                            <p className="text-[9px] font-black text-orange-400/60 uppercase tracking-widest">{h.completed ? 'VICTORY' : 'IN PROGRESS'}</p>
-                         </div>
-                      </div>
-                      <div className={`w-6 h-6 rounded-xl border-2 flex items-center justify-center transition-all ${h.completed ? 'bg-emerald-500 border-emerald-500' : 'border-gray-200'}`}>
-                         {h.completed && <ListChecks size={14} className="text-white" />}
-                      </div>
-                   </div>
-                ))
-             ) : (
-                <div className="py-12 flex flex-col items-center justify-center text-center opacity-30 italic">
-                   <Shield size={48} className="mb-4" />
-                   <p className="text-sm">কোনো ব্যাটেল নেই</p>
-                </div>
-             )}
+          {/* Battle Field */}
+          <div className="p-8 md:p-10 rounded-[3rem] border border-orange-100 shadow-sm bg-white space-y-8">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                 <h3 className="text-xl font-black text-orange-950">ব্যাটল ফিল্ড</h3>
+                 <p className="text-[10px] font-black text-orange-900/30 uppercase tracking-widest">প্রতিদিনের চ্যালেঞ্জ</p>
+              </div>
+              <Link to="/habits" className="p-4 bg-orange-50 rounded-[2rem] text-orange-600 hover:scale-105 transition-transform">
+                 <Swords size={24} />
+              </Link>
+            </div>
+
+            <div className="space-y-3">
+               {todayHabits.length > 0 ? (
+                  todayHabits.slice(0, 3).map((h, i) => (
+                     <div key={i} className="flex items-center justify-between p-4 rounded-[1.8rem] bg-gray-50/50 border border-gray-100 group hover:bg-orange-50 transition-all cursor-pointer">
+                        <div className="flex items-center gap-4">
+                           <div className={`p-3 rounded-2xl ${h.completed ? 'bg-emerald-100 text-emerald-600' : 'bg-white text-gray-400 shadow-sm'} transition-colors`}>
+                              <Zap size={18} fill={h.completed ? "currentColor" : "none"} />
+                           </div>
+                           <div>
+                              <p className="text-sm font-black text-emerald-950">{h.name}</p>
+                              <p className="text-[9px] font-black text-orange-400/60 uppercase tracking-widest">{h.completed ? 'VICTORY' : 'IN PROGRESS'}</p>
+                           </div>
+                        </div>
+                        <div className={`w-6 h-6 rounded-xl border-2 flex items-center justify-center transition-all ${h.completed ? 'bg-emerald-500 border-emerald-500' : 'border-gray-200'}`}>
+                           {h.completed && <ListChecks size={14} className="text-white" />}
+                        </div>
+                     </div>
+                  ))
+               ) : (
+                  <div className="py-12 flex flex-col items-center justify-center text-center opacity-30 italic">
+                     <Shield size={48} className="mb-4" />
+                     <p className="text-sm">কোনো ব্যাটেল নেই</p>
+                  </div>
+               )}
+            </div>
+
+            <Link to="/habits" className="block w-full text-center py-4 rounded-[1.8rem] border-2 border-dashed border-orange-100 text-orange-400 text-xs font-black uppercase tracking-widest hover:bg-orange-50 transition-all">
+               ম্যানেজ মিশনস
+            </Link>
           </div>
 
-          <Link to="/habits" className="block w-full text-center py-4 rounded-[1.8rem] border-2 border-dashed border-orange-100 text-orange-400 text-xs font-black uppercase tracking-widest hover:bg-orange-50 transition-all">
-             ম্যানেজ মিশনস
-          </Link>
         </div>
       </div>
 
