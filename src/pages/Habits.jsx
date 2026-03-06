@@ -151,11 +151,11 @@ const Habits = () => {
     <div className="animate-in fade-in duration-700 space-y-8 pb-24">
       
       {/* 🚀 Header: Ultra Premium Consistency View */}
-      <div className="relative overflow-hidden rounded-[3rem] p-1 shadow-sm border border-emerald-100 bg-white">
+      <div className="relative overflow-hidden rounded-[2.5rem] md:rounded-[3rem] p-1 shadow-sm border border-emerald-100 bg-white">
         <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-50 rounded-full blur-[80px] -mr-32 -mt-32 opacity-60" />
         
-        <div className="relative px-8 py-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
-          <div className="space-y-4">
+        <div className="relative px-6 py-8 md:px-8 md:py-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+          <div className="space-y-6">
             <div className="flex flex-wrap items-center gap-2">
               <span className="px-3 py-1 bg-orange-500 text-[10px] font-black text-white rounded-full uppercase tracking-widest shadow-lg shadow-orange-500/20">
                 STREAK ACTIVE
@@ -166,117 +166,124 @@ const Habits = () => {
             </div>
             
             <div className="space-y-1">
-              <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-emerald-950">
+              <h1 className="text-3xl md:text-5xl font-black tracking-tighter text-emerald-950">
                 হ্যাবিট <span className="text-emerald-500">ট্র্যাকার</span>
               </h1>
-              <p className="text-emerald-950/40 font-bold text-sm">চরিত্র গঠন হয় প্রতিটি ছোট অভ্যাসে</p>
+              <p className="text-emerald-950/40 font-bold text-xs md:text-sm">চরিত্র গঠন হয় প্রতিটি ছোট অভ্যাসে</p>
             </div>
 
-            <div className="flex items-center gap-6 pt-2">
-               <div className="flex items-center gap-2">
-                 <div className="w-12 h-12 rounded-2xl bg-orange-50 flex items-center justify-center text-orange-500 shadow-sm border border-orange-100">
-                    <Flame size={24} fill="currentColor" />
+            <div className="flex items-center gap-4 md:gap-6 pt-2">
+               <div className="flex items-center gap-2 md:gap-3">
+                 <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-orange-50 flex items-center justify-center text-orange-500 shadow-sm border border-orange-100">
+                    <Flame size={20} className="md:w-6 md:h-6" fill="currentColor" />
                  </div>
                  <div>
-                    <div className="text-2xl font-black text-emerald-950">{streak.current}</div>
-                    <p className="text-[9px] font-black text-orange-500 uppercase tracking-widest leading-none">DAY STREAK</p>
+                    <div className="text-xl md:text-2xl font-black text-emerald-950 leading-none">{streak.current}</div>
+                    <p className="text-[8px] md:text-[9px] font-black text-orange-500 uppercase tracking-widest mt-1">DAY STREAK</p>
                  </div>
                </div>
-               <div className="w-px h-10 bg-emerald-100" />
-               <div className="flex items-center gap-2">
-                 <div className="w-12 h-12 rounded-2xl bg-yellow-50 flex items-center justify-center text-yellow-600 shadow-sm border border-yellow-100">
-                    <Trophy size={24} />
+               <div className="w-px h-8 md:h-10 bg-emerald-100" />
+               <div className="flex items-center gap-2 md:gap-3">
+                 <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-yellow-50 flex items-center justify-center text-yellow-600 shadow-sm border border-yellow-100">
+                    <Trophy size={20} className="md:w-6 md:h-6" />
                  </div>
                  <div>
-                    <div className="text-2xl font-black text-emerald-950">{streak.longest}</div>
-                    <p className="text-[9px] font-black text-yellow-600 uppercase tracking-widest leading-none">BEST RECORD</p>
+                    <div className="text-xl md:text-2xl font-black text-emerald-950 leading-none">{streak.longest}</div>
+                    <p className="text-[8px] md:text-[9px] font-black text-yellow-600 uppercase tracking-widest mt-1">BEST RECORD</p>
                  </div>
                </div>
             </div>
           </div>
 
-          <div className="bg-emerald-50/50 p-6 rounded-[2.5rem] border border-emerald-100/50 flex flex-col items-center gap-4 min-w-[220px] backdrop-blur-sm">
+          <div className="bg-emerald-50/50 p-6 rounded-[2rem] md:rounded-[2.5rem] border border-emerald-100/50 flex flex-row lg:flex-col items-center justify-center gap-6 lg:gap-4 min-w-full lg:min-w-[220px] backdrop-blur-sm">
              <div className="relative">
-                <svg className="w-28 h-28 transform -rotate-90">
-                  <circle cx="56" cy="56" r="48" stroke="currentColor" strokeWidth="10" fill="transparent" className="text-emerald-100" />
-                  <circle cx="56" cy="56" r="48" stroke="currentColor" strokeWidth="10" fill="transparent" strokeDasharray={301.6} strokeDashoffset={301.6 - (301.6 * habitScore) / 7} className="text-emerald-500 transition-all duration-1000" strokeLinecap="round" />
+                <svg className="w-20 h-20 md:w-28 md:h-28 transform -rotate-90">
+                   <circle cx="40" cy="40" r="34" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-emerald-100 md:hidden" />
+                   <circle cx="40" cy="40" r="34" stroke="currentColor" strokeWidth="8" fill="transparent" strokeDasharray={213.6} strokeDashoffset={213.6 - (213.6 * habitScore) / 7} className="text-emerald-500 transition-all duration-1000 md:hidden" strokeLinecap="round" />
+                   
+                   <circle cx="56" cy="56" r="48" stroke="currentColor" strokeWidth="10" fill="transparent" className="text-emerald-100 hidden md:block" />
+                   <circle cx="56" cy="56" r="48" stroke="currentColor" strokeWidth="10" fill="transparent" strokeDasharray={301.6} strokeDashoffset={301.6 - (301.6 * habitScore) / 7} className="text-emerald-500 transition-all duration-1000 hidden md:block" strokeLinecap="round" />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-2xl font-black text-emerald-950">{habitScore}/7</span>
-                  <span className="text-[8px] font-black text-emerald-500 uppercase">TODAY</span>
+                  <span className="text-xl md:text-2xl font-black text-emerald-950 leading-none">{habitScore}/7</span>
+                  <span className="text-[7px] md:text-[8px] font-black text-emerald-500 uppercase mt-1">TODAY</span>
                 </div>
              </div>
-             <p className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest text-center">
-                {habitScore >= 7 ? 'PERFECT DAY ACHIEVED' : `REMAINING: ${7-habitScore} TASKS`}
-             </p>
+             <div className="flex flex-col items-start lg:items-center">
+                <p className="text-[9px] md:text-[10px] font-black text-emerald-900/40 uppercase tracking-widest text-left lg:text-center">
+                   {habitScore >= 7 ? 'PERFECT DAY ACHIEVED' : `REMAINING: ${7-habitScore} TASKS`}
+                </p>
+                <div className="mt-1 h-1 w-24 bg-emerald-100 rounded-full lg:hidden overflow-hidden">
+                   <div className="h-full bg-emerald-500" style={{ width: `${(habitScore/7)*100}%` }} />
+                </div>
+             </div>
           </div>
         </div>
       </div>
 
       {/* 📅 Date & Overview */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="flex items-center gap-3 bg-white p-2 rounded-[2rem] border border-emerald-50 shadow-sm w-max">
-           <button onClick={() => changeDate(-1)} className="p-4 rounded-2xl hover:bg-emerald-50 text-emerald-600 transition-all"><ChevronLeft size={20} /></button>
-           <div className="px-6 text-center">
-              <p className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest leading-none mb-1">SELECTED DATE</p>
-              <p className="text-sm font-black text-emerald-950">
-                 {format(parseISO(date), 'EEEE, dd MMMM')}
-                 {date === todayStr() && <span className="ml-2 text-emerald-500 text-[10px] uppercase">● আজ</span>}
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6">
+        <div className="flex items-center gap-2 md:gap-3 bg-white p-1.5 md:p-2 rounded-[2rem] border border-emerald-50 shadow-sm w-full md:w-max">
+           <button onClick={() => changeDate(-1)} className="p-3 md:p-4 rounded-xl md:rounded-2xl hover:bg-emerald-50 text-emerald-600 transition-all"><ChevronLeft size={18} className="md:w-5 md:h-5" /></button>
+           <div className="flex-1 px-2 md:px-6 text-center">
+              <p className="text-[8px] md:text-[10px] font-black text-emerald-900/40 uppercase tracking-widest leading-none mb-1">SELECTED DATE</p>
+              <p className="text-xs md:text-sm font-black text-emerald-950 whitespace-nowrap">
+                 {format(parseISO(date), 'EEEE, dd MMM')}
               </p>
            </div>
            <button 
              onClick={() => changeDate(1)} 
              disabled={date === todayStr()}
-             className="p-4 rounded-2xl hover:bg-emerald-50 text-emerald-600 transition-all disabled:opacity-30 disabled:hover:bg-transparent"
-           ><ChevronRight size={20} /></button>
+             className="p-3 md:p-4 rounded-xl md:rounded-2xl hover:bg-emerald-50 text-emerald-600 transition-all disabled:opacity-30 disabled:hover:bg-transparent"
+           ><ChevronRight size={18} className="md:w-5 md:h-5" /></button>
         </div>
 
-        <div className="flex items-center gap-4 bg-white px-6 py-4 rounded-[2rem] border border-emerald-50 shadow-sm">
+        <div className="flex items-center gap-4 bg-white px-6 py-4 rounded-[2rem] border border-emerald-50 shadow-sm w-full md:w-auto justify-center">
            <Activity size={18} className="text-emerald-400" />
            <p className="text-xs font-black text-emerald-950 uppercase tracking-widest">সাফল্যের হার: <span className="text-emerald-500">{(habitScore/7*100).toFixed(0)}%</span></p>
         </div>
       </div>
 
       {/* 🏹 Habits Battle Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         {habitKeys.map(key => {
           const isCompleted = habits[key];
           return (
             <div
               key={key}
               onClick={() => toggleHabit(key)}
-              className={`p-6 rounded-[2.5rem] border group transition-all duration-500 cursor-pointer flex flex-col justify-between min-h-[180px] relative overflow-hidden ${isCompleted ? 'bg-emerald-600 border-emerald-600 text-white shadow-xl shadow-emerald-600/20' : 'bg-white border-emerald-50 hover:border-emerald-200'}`}
+              className={`p-4 md:p-6 rounded-[2rem] md:rounded-[2.5rem] border group transition-all duration-500 cursor-pointer flex flex-col justify-between min-h-[140px] md:min-h-[180px] relative overflow-hidden ${isCompleted ? 'bg-emerald-600 border-emerald-600 text-white shadow-xl shadow-emerald-600/20' : 'bg-white border-emerald-50 hover:border-emerald-200'}`}
             >
-              {isCompleted && <div className="absolute -right-4 -top-4 w-16 h-16 bg-white/10 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700" />}
+              {isCompleted && <div className="absolute -right-4 -top-4 w-12 md:w-16 h-12 md:h-16 bg-white/10 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700" />}
               
               <div className="flex justify-between items-start relative z-10">
-                <div className={`p-4 rounded-2xl transition-all duration-500 ${isCompleted ? 'bg-white/20 text-white rotate-[360deg]' : 'bg-emerald-50 text-emerald-500 shadow-inner'}`}>
-                  <HabitIcon name={getHabitEmoji(key)} size={28} />
+                <div className={`p-3 md:p-4 rounded-xl md:rounded-2xl transition-all duration-500 ${isCompleted ? 'bg-white/20 text-white rotate-[360deg]' : 'bg-emerald-50 text-emerald-500 shadow-inner'}`}>
+                  <HabitIcon name={getHabitEmoji(key)} size={22} className="md:w-7 md:h-7" />
                 </div>
-                <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${isCompleted ? 'bg-white border-white text-emerald-600' : 'border-emerald-100 text-transparent hover:border-emerald-300 shadow-sm bg-gray-50/30'}`}>
-                  <Check size={18} className={isCompleted ? 'scale-100 opacity-100' : 'scale-0 opacity-0'} />
+                <div className={`w-6 h-6 md:w-8 md:h-8 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${isCompleted ? 'bg-white border-white text-emerald-600' : 'border-emerald-100 text-transparent hover:border-emerald-300 shadow-sm bg-gray-50/30'}`}>
+                  <Check size={14} className={`md:w-4 md:h-4 ${isCompleted ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} />
                 </div>
               </div>
               
               <div className="space-y-1 relative z-10">
-                <p className={`text-[9px] font-black uppercase tracking-[0.2em] transition-colors ${isCompleted ? 'text-emerald-100/50' : 'text-emerald-900/30'}`}>HABIT MODULE</p>
-                <p className={`text-lg font-black leading-tight transition-colors ${isCompleted ? 'text-white' : 'text-emerald-950'}`}>{getHabitName(key)}</p>
+                <p className={`text-[7px] md:text-[9px] font-black uppercase tracking-[0.2em] transition-colors ${isCompleted ? 'text-emerald-100/50' : 'text-emerald-900/30'}`}>HABIT MODULE</p>
+                <p className={`text-sm md:text-lg font-black leading-tight transition-colors ${isCompleted ? 'text-white' : 'text-emerald-950'}`}>{getHabitName(key)}</p>
               </div>
             </div>
           );
         })}
         
         {/* Info Card */}
-        <div className="p-6 rounded-[2.5rem] bg-emerald-950 text-white flex flex-col justify-between border border-white/10 group cursor-help transition-all">
+        <div className="col-span-2 sm:col-span-1 p-4 md:p-6 rounded-[2rem] md:rounded-[2.5rem] bg-emerald-950 text-white flex flex-col justify-between border border-white/10 group cursor-help transition-all min-h-[140px] md:min-h-[180px]">
            <div className="flex justify-between items-start">
-              <div className="p-3 bg-white/10 rounded-2xl border border-white/5">
-                 <Info size={22} className="text-emerald-400" />
+              <div className="p-3 bg-white/10 rounded-xl md:rounded-2xl border border-white/5">
+                 <Info size={20} className="text-emerald-400 md:w-5 md:h-5" />
               </div>
-              <Sparkles size={16} className="text-yellow-400 animate-pulse" />
+              <Sparkles size={14} className="text-yellow-400 animate-pulse md:w-4 md:h-4" />
            </div>
            <div className="space-y-1">
-              <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">HABIT CODE</p>
-              <p className="text-sm font-black italic group-hover:text-emerald-300 transition-colors">"আমরা যা বারবার করি তাই আমাদের চরিত্র।"</p>
+              <p className="text-[8px] md:text-[10px] font-black text-emerald-400 uppercase tracking-widest">HABIT CODE</p>
+              <p className="text-xs md:text-sm font-black italic group-hover:text-emerald-300 transition-colors leading-snug">"আমরা যা বারবার করি তাই আমাদের চরিত্র।"</p>
            </div>
         </div>
       </div>

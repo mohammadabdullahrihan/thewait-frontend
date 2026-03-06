@@ -215,11 +215,11 @@ const Study = () => {
     <div className="animate-in fade-in duration-700 space-y-8 pb-24">
       
       {/* 🚀 Header: Ultra Premium Knowledge Command Center */}
-      <div className="relative overflow-hidden rounded-[3.5rem] p-1 shadow-sm border border-emerald-100 bg-white group">
+      <div className="relative overflow-hidden rounded-[2.5rem] md:rounded-[3.5rem] p-1 shadow-sm border border-emerald-100 bg-white group">
         <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-50 rounded-full blur-[100px] -mr-40 -mt-40 opacity-60 group-hover:scale-125 transition-transform duration-1000" />
         
-        <div className="relative px-8 py-10 flex flex-col md:flex-row md:items-center justify-between gap-10">
-          <div className="space-y-4">
+        <div className="relative px-6 py-8 md:px-8 md:py-10 flex flex-col xl:flex-row xl:items-center justify-between gap-8 md:gap-10">
+          <div className="space-y-6">
             <div className="flex flex-wrap items-center gap-2">
               <span className="px-3 py-1 bg-emerald-500 text-[10px] font-black text-white rounded-full uppercase tracking-widest shadow-lg shadow-emerald-500/20">
                 ACTIVE FOCUS
@@ -230,50 +230,50 @@ const Study = () => {
             </div>
             
             <div className="space-y-1">
-              <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-emerald-950">
+              <h1 className="text-3xl md:text-5xl font-black tracking-tighter text-emerald-950">
                 নলেজ <span className="bg-gradient-to-r from-emerald-600 to-emerald-400 bg-clip-text text-transparent">পোর্টাল</span>
               </h1>
-              <p className="text-emerald-950/40 font-bold text-sm">শিখতে থাকা মানেই তুমি এগিয়ে আছো</p>
+              <p className="text-emerald-950/40 font-bold text-xs md:text-sm">শিখতে থাকা মানেই তুমি এগিয়ে আছো</p>
             </div>
 
-            <div className="flex items-center gap-6 pt-2">
-               <div className="flex items-center gap-2">
-                 <div className="w-12 h-12 rounded-2xl bg-sky-50 flex items-center justify-center text-sky-500 shadow-sm border border-sky-100">
-                    <Timer size={24} />
+            <div className="flex items-center gap-4 md:gap-6 pt-2">
+               <div className="flex items-center gap-2 md:gap-3">
+                 <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-sky-50 flex items-center justify-center text-sky-500 shadow-sm border border-sky-100">
+                    <Timer size={20} className="md:w-6 md:h-6" />
                  </div>
                  <div>
-                    <div className="text-2xl font-black text-emerald-950">{totalHoursAll.toFixed(1)}h</div>
-                    <p className="text-[9px] font-black text-sky-500 uppercase tracking-widest leading-none">TOTAL STUDY</p>
+                    <div className="text-xl md:text-2xl font-black text-emerald-950 leading-none">{totalHoursAll.toFixed(1)}h</div>
+                    <p className="text-[8px] md:text-[9px] font-black text-sky-500 uppercase tracking-widest mt-1">TOTAL STUDY</p>
                  </div>
                </div>
-               <div className="w-px h-10 bg-emerald-100" />
-               <div className="flex items-center gap-2">
-                 <div className="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-500 shadow-sm border border-purple-100">
-                    <Brain size={24} />
+               <div className="w-px h-8 md:h-10 bg-emerald-100" />
+               <div className="flex items-center gap-2 md:gap-3">
+                 <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-purple-50 flex items-center justify-center text-purple-500 shadow-sm border border-purple-100">
+                    <Brain size={20} className="md:w-6 md:h-6" />
                  </div>
                  <div>
-                    <div className="text-2xl font-black text-emerald-950">{mostStudied?.subject || 'N/A'}</div>
-                    <p className="text-[9px] font-black text-purple-500 uppercase tracking-widest leading-none">PRIMARY FOCUS</p>
+                    <div className="text-xl md:text-2xl font-black text-emerald-950 leading-none truncate max-w-[80px] md:max-w-none">{mostStudied?.subject || 'N/A'}</div>
+                    <p className="text-[8px] md:text-[9px] font-black text-purple-500 uppercase tracking-widest mt-1">PRIMARY FOCUS</p>
                  </div>
                </div>
             </div>
           </div>
 
-          <div className="bg-emerald-950 p-8 rounded-[3rem] text-white space-y-4 min-w-[280px] shadow-2xl relative overflow-hidden">
+          <div className="bg-emerald-950 p-6 md:p-8 rounded-[2.5rem] md:rounded-[3rem] text-white space-y-4 min-w-full xl:min-w-[280px] shadow-2xl relative overflow-hidden">
              <div className="absolute top-0 right-0 p-4 opacity-10">
-                <Award size={80} strokeWidth={1} />
+                <Award size={64} className="md:w-20 md:h-20" strokeWidth={1} />
              </div>
              <div className="flex items-center gap-3">
                 <div className="p-2 bg-white/10 rounded-xl">
-                   <Zap size={20} className="text-emerald-400" />
+                   <Zap size={18} className="text-emerald-400 md:w-5 md:h-5" />
                 </div>
                 <div>
-                   <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">EXPERT STATUS</p>
-                   <h3 className="text-lg font-black">{totalHoursAll > 50 ? 'Master Scholar' : 'Initial Explorer'}</h3>
+                   <p className="text-[9px] md:text-[10px] font-black text-emerald-400 uppercase tracking-widest">EXPERT STATUS</p>
+                   <h3 className="text-base md:text-lg font-black">{totalHoursAll > 50 ? 'Master Scholar' : 'Initial Explorer'}</h3>
                 </div>
              </div>
              <div className="space-y-2">
-                <div className="flex justify-between text-[10px] font-black uppercase text-emerald-400">
+                <div className="flex justify-between text-[9px] md:text-[10px] font-black uppercase text-emerald-400">
                    <span>Next Badge</span>
                    <span>{totalHoursAll.toFixed(0)} / 100h</span>
                 </div>
@@ -286,32 +286,41 @@ const Study = () => {
       </div>
 
       {/* 📊 Section: Focus Zone & Analytics */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
         
         {/* Pomodoro: The Core Focus Module */}
         <div className="lg:col-span-4 space-y-6">
-          <div className="p-8 md:p-10 rounded-[3.5rem] border border-emerald-100 shadow-sm bg-white space-y-8 flex flex-col items-center">
+          <div className="p-8 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] border border-emerald-100 shadow-sm bg-white space-y-6 md:space-y-8 flex flex-col items-center">
              <div className="w-full flex justify-between items-center">
-                <h3 className="text-[10px] font-black text-emerald-900/40 uppercase tracking-[0.3em]">FOCUS ZONE</h3>
-                <div className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${pomRunning ? 'bg-orange-100 text-orange-600 animate-pulse' : 'bg-emerald-50 text-emerald-600'}`}>
+                <h3 className="text-[9px] md:text-[10px] font-black text-emerald-900/40 uppercase tracking-[0.3em]">FOCUS ZONE</h3>
+                <div className={`px-3 py-1 rounded-full text-[8px] md:text-[9px] font-black uppercase tracking-widest ${pomRunning ? 'bg-orange-100 text-orange-600 animate-pulse' : 'bg-emerald-50 text-emerald-600'}`}>
                    {pomRunning ? 'SESSION ACTIVE' : 'READY TO WORK'}
                 </div>
              </div>
 
              <div className="relative group cursor-pointer">
-                <svg className="w-56 h-56 transform -rotate-90">
-                  <circle cx="112" cy="112" r="102" stroke="currentColor" strokeWidth="12" fill="transparent" className="text-emerald-50" />
+                <svg className="w-48 h-48 md:w-56 md:h-56 transform -rotate-90">
+                   <circle cx="96" cy="96" r="86" stroke="currentColor" strokeWidth="10" fill="transparent" className="text-emerald-50 md:hidden" />
+                   <circle 
+                     cx="96" cy="96" r="86" stroke="currentColor" strokeWidth="10" fill="transparent" 
+                     strokeDasharray={2 * Math.PI * 86} 
+                     strokeDashoffset={2 * Math.PI * 86 * (1 - (totalDuration - timeLeft) / totalDuration)} 
+                     className={`transition-all duration-1000 md:hidden ${pomMode === 'work' ? 'text-emerald-500' : 'text-sky-500'}`} 
+                     strokeLinecap="round" 
+                   />
+
+                  <circle cx="112" cy="112" r="102" stroke="currentColor" strokeWidth="12" fill="transparent" className="text-emerald-50 hidden md:block" />
                   <circle 
                     cx="112" cy="112" r="102" stroke="currentColor" strokeWidth="12" fill="transparent" 
                     strokeDasharray={2 * Math.PI * 102} 
                     strokeDashoffset={2 * Math.PI * 102 * (1 - (totalDuration - timeLeft) / totalDuration)} 
-                    className={`transition-all duration-1000 ${pomMode === 'work' ? 'text-emerald-500 shadow-lg shadow-emerald-500/20' : 'text-sky-500'}`} 
+                    className={`transition-all duration-1000 hidden md:block ${pomMode === 'work' ? 'text-emerald-500 shadow-lg shadow-emerald-500/20' : 'text-sky-500'}`} 
                     strokeLinecap="round" 
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-5xl font-black text-emerald-950 tracking-tighter">{formatTime(timeLeft)}</span>
-                  <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mt-1">
+                  <span className="text-4xl md:text-5xl font-black text-emerald-950 tracking-tighter leading-none">{formatTime(timeLeft)}</span>
+                  <span className="text-[8px] md:text-[10px] font-black text-emerald-500 uppercase tracking-widest mt-1">
                      {pomMode === 'work' ? 'পড়াশোনা' : 'বিরতি'}
                   </span>
                 </div>
@@ -322,7 +331,7 @@ const Study = () => {
                    <button 
                      key={mode} 
                      onClick={() => switchMode(mode)}
-                     className={`flex-1 py-3 rounded-2xl text-[9px] font-black tracking-widest transition-all ${pomMode === mode ? 'bg-emerald-950 text-white shadow-xl' : 'bg-emerald-50 text-emerald-900/40 hover:bg-emerald-100'}`}
+                     className={`flex-1 py-3 rounded-xl md:rounded-2xl text-[8px] md:text-[9px] font-black tracking-widest transition-all ${pomMode === mode ? 'bg-emerald-950 text-white shadow-xl' : 'bg-emerald-50 text-emerald-900/40 hover:bg-emerald-100'}`}
                    >
                      {label}
                    </button>
@@ -332,40 +341,40 @@ const Study = () => {
              <div className="flex items-center gap-3 w-full">
                 <button 
                   onClick={() => setPomRunning(!pomRunning)}
-                  className={`flex-[2] py-5 rounded-[2rem] font-black text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-3 shadow-xl ${pomRunning ? 'bg-rose-50 text-rose-600 shadow-rose-200/50' : 'bg-emerald-500 text-white shadow-emerald-600/20 hover:scale-105'}`}
+                  className={`flex-[2] py-4 md:py-5 rounded-[1.8rem] md:rounded-[2rem] font-black text-xs md:text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-2 md:gap-3 shadow-xl ${pomRunning ? 'bg-rose-50 text-rose-600 shadow-rose-200/50' : 'bg-emerald-500 text-white shadow-emerald-600/20 hover:scale-105'}`}
                 >
-                  {pomRunning ? <><Pause size={20} fill="currentColor" /> PAUSE</> : <><Play size={20} fill="currentColor" /> START FOCUS</>}
+                  {pomRunning ? <><Pause size={18} className="md:w-5 md:h-5" fill="currentColor" /> PAUSE</> : <><Play size={18} className="md:w-5 md:h-5" fill="currentColor" /> START FOCUS</>}
                 </button>
                 <button 
                   onClick={() => { setPomRunning(false); setTimeLeft(POMODORO_DURATIONS[pomMode]); }}
-                  className="flex-1 py-5 rounded-[2rem] bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-emerald-600 transition-all flex items-center justify-center border border-gray-100"
+                  className="flex-1 py-4 md:py-5 rounded-[1.8rem] md:rounded-[2rem] bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-emerald-600 transition-all flex items-center justify-center border border-gray-100"
                 >
-                  <RefreshCw size={20} />
+                  <RefreshCw size={18} className="md:w-5 md:h-5" />
                 </button>
              </div>
 
-             <div className="flex items-center gap-2 text-[10px] font-black text-emerald-500 uppercase">
-                <Zap size={14} className="fill-current" /> TODAY: {sessions} SESSIONS
+             <div className="flex items-center gap-2 text-[9px] md:text-[10px] font-black text-emerald-500 uppercase">
+                <Zap size={12} className="md:w-3.5 md:h-3.5 fill-current" /> TODAY: {sessions} SESSIONS
              </div>
           </div>
         </div>
 
         {/* Analytics & Subjects */}
-        <div className="lg:col-span-8 space-y-8">
+        <div className="lg:col-span-8 space-y-6 md:space-y-8">
            
            {/* Productivity Chart */}
-           <div className="p-8 md:p-10 rounded-[3.5rem] border border-emerald-100 shadow-sm bg-white space-y-8">
+           <div className="p-6 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] border border-emerald-100 shadow-sm bg-white space-y-6 md:space-y-8">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                   <h3 className="text-2xl font-black text-emerald-950 tracking-tight">স্ট্যাডি ইনটেনসিটি</h3>
-                   <p className="text-[10px] font-black text-emerald-900/30 uppercase tracking-widest">গত ৭ দিনের পড়াশোনার রেকর্ড (মিনিট)</p>
+                   <h3 className="text-xl md:text-2xl font-black text-emerald-950 tracking-tight">স্ট্যাডি ইনটেনসিটি</h3>
+                   <p className="text-[9px] md:text-[10px] font-black text-emerald-900/30 uppercase tracking-widest">গত ৭ দিনের রেকর্ড</p>
                 </div>
-                <div className="p-4 bg-sky-50 rounded-2xl text-sky-500 border border-sky-100">
-                   <TrendingUp size={24} />
+                <div className="p-3 md:p-4 bg-sky-50 rounded-xl md:rounded-2xl text-sky-500 border border-sky-100">
+                   <TrendingUp size={20} className="md:w-6 md:h-6" />
                 </div>
               </div>
 
-              <div className="h-[240px] w-full pt-4">
+              <div className="h-[200px] md:h-[240px] w-full pt-4">
                  <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={chartData}>
                        <defs>
@@ -374,8 +383,7 @@ const Study = () => {
                              <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
                           </linearGradient>
                        </defs>
-                       <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                       <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 9, fontWeight: 900, fill: '#94a3b8' }} dy={10} />
+                       <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 8, fontWeight: 900, fill: '#94a3b8' }} dy={10} />
                        <YAxis hide />
                        <Tooltip 
                          content={({ active, payload }) => active && payload?.[0] ? (
@@ -385,14 +393,14 @@ const Study = () => {
                            </div>
                          ) : null}
                        />
-                       <Area type="monotone" dataKey="mins" stroke="#10b981" strokeWidth={4} fillOpacity={1} fill="url(#studyGrad)" dot={{ r: 4, fill: '#fff', stroke: '#10b981', strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                       <Area type="monotone" dataKey="mins" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#studyGrad)" dot={{ r: 3, fill: '#fff', stroke: '#10b981', strokeWidth: 2 }} activeDot={{ r: 5 }} />
                     </AreaChart>
                  </ResponsiveContainer>
               </div>
            </div>
 
-           {/* Subjects Grid (Normal layout, not scrolling) */}
-           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+           {/* Subjects Grid (Updated to 2 columns on mobile) */}
+           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
               {Object.keys(SUBJECT_META).filter(k => k !== 'Other').map(sub => {
                 const meta = SUBJECT_META[sub];
                 const active = selected === sub;
@@ -405,21 +413,21 @@ const Study = () => {
                   <div 
                     key={sub}
                     onClick={() => selectSubject(sub)}
-                    className={`p-6 rounded-[2.5rem] border transition-all duration-300 cursor-pointer flex flex-col justify-between h-[160px] ${active ? 'bg-emerald-950 border-emerald-950 text-white shadow-2xl scale-[1.02]' : 'bg-white border-emerald-50 hover:border-emerald-200'}`}
+                    className={`p-4 md:p-6 rounded-[2rem] md:rounded-[2.5rem] border transition-all duration-300 cursor-pointer flex flex-col justify-between h-[130px] md:h-[160px] ${active ? 'bg-emerald-950 border-emerald-950 text-white shadow-2xl scale-[1.02]' : 'bg-white border-emerald-50 hover:border-emerald-200'}`}
                   >
                      <div className="flex justify-between items-start">
-                        <div className={`p-3 rounded-2xl ${active ? 'bg-white/10 border border-white/10' : `${meta.bg} ${meta.color} ${meta.border}`} transition-all`}>
-                           {meta.icon}
+                        <div className={`p-2.5 md:p-3 rounded-xl md:rounded-2xl ${active ? 'bg-white/10 border border-white/10' : `${meta.bg} ${meta.color} ${meta.border}`} transition-all`}>
+                           {active ? <div className="text-white">{meta.icon}</div> : meta.icon}
                         </div>
                         {progPerc > 0 && (
-                           <div className={`text-[9px] font-black px-2 py-1 rounded-lg ${active ? 'bg-emerald-400 text-emerald-950' : 'bg-emerald-50 text-emerald-600'}`}>
+                           <div className={`text-[8px] md:text-[9px] font-black px-1.5 py-0.5 md:px-2 md:py-1 rounded-md md:rounded-lg ${active ? 'bg-emerald-400 text-emerald-950' : 'bg-emerald-50 text-emerald-600'}`}>
                               {progPerc.toFixed(0)}%
                            </div>
                         )}
                      </div>
                      <div className="space-y-1">
-                        <p className={`text-[10px] font-black uppercase tracking-widest ${active ? 'text-emerald-400' : 'text-emerald-900/30'}`}>{sub}</p>
-                        <p className="text-base font-black truncate">{progressData?.totalHours?.toFixed(1) || 0} Hours Logged</p>
+                        <p className={`text-[8px] md:text-[10px] font-black uppercase tracking-widest ${active ? 'text-emerald-400' : 'text-emerald-900/30'}`}>{sub}</p>
+                        <p className="text-xs md:text-base font-black truncate">{progressData?.totalHours?.toFixed(1) || 0}h Logged</p>
                      </div>
                   </div>
                 );
@@ -430,73 +438,73 @@ const Study = () => {
 
       {/* 📚 Section: Deep Focus Module - Topics & Scores */}
       {selected && (
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 md:gap-8 items-start">
            
            {/* Module Control */}
-           <div className="xl:col-span-12 flex flex-col md:flex-row items-center justify-between p-8 rounded-[3rem] bg-emerald-50 border border-emerald-100 gap-6">
-              <div className="flex items-center gap-6">
-                 <div className="w-16 h-16 rounded-3xl bg-white shadow-sm flex items-center justify-center text-emerald-500 border border-emerald-100">
-                    {SUBJECT_META[selected]?.icon || <BookOpen size={30} />}
+           <div className="xl:col-span-12 flex flex-col lg:flex-row items-center justify-between p-6 md:p-8 rounded-[2.5rem] md:rounded-[3rem] bg-emerald-50 border border-emerald-100 gap-6">
+              <div className="flex items-center gap-4 md:gap-6 w-full lg:w-auto">
+                 <div className="w-12 h-12 md:w-16 md:h-16 rounded-2xl md:rounded-3xl bg-white shadow-sm flex items-center justify-center text-emerald-500 border border-emerald-100 shrink-0">
+                    {SUBJECT_META[selected]?.icon || <BookOpen size={24} className="md:w-7 md:h-7" />}
                  </div>
-                 <div>
-                    <h2 className="text-3xl font-black text-emerald-950 tracking-tighter">{selected} ম্যানেজমেন্ট</h2>
-                    <p className="text-sm font-bold text-emerald-900/40 uppercase tracking-widest">সিলেবাস এবং প্রগ্রেস ট্র্যাকার</p>
+                 <div className="min-w-0">
+                    <h2 className="text-xl md:text-3xl font-black text-emerald-950 tracking-tighter truncate">{selected}</h2>
+                    <p className="text-[10px] md:text-sm font-bold text-emerald-900/40 uppercase tracking-widest">সিলেবাস ও প্রগ্রেস</p>
                  </div>
               </div>
               
-              <div className="flex items-center gap-3">
-                 <button onClick={() => setShowTopicAdd(!showTopicAdd)} className="px-6 py-4 bg-emerald-600 text-white rounded-[1.8rem] font-black text-xs uppercase tracking-widest hover:bg-emerald-700 shadow-xl shadow-emerald-600/20 transition-all flex items-center gap-2">
-                    {showTopicAdd ? <X size={18} /> : <Plus size={18} />}
-                    {showTopicAdd ? 'বাতিল' : 'নতুন টপিক'}
+              <div className="flex items-center gap-3 w-full lg:w-auto">
+                 <button onClick={() => setShowTopicAdd(!showTopicAdd)} className="flex-1 lg:flex-none px-4 md:px-6 py-3.5 md:py-4 bg-emerald-600 text-white rounded-2xl md:rounded-[1.8rem] font-black text-[10px] md:text-xs uppercase tracking-widest hover:bg-emerald-700 shadow-xl shadow-emerald-600/20 transition-all flex items-center justify-center gap-2">
+                    {showTopicAdd ? <X size={16} /> : <Plus size={16} />}
+                    <span className="whitespace-nowrap">{showTopicAdd ? 'বাতিল' : 'নতুন টপিক'}</span>
                  </button>
-                 <button onClick={() => setShowScoreAdd(!showScoreAdd)} className="px-6 py-4 bg-white text-emerald-950 rounded-[1.8rem] border border-emerald-100 font-black text-xs uppercase tracking-widest hover:bg-emerald-50 transition-all flex items-center gap-2">
-                    {showScoreAdd ? <X size={18} /> : <BarChart3 size={18} />}
-                    {showScoreAdd ? 'বাতিল' : 'স্কোর কার্ড'}
+                 <button onClick={() => setShowScoreAdd(!showScoreAdd)} className="flex-1 lg:flex-none px-4 md:px-6 py-3.5 md:py-4 bg-white text-emerald-950 rounded-2xl md:rounded-[1.8rem] border border-emerald-100 font-black text-[10px] md:text-xs uppercase tracking-widest hover:bg-emerald-50 transition-all flex items-center justify-center gap-2">
+                    {showScoreAdd ? <X size={16} /> : <BarChart3 size={16} />}
+                    <span className="whitespace-nowrap">{showScoreAdd ? 'বাতিল' : 'স্কোর কার্ড'}</span>
                  </button>
               </div>
            </div>
 
            {/* Curriculum List */}
-           <div className="xl:col-span-7 space-y-6">
+           <div className="xl:col-span-7 space-y-4 md:space-y-6">
               {showTopicAdd && (
-                <div className="p-8 rounded-[3rem] bg-white border-2 border-dashed border-emerald-200 shadow-sm animate-in slide-in-from-top-4 duration-300">
-                   <h4 className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest mb-4 ml-4">ADD NEW STUDY TOPIC</h4>
-                   <div className="flex gap-4">
+                <div className="p-6 md:p-8 rounded-[2rem] md:rounded-[3rem] bg-white border-2 border-dashed border-emerald-200 shadow-sm animate-in slide-in-from-top-4 duration-300">
+                   <h4 className="text-[9px] md:text-[10px] font-black text-emerald-900/40 uppercase tracking-widest mb-4 ml-2">ADD NEW STUDY TOPIC</h4>
+                   <div className="flex gap-3">
                       <input 
                         type="text" 
-                        placeholder="যেমন: Calculus Fundamentals" 
-                        className="flex-1 bg-emerald-50/50 rounded-2xl px-6 py-4 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-sm font-bold text-emerald-950 border border-emerald-50" 
+                        placeholder="টপিকের নাম..." 
+                        className="flex-1 bg-emerald-50/50 rounded-xl md:rounded-2xl px-4 md:px-6 py-3.5 md:py-4 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-sm font-bold text-emerald-950 border border-emerald-50" 
                         value={topicForm} 
                         onChange={e => setTopicForm(e.target.value)} 
                       />
-                      <button onClick={addTopic} className="p-5 bg-emerald-500 text-white rounded-2xl shadow-lg hover:bg-emerald-600 transition-all">
-                         <Check size={20} />
+                      <button onClick={addTopic} className="p-4 md:p-5 bg-emerald-500 text-white rounded-xl md:rounded-2xl shadow-lg hover:bg-emerald-600 transition-all">
+                         <Check size={18} className="md:w-5 md:h-5" />
                       </button>
                    </div>
                 </div>
               )}
 
-              <div className="space-y-4">
+              <div className="space-y-3 md:space-y-4">
                  {selectedData?.topics?.length > 0 ? (
                    selectedData.topics.map((topic, i) => (
-                     <div key={topic._id || i} className={`p-6 rounded-[2.5rem] bg-white border border-emerald-50 shadow-sm flex items-center gap-6 group transition-all hover:translate-x-2 ${topic.completed ? 'opacity-50 grayscale' : ''}`}>
+                     <div key={topic._id || i} className={`p-4 md:p-6 rounded-[2rem] md:rounded-[2.5rem] bg-white border border-emerald-50 shadow-sm flex items-center gap-4 md:gap-6 group transition-all hover:bg-emerald-50/30 ${topic.completed ? 'opacity-50 grayscale' : ''}`}>
                         <div 
                           onClick={() => topic._id && toggleTopic(topic._id, topic.completed)}
-                          className={`w-12 h-12 rounded-2xl border-2 flex items-center justify-center cursor-pointer transition-all ${topic.completed ? 'bg-emerald-500 border-emerald-500 text-white rotate-[360deg]' : 'border-emerald-100 text-transparent hover:border-emerald-400 shadow-sm bg-gray-50/30'}`}
+                          className={`w-10 h-10 md:w-12 md:h-12 rounded-[1.2rem] md:rounded-2xl border-2 flex items-center justify-center cursor-pointer transition-all shrink-0 ${topic.completed ? 'bg-emerald-500 border-emerald-500 text-white rotate-[360deg]' : 'border-emerald-100 text-transparent hover:border-emerald-400 shadow-sm bg-gray-50/30 font-bold'}`}
                         >
-                          <Check size={20} className={topic.completed ? 'scale-100' : 'scale-0'} />
+                          <Check size={16} className={`md:w-5 md:h-5 ${topic.completed ? 'scale-100' : 'scale-0'}`} />
                         </div>
-                        <div className="flex-1">
-                           <p className={`text-base font-black text-emerald-950 ${topic.completed ? 'line-through' : ''}`}>{topic.name}</p>
-                           <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">{topic.completed ? 'MODULE FINISHED' : 'PENDING OBJECTIVE'}</p>
+                        <div className="flex-1 min-w-0">
+                           <p className={`text-sm md:text-base font-black text-emerald-950 truncate ${topic.completed ? 'line-through' : ''}`}>{topic.name}</p>
+                           <p className="text-[8px] md:text-[10px] font-black text-emerald-400 uppercase tracking-widest leading-none mt-1">{topic.completed ? 'MODULE FINISHED' : 'PENDING OBJECTIVE'}</p>
                         </div>
-                        {!topic.completed && <div className="p-2 bg-emerald-50 text-emerald-500 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"><ArrowRight size={16} /></div>}
+                        {!topic.completed && <div className="p-2 bg-emerald-50 text-emerald-500 rounded-xl hidden md:block opacity-0 group-hover:opacity-100 transition-opacity"><ArrowRight size={16} /></div>}
                      </div>
                    ))
                  ) : (
-                    <div className="p-20 text-center space-y-4 bg-gray-50/50 rounded-[4rem] border-2 border-dashed border-gray-100">
-                       <Layout size={48} className="mx-auto text-gray-200" />
-                       <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">সিলেবাসে কোনো টপিক নেই</p>
+                    <div className="p-12 md:p-20 text-center space-y-4 bg-gray-50/50 rounded-[2.5rem] md:rounded-[4rem] border-2 border-dashed border-gray-100">
+                       <Layout size={32} className="mx-auto text-gray-200 md:w-12 md:h-12" />
+                       <p className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">সিলিবাসে কোনো টপিক নেই</p>
                     </div>
                  )}
               </div>
@@ -505,51 +513,51 @@ const Study = () => {
            {/* Performance Hub */}
            <div className="xl:col-span-5 space-y-6">
               {showScoreAdd && (
-                <div className="p-8 rounded-[3rem] bg-white border-2 border-emerald-100 shadow-xl space-y-6 animate-in zoom-in-95 duration-300">
-                   <h4 className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest text-center">নতুন টেস্ট স্কোর</h4>
+                <div className="p-6 md:p-8 rounded-[2rem] md:rounded-[3rem] bg-white border-2 border-emerald-100 shadow-xl space-y-6 animate-in zoom-in-95 duration-300">
+                   <h4 className="text-[9px] md:text-[10px] font-black text-emerald-900/40 uppercase tracking-widest text-center">নতুন টেস্ট স্কোর</h4>
                    <div className="space-y-4">
-                      <input type="text" placeholder="টেস্টের নাম" className="w-full bg-emerald-50/50 rounded-2xl px-6 py-4 border border-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-sm font-bold text-emerald-950" value={scoreForm.testName} onChange={e => setScoreForm({...scoreForm, testName: e.target.value})} />
-                      <div className="grid grid-cols-2 gap-4">
-                         <input type="number" placeholder="স্কোর" className="w-full bg-emerald-50/50 rounded-2xl px-6 py-4 border border-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-sm font-bold text-emerald-950" value={scoreForm.score} onChange={e => setScoreForm({...scoreForm, score: e.target.value})} />
-                         <input type="number" placeholder="মোট" className="w-full bg-emerald-50/50 rounded-2xl px-6 py-4 border border-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-sm font-bold text-emerald-950" value={scoreForm.maxScore} onChange={e => setScoreForm({...scoreForm, maxScore: e.target.value})} />
+                      <input type="text" placeholder="টেস্টের নাম" className="w-full bg-emerald-50/50 rounded-xl md:rounded-2xl px-4 md:px-6 py-3.5 md:py-4 border border-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-sm font-bold text-emerald-950" value={scoreForm.testName} onChange={e => setScoreForm({...scoreForm, testName: e.target.value})} />
+                      <div className="grid grid-cols-2 gap-3">
+                         <input type="number" placeholder="স্কোর" className="w-full bg-emerald-50/50 rounded-xl md:rounded-2xl px-4 md:px-6 py-3.5 md:py-4 border border-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-sm font-bold text-emerald-950" value={scoreForm.score} onChange={e => setScoreForm({...scoreForm, score: e.target.value})} />
+                         <input type="number" placeholder="মোট" className="w-full bg-emerald-50/50 rounded-xl md:rounded-2xl px-4 md:px-6 py-3.5 md:py-4 border border-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-sm font-bold text-emerald-950" value={scoreForm.maxScore} onChange={e => setScoreForm({...scoreForm, maxScore: e.target.value})} />
                       </div>
-                      <button onClick={addScore} className="w-full py-5 bg-emerald-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-emerald-700 shadow-xl shadow-emerald-600/20 transition-all">সংরক্ষণ করো</button>
+                      <button onClick={addScore} className="w-full py-4 md:py-5 bg-emerald-600 text-white rounded-xl md:rounded-2xl font-black text-[10px] md:text-xs uppercase tracking-widest hover:bg-emerald-700 shadow-xl shadow-emerald-600/20 transition-all">সংরক্ষণ করো</button>
                    </div>
                 </div>
               )}
 
-              <div className="p-8 rounded-[3rem] border border-emerald-100 bg-white shadow-sm space-y-8">
+              <div className="p-6 md:p-8 rounded-[2.5rem] md:rounded-[3rem] border border-emerald-100 bg-white shadow-sm space-y-6 md:space-y-8">
                  <div className="flex justify-between items-center">
-                    <h3 className="text-xl font-black text-emerald-950">পারফরম্যান্স রিপোর্ট</h3>
-                    <div className="p-3 bg-white border border-emerald-50 rounded-2xl text-yellow-500 shadow-sm"><Star size={20} fill="currentColor" /></div>
+                    <h3 className="text-lg md:text-xl font-black text-emerald-950">পারফরম্যান্স</h3>
+                    <div className="p-2.5 bg-white border border-emerald-50 rounded-xl text-yellow-500 shadow-sm"><Star size={18} className="md:w-5 md:h-5" fill="currentColor" /></div>
                  </div>
 
-                 <div className="space-y-4">
+                 <div className="space-y-3 md:space-y-4">
                     {selectedData?.testScores?.length > 0 ? (
                       [...selectedData.testScores].reverse().slice(0, 3).map((s, i) => {
                         const perc = (s.score / s.maxScore) * 100;
                         return (
-                          <div key={i} className="p-5 rounded-3xl bg-emerald-50/30 border border-emerald-100/50 flex items-center justify-between group hover:scale-[1.02] transition-all">
-                             <div className="space-y-1">
-                                <p className="text-sm font-black text-emerald-950">{s.testName}</p>
-                                <p className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">{new Date(s.date).toLocaleDateString('bn-BD')}</p>
+                          <div key={i} className="p-4 md:p-5 rounded-[1.8rem] md:rounded-3xl bg-emerald-50/30 border border-emerald-100/50 flex items-center justify-between group transition-all">
+                             <div className="space-y-0.5 min-w-0">
+                                <p className="text-xs md:text-sm font-black text-emerald-950 truncate">{s.testName}</p>
+                                <p className="text-[8px] md:text-[9px] font-black text-emerald-400 uppercase tracking-widest">{new Date(s.date).toLocaleDateString('bn-BD')}</p>
                              </div>
-                             <div className="text-right">
-                                <p className={`text-xl font-black ${perc >= 80 ? 'text-emerald-500' : perc >= 60 ? 'text-amber-500' : 'text-rose-500'}`}>{s.score}/{s.maxScore}</p>
-                                <p className="text-[8px] font-black text-emerald-900/20 uppercase tracking-widest">SCORE ACHIEVED</p>
+                             <div className="text-right shrink-0">
+                                <p className={`text-lg md:text-xl font-black leading-none ${perc >= 80 ? 'text-emerald-500' : perc >= 60 ? 'text-amber-500' : 'text-rose-500'}`}>{s.score}/{s.maxScore}</p>
+                                <p className="text-[7px] md:text-[8px] font-black text-emerald-900/20 uppercase tracking-widest mt-1">SCORE</p>
                              </div>
                           </div>
                         );
                       })
                     ) : (
-                       <div className="py-10 text-center opacity-20 italic">
-                          <History size={40} className="mx-auto mb-2" />
-                          <p className="text-xs">কোনো স্কোর হিস্ট্রি নেই</p>
+                       <div className="py-8 md:py-10 text-center opacity-20 italic">
+                          <History size={32} className="mx-auto mb-2 md:w-10 md:h-10" />
+                          <p className="text-[10px] md:text-xs font-bold uppercase tracking-widest">কোনো হিস্ট্রি নেই</p>
                        </div>
                     )}
                  </div>
 
-                 <button className="w-full py-4 rounded-2xl border-2 border-dashed border-emerald-100 text-emerald-400 text-[10px] font-black uppercase tracking-widest hover:bg-emerald-50 transition-all">
+                 <button className="w-full py-4 rounded-xl md:rounded-2xl border-2 border-dashed border-emerald-100 text-emerald-400 text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-emerald-50 transition-all">
                     FULL MOCK HISTORY <ChevronRight size={10} className="inline ml-1" />
                  </button>
               </div>

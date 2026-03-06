@@ -51,8 +51,27 @@ const Routine = () => {
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
   const [showNewRoutineModal, setShowNewRoutineModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [pendingRoutine, setPendingRoutine] = useState(null);
   const [newRoutineName, setNewRoutineName] = useState('');
   const [newTask, setNewTask] = useState({ time: '', task: '', category: 'Discipline' });
+
+  // 🔒 শৃঙ্খলার সাথে স্ক্রিন লক
+  useEffect(() => {
+    if (showNewRoutineModal || showConfirmModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [showNewRoutineModal, showConfirmModal]);
+
+  // Sync activeName with user preference once user is loaded
+  useEffect(() => {
+    if (user?.activeRoutineName && user.activeRoutineName !== activeName) {
+      setActiveName(user.activeRoutineName);
+    }
+  }, [user]);
 
   const fetchRoutineData = async (d, name) => {
     setLoading(true);
@@ -68,14 +87,7 @@ const Routine = () => {
       if (user?.activeRoutineName && !names.includes(user.activeRoutineName)) names.push(user.activeRoutineName);
       setRoutineNames([...new Set(names)]);
 
-      // Special Ramadan Toast Notification
-      const rName = routineRes.data.routineName || name;
-      if ((rName === 'Ramadan' || rName === 'রমজান') && routineRes.data.routine?.tasks?.length > 0) {
-        toast('🌙 আপনার জন্য রমজানের বিশেষ রুটিন লোড করা হয়েছে!', {
-          icon: '✨',
-          style: { borderRadius: '2rem', background: '#064e3b', color: '#fff', border: '1px solid #10b981' }
-        });
-      }
+      // Removed automatic toast on every load
     } catch (e) {
       toast.error('ডেটা লোড করা যায়নি');
     } finally {
@@ -86,6 +98,32 @@ const Routine = () => {
   useEffect(() => {
     fetchRoutineData(date, activeName);
   }, [date, activeName]);
+
+  const handleRoutineSwitchRequest = (name) => {
+    if (name === activeName) return;
+    setPendingRoutine(name);
+    setShowConfirmModal(true);
+  };
+
+  const confirmRoutineSwitch = async () => {
+    const name = pendingRoutine;
+    setActiveName(name);
+    setShowConfirmModal(false);
+    
+    if (name === 'Ramadan' || name === 'রমজান') {
+      toast('🌙 রমজান রুটিন সক্রিয় করা হয়েছে!', {
+        icon: '✨',
+        style: { borderRadius: '2rem', background: '#064e3b', color: '#fff', border: '1px solid #10b981' }
+      });
+    }
+
+    try {
+      const res = await authAPI.updateProfile({ activeRoutineName: name });
+      updateUser(res.data.user);
+    } catch (e) {
+      console.error('Failed to save active routine preference');
+    }
+  };
 
   const toggleTask = async (taskId, completed, index) => {
     try {
@@ -183,6 +221,13 @@ const Routine = () => {
 
   const handleRoutineChange = async (name) => {
     setActiveName(name);
+    // Show special toast only when manually switching to Ramadan
+    if (name === 'Ramadan' || name === 'রমজান') {
+      toast('🌙 রমজান রুটিন সক্রিয় করা হয়েছে!', {
+        icon: '✨',
+        style: { borderRadius: '2rem', background: '#064e3b', color: '#fff', border: '1px solid #10b981' }
+      });
+    }
     try {
       // Persist active routine choice to user profile
       const res = await authAPI.updateProfile({ activeRoutineName: name });
@@ -259,7 +304,7 @@ const Routine = () => {
               {routineNames.map(name => (
                 <button
                   key={name}
-                  onClick={() => handleRoutineChange(name)}
+                  onClick={() => handleRoutineSwitchRequest(name)}
                   className={`px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeName === name ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'text-emerald-900/50 hover:text-emerald-700'}`}
                 >
                   <div className="flex items-center gap-2">
@@ -410,8 +455,8 @@ const Routine = () => {
                       <ClipboardList size={48} strokeWidth={1} />
                    </div>
                    <div className="space-y-2">
-                      <h4 className="text-xl font-black text-emerald-950">শূন্য রুটিন!</h4>
-                      <p className="max-w-xs text-xs font-bold text-emerald-900/30">একটি মজবুত রুটিনই পারে তোমার দিনটিকে বদলে দিতে। আজই নতুন টাস্ক যোগ করো।</p>
+                       <h4 className="text-xl font-black text-emerald-950">শূন্য রুটিন!</h4>
+                       <p className="max-w-xs text-xs font-bold text-emerald-900/30">একটি মজবুত রুটিনই পারে তোমার দিনটিকে বদলে দিতে। আজই নতুন টাস্ক যোগ করো।</p>
                    </div>
                    <button onClick={() => setShowAdd(true)} className="px-8 py-3 bg-white border border-emerald-100 rounded-2xl text-[10px] font-black text-emerald-500 uppercase tracking-widest hover:bg-emerald-50 transition-all">শুরু করো <ChevronRight size={14} className="inline ml-1" /></button>
                 </div>
@@ -511,8 +556,8 @@ const Routine = () => {
 
       {/* 🚀 New Routine Modal */}
       {showNewRoutineModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-emerald-950/20 backdrop-blur-sm animate-in fade-in duration-300">
-           <div className="w-full max-w-md bg-white rounded-[3rem] p-10 shadow-2xl border border-emerald-50 space-y-8 animate-in zoom-in-95 duration-300">
+        <div className="fixed inset-0 z-[9999] flex items-start justify-center p-6 pt-20 bg-emerald-950/30 backdrop-blur-sm animate-in fade-in duration-300">
+           <div className="w-full max-w-md bg-white rounded-[3rem] p-10 shadow-2xl border border-emerald-50 space-y-8 animate-in slide-in-from-top-10 duration-500">
               <div className="text-center space-y-2">
                  <div className="w-16 h-16 bg-emerald-50 rounded-[1.8rem] flex items-center justify-center text-emerald-500 mx-auto shadow-inner border border-emerald-100">
                     <Layers size={32} />
@@ -562,6 +607,35 @@ const Routine = () => {
                    onClick={createNewRoutine}
                    className="flex-1 py-4 bg-emerald-600 text-white rounded-[1.5rem] font-black text-xs uppercase tracking-widest hover:bg-emerald-700 shadow-xl shadow-emerald-600/20 transition-all"
                  >তৈরি করো</button>
+              </div>
+           </div>
+        </div>
+      )}
+
+      {/* ⚠️ Routine Change Confirmation Modal */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 z-[9999] flex items-start justify-center p-6 pt-24 bg-emerald-950/30 backdrop-blur-sm animate-in fade-in duration-300">
+           <div className="w-full max-w-sm bg-white rounded-[2.5rem] p-8 shadow-2xl border border-emerald-50 space-y-6 text-center animate-in slide-in-from-top-10 duration-500">
+              <div className="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-500 mx-auto border border-amber-100">
+                 <Settings size={32} className="animate-spin-slow" />
+              </div>
+              <div className="space-y-2">
+                 <h3 className="text-xl font-black text-emerald-950">রুটিন পরিবর্তন?</h3>
+                 <p className="text-xs font-bold text-emerald-900/40">আপনি কি নিশ্চিতভাবে <span className="text-emerald-600">"{pendingRoutine}"</span> রুটিনে সুইচ করতে চান?</p>
+              </div>
+              <div className="flex gap-3">
+                 <button 
+                   onClick={() => setShowConfirmModal(false)} 
+                   className="flex-1 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest text-emerald-900/40 hover:bg-gray-50 transition-all"
+                 >
+                   না, থাক
+                 </button>
+                 <button 
+                   onClick={confirmRoutineSwitch}
+                   className="flex-1 py-3 bg-emerald-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-700 shadow-lg shadow-emerald-600/20 transition-all"
+                 >
+                   হ্যাঁ, নিশ্চিত
+                 </button>
               </div>
            </div>
         </div>
