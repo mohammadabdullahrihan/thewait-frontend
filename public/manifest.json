@@ -4,7 +4,7 @@
   "description": "পার্সোনাল গ্রোথ ও ডিসিপ্লিন ট্র্যাকিং অ্যাপ",
   "theme_color": "#064e3b",
   "background_color": "#064e3b",
-  "display": "standalone",
+  "display": "fullscreen",
   "orientation": "portrait",
   "scope": "/",
   "start_url": "/",

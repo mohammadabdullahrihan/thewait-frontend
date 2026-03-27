@@ -137,7 +137,7 @@ const MobileNav = () => {
           </NavLink>
         ))}
         <button 
-          className={`mobile-nav-item${showMore ? ' active' : ''}`}
+          className={`mobile-nav-item${showMore ?' active' : ''}`}
           onClick={() => setShowMore(v => !v)}
         >
           <motion.span 
