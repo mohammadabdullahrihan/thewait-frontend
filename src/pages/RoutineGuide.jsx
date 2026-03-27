@@ -293,22 +293,22 @@ const PhaseCard = ({ phase }) => {
   const c = PHASE_COLORS[phase.color] || PHASE_COLORS.emerald;
 
   return (
-    <div className={`rounded-[2rem] border-2 ${c.border} ${c.bg} overflow-hidden transition-all`}>
+    <div className={`rounded-[1.5rem] sm:rounded-[2rem] border-2 ${c.border} ${c.bg} overflow-hidden transition-all`}>
       <button
         onClick={() => setOpen(v => !v)}
-        className="w-full flex items-center justify-between p-5 md:p-6 text-left"
+        className="w-full flex items-center justify-between p-4 sm:p-5 md:p-6 text-left"
       >
-        <div className="flex items-center gap-3">
-          <div className={`p-2.5 rounded-xl bg-white/80 border ${c.border} ${c.icon}`}>
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          <div className={`p-2 sm:p-2.5 rounded-xl bg-white/80 border flex-shrink-0 ${c.border} ${c.icon}`}>
             {phase.icon}
           </div>
-          <div>
-            <p className={`font-black text-sm md:text-base ${c.title}`}>{phase.phase}</p>
-            <p className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest">{phase.subtitle}</p>
+          <div className="min-w-0">
+            <p className={`font-black text-sm md:text-base truncate ${c.title}`}>{phase.phase}</p>
+            <p className="text-[9px] font-black text-emerald-900/40 uppercase tracking-widest">{phase.subtitle}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <span className={`text-[9px] font-black text-white px-2 py-0.5 rounded-full uppercase tracking-widest ${c.badge}`}>
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 ml-2">
+          <span className={`text-[9px] font-black text-white px-2 py-0.5 rounded-full uppercase tracking-widest ${c.badge} hidden xs:inline`}>
             {phase.tasks.length} টাস্ক
           </span>
           <div className={`p-1.5 rounded-xl bg-white/60 ${c.title}`}>
@@ -318,13 +318,13 @@ const PhaseCard = ({ phase }) => {
       </button>
 
       {open && (
-        <div className="px-5 pb-5 md:px-6 md:pb-6 space-y-2.5">
+        <div className="px-3 pb-3 sm:px-5 sm:pb-5 md:px-6 md:pb-6 space-y-2">
           {phase.tasks.map((task, i) => (
-            <div key={i} className="flex items-start gap-3 bg-white/70 rounded-2xl p-3.5 border border-white/80">
-              <div className={`text-[10px] font-black px-2.5 py-1.5 rounded-xl border whitespace-nowrap mt-0.5 ${CAT_COLORS[task.cat] || 'bg-gray-50 text-gray-500 border-gray-100'}`}>
+            <div key={i} className="flex items-start gap-2.5 sm:gap-3 bg-white/70 rounded-xl sm:rounded-2xl p-3 sm:p-3.5 border border-white/80">
+              <div className={`text-[9px] sm:text-[10px] font-black px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg sm:rounded-xl border whitespace-nowrap flex-shrink-0 mt-0.5 ${CAT_COLORS[task.cat] || 'bg-gray-50 text-gray-500 border-gray-100'}`}>
                 {task.time}
               </div>
-              <p className="text-sm font-bold text-emerald-950 leading-snug">{task.task}</p>
+              <p className="text-xs sm:text-sm font-bold text-emerald-950 leading-snug">{task.task}</p>
             </div>
           ))}
         </div>
@@ -346,47 +346,48 @@ const RoutineGuide = () => {
   };
 
   return (
-    <div className="animate-in fade-in duration-700 pb-28 space-y-8">
+    <div className="animate-in fade-in duration-700 pb-28 space-y-5 sm:space-y-8">
 
       {/* ── Header ── */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-emerald-50 pb-8 mt-4">
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <span className="px-3 py-1 bg-emerald-500 text-[10px] font-black text-white rounded-full uppercase tracking-widest shadow-lg shadow-emerald-500/20">
+      <div className="flex flex-col gap-4 sm:gap-6 border-b border-emerald-50 pb-5 sm:pb-8 mt-3 sm:mt-4">
+        <div className="space-y-2 sm:space-y-3">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="px-2.5 py-1 bg-emerald-500 text-[9px] sm:text-[10px] font-black text-white rounded-full uppercase tracking-widest shadow-lg shadow-emerald-500/20">
               WARRIOR MANUAL
             </span>
-            <span className="px-3 py-1 bg-emerald-50 border border-emerald-100 text-[10px] font-black text-emerald-600 rounded-full uppercase tracking-widest">
+            <span className="px-2.5 py-1 bg-emerald-50 border border-emerald-100 text-[9px] sm:text-[10px] font-black text-emerald-600 rounded-full uppercase tracking-widest">
               READ ONLY
             </span>
           </div>
-          <h1 className="text-4xl font-black tracking-tighter text-emerald-950 flex items-center gap-3">
-            <div className="p-3 bg-white rounded-2xl shadow-sm border border-emerald-100 text-emerald-500">
-              <BookOpen size={28} />
+          <h1 className="text-2xl sm:text-4xl font-black tracking-tighter text-emerald-950 flex items-center gap-2 sm:gap-3">
+            <div className="p-2 sm:p-3 bg-white rounded-xl sm:rounded-2xl shadow-sm border border-emerald-100 text-emerald-500 flex-shrink-0">
+              <BookOpen size={20} className="sm:hidden" />
+              <BookOpen size={28} className="hidden sm:block" />
             </div>
             রুটিন গাইড
           </h1>
-          <p className="text-emerald-950/40 font-bold text-sm pl-1">
+          <p className="text-emerald-950/40 font-bold text-xs sm:text-sm pl-1">
             তোমার সম্পূর্ণ দৈনিক মিশন — শুধু পড়ার জন্য
           </p>
         </div>
 
         {/* Quick info */}
-        <div className="flex flex-wrap gap-3">
+        <div className="flex gap-2 sm:gap-3">
           {[
             { label: 'মোট টাস্ক', value: '৩৭', color: 'emerald' },
             { label: 'শুক্রবার', value: '১৪', color: 'teal' },
             { label: 'শনিবার', value: '১৫', color: 'rose' },
           ].map(s => (
-            <div key={s.label} className={`p-4 bg-${s.color}-50 border border-${s.color}-100 rounded-2xl text-center min-w-[80px]`}>
-              <p className={`text-2xl font-black text-${s.color}-600 leading-none`}>{s.value}</p>
-              <p className={`text-[9px] font-black text-${s.color}-500/60 uppercase tracking-widest mt-1`}>{s.label}</p>
+            <div key={s.label} className={`flex-1 p-3 sm:p-4 bg-${s.color}-50 border border-${s.color}-100 rounded-xl sm:rounded-2xl text-center`}>
+              <p className={`text-xl sm:text-2xl font-black text-${s.color}-600 leading-none`}>{s.value}</p>
+              <p className={`text-[8px] sm:text-[9px] font-black text-${s.color}-500/60 uppercase tracking-widest mt-1`}>{s.label}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* ── Tab Switcher ── */}
-      <div className="flex items-center gap-2 bg-white p-1.5 rounded-[2rem] border border-emerald-100 shadow-sm w-full md:w-max overflow-x-auto scrollbar-hide">
+      <div className="flex items-center gap-1.5 sm:gap-2 bg-white p-1 sm:p-1.5 rounded-[1.5rem] sm:rounded-[2rem] border border-emerald-100 shadow-sm w-full overflow-x-auto scrollbar-hide">
         {TABS.map(tab => {
           const tc = tabColors[tab.color] || tabColors.emerald;
           const isActive = activeTab === tab.key;
@@ -394,11 +395,12 @@ const RoutineGuide = () => {
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`px-5 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all whitespace-nowrap flex items-center gap-2 shadow-lg ${isActive ? `${tc.active} shadow-lg` : 'text-emerald-900/50 hover:text-emerald-700'}`}
+              className={`flex-1 sm:flex-none px-3 sm:px-5 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl text-[10px] sm:text-[11px] font-black uppercase tracking-widest transition-all whitespace-nowrap flex items-center justify-center gap-1 sm:gap-2 ${isActive ? `${tc.active} shadow-lg` : 'text-emerald-900/50 hover:text-emerald-700'}`}
             >
               <span>{tab.emoji}</span>
-              <span>{tab.label}</span>
-              <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-full ${isActive ? 'bg-white/20' : 'bg-emerald-100 text-emerald-500'}`}>
+              <span className="hidden xs:inline sm:inline">{tab.label}</span>
+              <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
+              <span className={`text-[7px] sm:text-[8px] font-black px-1 sm:px-1.5 py-0.5 rounded-full hidden sm:inline ${isActive ? 'bg-white/20' : 'bg-emerald-100 text-emerald-500'}`}>
                 {tab.badge}
               </span>
             </button>
@@ -415,21 +417,21 @@ const RoutineGuide = () => {
 
       {/* ── Daily Checklist (only for Daily tab) ── */}
       {activeTab === 'Daily' && (
-        <div className="p-8 rounded-[3rem] bg-emerald-950 text-white shadow-xl space-y-6">
+        <div className="p-5 sm:p-8 rounded-[2rem] sm:rounded-[3rem] bg-emerald-950 text-white shadow-xl space-y-4 sm:space-y-6">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-white/10 rounded-xl border border-white/10">
-              <Zap size={20} className="text-emerald-400" />
+            <div className="p-2 sm:p-2.5 bg-white/10 rounded-xl border border-white/10">
+              <Zap size={18} className="text-emerald-400" />
             </div>
             <div>
-              <h3 className="font-black text-lg">দৈনিক চেকলিস্ট</h3>
-              <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">প্রতিদিন রাতে মিলিয়ে দেখো</p>
+              <h3 className="font-black text-base sm:text-lg">দৈনিক চেকলিস্ট</h3>
+              <p className="text-[9px] sm:text-[10px] font-black text-emerald-400 uppercase tracking-widest">প্রতিদিন রাতে মিলিয়ে দেখো</p>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
             {CHECKLIST.map((item, i) => (
-              <div key={i} className="flex items-start gap-3 p-3.5 bg-white/5 rounded-2xl border border-white/10">
-                <div className="w-5 h-5 rounded-md border-2 border-emerald-500/40 flex-shrink-0 mt-0.5" />
-                <p className="text-sm font-bold text-white/80 leading-snug">{item}</p>
+              <div key={i} className="flex items-start gap-2.5 sm:gap-3 p-3 sm:p-3.5 bg-white/5 rounded-xl sm:rounded-2xl border border-white/10">
+                <div className="w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-md border-2 border-emerald-500/40 flex-shrink-0 mt-0.5" />
+                <p className="text-xs sm:text-sm font-bold text-white/80 leading-snug">{item}</p>
               </div>
             ))}
           </div>
@@ -437,23 +439,23 @@ const RoutineGuide = () => {
       )}
 
       {/* ── Warrior Rules ── */}
-      <div className="p-8 rounded-[3rem] bg-white border border-emerald-100 shadow-sm space-y-5">
+      <div className="p-5 sm:p-8 rounded-[2rem] sm:rounded-[3rem] bg-white border border-emerald-100 shadow-sm space-y-4 sm:space-y-5">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-amber-50 rounded-xl border border-amber-100 text-amber-500">
-            <Sparkles size={20} />
+          <div className="p-2 sm:p-2.5 bg-amber-50 rounded-xl border border-amber-100 text-amber-500">
+            <Sparkles size={18} />
           </div>
           <div>
-            <h3 className="font-black text-lg text-emerald-950">মার্সেনারি কোড</h3>
-            <p className="text-[10px] font-black text-emerald-900/30 uppercase tracking-widest">৫টি নিয়ম — মনে রেখো সবসময়</p>
+            <h3 className="font-black text-base sm:text-lg text-emerald-950">মার্সেনারি কোড</h3>
+            <p className="text-[9px] sm:text-[10px] font-black text-emerald-900/30 uppercase tracking-widest">৫টি নিয়ম — মনে রেখো সবসময়</p>
           </div>
         </div>
-        <div className="space-y-3">
+        <div className="space-y-2 sm:space-y-3">
           {WARRIOR_RULES.map((rule, i) => (
-            <div key={i} className="flex items-start gap-4 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
-              <span className="w-7 h-7 flex-shrink-0 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-[11px] font-black">
+            <div key={i} className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-emerald-50 rounded-xl sm:rounded-2xl border border-emerald-100">
+              <span className="w-6 h-6 sm:w-7 sm:h-7 flex-shrink-0 rounded-lg sm:rounded-xl bg-emerald-500 text-white flex items-center justify-center text-[10px] sm:text-[11px] font-black">
                 {i + 1}
               </span>
-              <p className="text-sm font-bold text-emerald-800 leading-snug">{rule}</p>
+              <p className="text-xs sm:text-sm font-bold text-emerald-800 leading-snug">{rule}</p>
             </div>
           ))}
         </div>

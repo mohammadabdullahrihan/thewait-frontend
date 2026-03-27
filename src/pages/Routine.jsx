@@ -199,7 +199,12 @@ const Routine = () => {
   const [pendingRoutine, setPendingRoutine] = useState(null);
   const [newRoutineName, setNewRoutineName] = useState('');
   const [newTask, setNewTask] = useState({ time: '', task: '', category: 'Discipline' });
-  const [selectedTemplateKey, setSelectedTemplateKey] = useState('Daily');
+  const [selectedTemplateKey, setSelectedTemplateKey] = useState(() => {
+    const dayOfWeek = new Date().getDay(); // 0=Sun, 5=Fri, 6=Sat
+    if (dayOfWeek === 5) return 'Friday';
+    if (dayOfWeek === 6) return 'Saturday';
+    return 'Daily';
+  });
 
   // scroll lock
   useEffect(() => {
@@ -801,8 +806,11 @@ const Routine = () => {
 
       {/* ✨ Template Selector Modal */}
       {showTemplateModal && (
-        <div className="fixed inset-0 z-[9999] flex items-start justify-center p-4 pt-10 bg-emerald-950/40 backdrop-blur-sm animate-in fade-in duration-300 overflow-y-auto">
-          <div className="w-full max-w-lg bg-white rounded-[3rem] p-8 shadow-2xl border border-emerald-50 space-y-6 animate-in slide-in-from-top-10 duration-500 mb-8">
+        <div
+          className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center bg-emerald-950/40 backdrop-blur-sm animate-in fade-in duration-300"
+          onClick={(e) => { if (e.target === e.currentTarget) setShowTemplateModal(false); }}
+        >
+          <div className="w-full max-w-lg bg-white rounded-t-[2.5rem] sm:rounded-[3rem] p-6 sm:p-8 shadow-2xl border border-emerald-50 space-y-5 animate-in slide-in-from-bottom-10 sm:slide-in-from-top-10 duration-500 max-h-[92dvh] overflow-y-auto pb-safe">
             {/* Header */}
             <div className="text-center space-y-2">
               <div className="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center text-2xl mx-auto border border-amber-100">✨</div>
