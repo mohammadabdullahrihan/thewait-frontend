@@ -566,7 +566,7 @@ const Routine = () => {
   const [showAdd, setShowAdd] = useState(false);
   const [showNewRoutineModal, setShowNewRoutineModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [showTemplateShelf, setShowTemplateShelf] = useState(false);
   const [loadingTemplate, setLoadingTemplate] = useState(false);
   const [pendingRoutine, setPendingRoutine] = useState(null);
   const [newRoutineName, setNewRoutineName] = useState("");
@@ -584,7 +584,7 @@ const Routine = () => {
 
   // scroll lock
   useEffect(() => {
-    if (showNewRoutineModal || showConfirmModal || showTemplateModal) {
+    if (showNewRoutineModal || showConfirmModal) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -592,7 +592,7 @@ const Routine = () => {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [showNewRoutineModal, showConfirmModal, showTemplateModal]);
+  }, [showNewRoutineModal, showConfirmModal]);
 
   // Sync activeName with user preference once user is loaded
   useEffect(() => {
@@ -911,11 +911,11 @@ const Routine = () => {
     }
   };
 
-  const loadDefaultTemplate = async () => {
-    const template = ALL_TEMPLATES[selectedTemplateKey];
+  const loadDefaultTemplate = async (key) => {
+    const template = ALL_TEMPLATES[key];
     if (!template) return;
     setLoadingTemplate(true);
-    setShowTemplateModal(false);
+    setShowTemplateShelf(false);
     try {
       const res = await routineAPI.save({
         date,
@@ -976,16 +976,16 @@ const Routine = () => {
             {showAdd ? "বাতিল" : "নতুন টাস্ক"}
           </button>
 
-          {/* Load My Full Routine Template */}
+          {/* ✨ Desktop/Universal Action Bar Toggle */}
           <button
-            onClick={() => setShowTemplateModal(true)}
+            onClick={() => setShowTemplateShelf(!showTemplateShelf)}
             disabled={loadingTemplate}
-            className="p-4 bg-amber-50 border border-amber-200 text-amber-600 rounded-3xl hover:bg-amber-100 transition-all shadow-sm flex items-center gap-2 disabled:opacity-50"
-            title="আমার সম্পূর্ণ দৈনিক রুটিন লোড করো"
+            className={`px-6 py-4 rounded-3xl font-black text-xs uppercase tracking-widest transition-all shadow-xl flex items-center gap-2 ${showTemplateShelf ? "bg-amber-100 text-amber-700 border border-amber-200" : "bg-amber-50 border border-amber-200 text-amber-600 hover:bg-amber-100 shadow-amber-500/10"}`}
+            title="লাইব্রেরি থেকে রুটিন লোড করো"
           >
-            <Sparkles size={20} />
-            <span className="hidden md:inline text-xs font-black uppercase tracking-widest">
-              টেমপ্লেট
+            <Sparkles size={18} />
+            <span className="hidden md:inline">
+              {showTemplateShelf ? "রুটিনে ফেরো" : "টেমপ্লেট লাইব্রেরি"}
             </span>
           </button>
 
@@ -1009,6 +1009,8 @@ const Routine = () => {
           )}
         </div>
       </div>
+
+      {/* The Template Shelf/Modal code is removed from here as we will inline it below in the main area */}
 
       {/* 📅 Date & Routine Meta Navigation */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
@@ -1061,52 +1063,129 @@ const Routine = () => {
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
-        {/* 📋 Main Task Area */}
+        {/* 📋 Main Content Area (Routine Tasks OR Template Library) */}
         <div className="xl:col-span-8 space-y-6">
-          {/* Progress Card */}
-          <div className="p-8 rounded-[3rem] bg-white border border-emerald-100 shadow-sm space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-emerald-50 rounded-2xl text-emerald-500 border border-emerald-100 shadow-inner">
-                  <Target size={22} />
-                </div>
-                <div>
-                  <h3 className="text-lg font-black text-emerald-950 uppercase tracking-tight">
-                    {activeName} প্রগ্রেস
-                  </h3>
-                  <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">
-                    {completedCount} OF {totalCount} TASKS COMPLETED
-                  </p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-3xl font-black text-emerald-500 leading-none">
-                  {completionRate}%
-                </p>
-                <p className="text-[9px] font-black text-emerald-900/30 uppercase tracking-[0.2em] mt-1">
-                  SUCCESS RATE
-                </p>
-              </div>
-            </div>
-
-            <div className="relative h-4 w-full bg-emerald-50 rounded-full border border-emerald-100 shadow-inner overflow-hidden p-1">
-              <div
-                className="h-full rounded-full transition-all duration-1000 bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.4)]"
-                style={{ width: `${completionRate}%` }}
-              />
-            </div>
-          </div>
-
-          {/* Add Task Form (Expanded) */}
-          <AnimatePresence>
-            {showAdd && (
+          <AnimatePresence mode="wait">
+            {showTemplateShelf ? (
               <motion.div
-                initial={{ height: 0, opacity: 0, scale: 0.95 }}
-                animate={{ height: "auto", opacity: 1, scale: 1 }}
-                exit={{ height: 0, opacity: 0, scale: 0.95 }}
-                transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                className="overflow-hidden"
+                key="templates"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="space-y-6"
               >
+                <div className="p-8 sm:p-10 rounded-[3rem] bg-amber-50 border border-amber-100 shadow-sm">
+                   <div className="flex items-center justify-between mb-8">
+                     <div>
+                       <h3 className="text-2xl font-black text-amber-950 flex items-center gap-3">
+                         <Sparkles className="text-amber-500" /> এক্সপার্ট টেমপ্লেট লাইব্রেরি
+                       </h3>
+                       <p className="text-xs font-bold text-amber-900/40 mt-1 uppercase tracking-widest">শুরু করার জন্য একটি আধুনিক ফ্রেমওয়ার্ক বেছে নাও</p>
+                     </div>
+                     <button onClick={() => setShowTemplateShelf(false)} className="hidden sm:block px-6 py-2 bg-white text-[10px] font-black text-amber-700 rounded-xl border border-amber-200">লাইব্রেরি বন্ধ করো</button>
+                   </div>
+
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                     {Object.values(ALL_TEMPLATES).map(tmpl => {
+                        const colorMap = {
+                          emerald: "bg-emerald-50 text-emerald-600 border-emerald-100 focus:ring-emerald-500",
+                          teal: "bg-teal-50 text-teal-600 border-teal-100 focus:ring-teal-500",
+                          rose: "bg-rose-50 text-rose-600 border-rose-100 focus:ring-rose-500",
+                        };
+                        const colors = colorMap[tmpl.color] || colorMap.emerald;
+                        return (
+                          <div key={tmpl.key} className="bg-white rounded-[2rem] p-6 border border-amber-100 shadow-sm hover:border-amber-400 transition-all flex flex-col justify-between group">
+                            <div className="space-y-4">
+                              <div className="flex justify-between items-start">
+                                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl ${colors} border group-hover:scale-110 transition-transform`}>
+                                  {tmpl.emoji}
+                                </div>
+                                <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest ${colors} border`}>
+                                  {tmpl.tasks.length} Missions
+                                </span>
+                              </div>
+                              <div className="space-y-1">
+                                <h4 className="text-lg font-black text-emerald-950">{tmpl.label}</h4>
+                                <p className="text-xs font-bold text-emerald-950/40 leading-relaxed">{tmpl.description}</p>
+                              </div>
+                              <div className="flex flex-wrap gap-2 pt-2">
+                                {tmpl.highlights.map((h, i) => (
+                                  <span key={i} className="px-2 py-1 bg-gray-50 text-[8px] font-black text-gray-400 rounded-lg uppercase tracking-tight">{h}</span>
+                                ))}
+                              </div>
+                            </div>
+                            <button 
+                              onClick={() => loadDefaultTemplate(tmpl.key)}
+                              disabled={loadingTemplate}
+                              className="mt-8 w-full py-4 bg-emerald-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-700 shadow-xl shadow-emerald-600/10 transition-all"
+                            >
+                              {loadingTemplate ? "প্রসেসিং..." : "এই রুটিন লোড করো"}
+                            </button>
+                          </div>
+                        );
+                     })}
+                   </div>
+                </div>
+                <button 
+                  onClick={() => setShowTemplateShelf(false)} 
+                  className="w-full py-6 rounded-[2.5rem] bg-amber-100/30 border border-dashed border-amber-200 text-amber-700 font-black text-xs uppercase tracking-widest hover:bg-amber-100 transition-all"
+                >
+                  ফিরে যাও (লাইব্রেরি বন্ধ করো)
+                </button>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="routine"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                className="space-y-6"
+              >
+                {/* Progress Card */}
+                <div className="p-8 rounded-[3rem] bg-white border border-emerald-100 shadow-sm space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="p-3 bg-emerald-50 rounded-2xl text-emerald-500 border border-emerald-100 shadow-inner">
+                        <Target size={22} />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-black text-emerald-950 uppercase tracking-tight">
+                          {activeName} প্রগ্রেস
+                        </h3>
+                        <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">
+                          {completedCount} OF {totalCount} TASKS COMPLETED
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-3xl font-black text-emerald-500 leading-none">
+                        {completionRate}%
+                      </p>
+                      <p className="text-[9px] font-black text-emerald-900/30 uppercase tracking-[0.2em] mt-1">
+                        SUCCESS RATE
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="relative h-4 w-full bg-emerald-50 rounded-full border border-emerald-100 shadow-inner overflow-hidden p-1">
+                    <div
+                      className="h-full rounded-full transition-all duration-1000 bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.4)]"
+                      style={{ width: `${completionRate}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Add Task Form (Expanded) */}
+                <AnimatePresence>
+                  {showAdd && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0, scale: 0.95 }}
+                      animate={{ height: "auto", opacity: 1, scale: 1 }}
+                      exit={{ height: 0, opacity: 0, scale: 0.95 }}
+                      transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                      className="overflow-hidden"
+                    >
+                      {/* ... rest of the Add Task Form ... same as before */}
                 <div className="p-8 rounded-[3rem] bg-emerald-50 border border-emerald-200 shadow-sm mb-6">
                   <div className="flex items-center justify-between mb-8">
                     <h3 className="text-xl font-black text-emerald-950 flex items-center gap-2">
@@ -1218,7 +1297,10 @@ const Routine = () => {
               <EmptyState type="routine" onAction={() => setShowAdd(true)} />
             )}
           </div>
-        </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  </div>
 
         {/* 📋 Sidebar: Deep View & Templates */}
         <div className="xl:col-span-4 space-y-8">
@@ -1362,150 +1444,7 @@ const Routine = () => {
         </div>
       </div>
 
-      {/* ✨ Template Selector Modal */}
-      <AnimatePresence>
-        {showTemplateModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9999] flex flex-col items-center justify-start bg-emerald-950/60 backdrop-blur-md p-4 sm:pt-10 sm:pb-10"
-            onClick={() => setShowTemplateModal(false)}
-          >
-            <motion.div
-              initial={{ y: "-100%", opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: "-100%", opacity: 0 }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="w-full max-w-lg bg-white rounded-[2.5rem] sm:rounded-[3rem] shadow-2xl border border-emerald-50 flex flex-col overflow-hidden"
-              style={{ maxHeight: "90vh" }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div
-                className="flex-1 overflow-y-auto overscroll-contain p-6 sm:p-8 space-y-5"
-                style={{ WebkitOverflowScrolling: "touch" }}
-              >
-                {/* Header */}
-                <div className="text-center space-y-2">
-                  <div className="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center text-2xl mx-auto border border-amber-100">
-                    ✨
-                  </div>
-                  <h3 className="text-2xl font-black text-emerald-950">
-                    রুটিন টেমপ্লেট বেছে নাও
-                  </h3>
-                  <p className="text-xs font-bold text-emerald-900/40">
-                    তোমার আজকের দিন অনুযায়ী একটি টেমপ্লেট বেছে নাও। বিদ্যমান
-                    টাস্ক মুছে নতুন টাস্ক লোড হবে।
-                  </p>
-                </div>
-
-                {/* Template Cards */}
-                <div className="space-y-3">
-                  {Object.values(ALL_TEMPLATES).map((tmpl) => {
-                    const isSelected = selectedTemplateKey === tmpl.key;
-                    const colorMap = {
-                      emerald: {
-                        border: "border-emerald-400",
-                        bg: "bg-emerald-50",
-                        badge: "bg-emerald-500",
-                        check: "text-emerald-500",
-                        title: "text-emerald-700",
-                      },
-                      teal: {
-                        border: "border-teal-400",
-                        bg: "bg-teal-50",
-                        badge: "bg-teal-500",
-                        check: "text-teal-500",
-                        title: "text-teal-700",
-                      },
-                      rose: {
-                        border: "border-rose-400",
-                        bg: "bg-rose-50",
-                        badge: "bg-rose-500",
-                        check: "text-rose-500",
-                        title: "text-rose-700",
-                      },
-                    };
-                    const c = colorMap[tmpl.color] || colorMap.emerald;
-                    return (
-                      <button
-                        key={tmpl.key}
-                        onClick={() => setSelectedTemplateKey(tmpl.key)}
-                        className={`w-full text-left p-5 rounded-2xl border-2 transition-all ${isSelected ? `${c.border} ${c.bg}` : "border-gray-100 hover:border-gray-200 bg-white"}`}
-                      >
-                        <div className="flex items-start gap-4">
-                          <div
-                            className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl flex-shrink-0 ${isSelected ? c.bg : "bg-gray-50"} border ${isSelected ? c.border : "border-gray-100"}`}
-                          >
-                            {tmpl.emoji}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <p
-                                className={`font-black text-sm ${isSelected ? c.title : "text-emerald-950"}`}
-                              >
-                                {tmpl.label}
-                              </p>
-                              <span
-                                className={`text-[9px] font-black text-white px-2 py-0.5 rounded-full uppercase tracking-widest ${c.badge}`}
-                              >
-                                {tmpl.tasks.length} টাস্ক
-                              </span>
-                            </div>
-                            <p className="text-[11px] font-bold text-emerald-900/50 mt-0.5">
-                              {tmpl.description}
-                            </p>
-                            {isSelected && (
-                              <div className="mt-3 space-y-1.5 max-h-32 overflow-y-auto">
-                                {tmpl.highlights.map((h, i) => (
-                                  <div
-                                    key={i}
-                                    className={`flex items-start gap-1.5 text-[11px] font-bold ${c.title}`}
-                                  >
-                                    <Check
-                                      size={11}
-                                      className={`${c.check} mt-0.5 flex-shrink-0`}
-                                    />
-                                    {h}
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                          {isSelected && (
-                            <div
-                              className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${c.badge}`}
-                            >
-                              <Check size={14} className="text-white" />
-                            </div>
-                          )}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Actions (Sticky at bottom) */}
-              <div className="flex gap-4 p-6 sm:p-8 pt-2 sm:pt-4 border-t border-emerald-50 bg-white rounded-b-[2.5rem] sm:rounded-b-[3rem]">
-                <button
-                  onClick={() => setShowTemplateModal(false)}
-                  className="flex-1 py-4 rounded-[1.5rem] font-black text-xs uppercase tracking-widest text-emerald-900/40 hover:bg-gray-50 transition-all"
-                >
-                  বাতিল
-                </button>
-                <button
-                  onClick={loadDefaultTemplate}
-                  className="flex-1 py-4 bg-emerald-600 text-white rounded-[1.5rem] font-black text-xs uppercase tracking-widest hover:bg-emerald-700 shadow-xl shadow-emerald-600/20 transition-all flex items-center justify-center gap-2"
-                >
-                  <Sparkles size={16} />{" "}
-                  {ALL_TEMPLATES[selectedTemplateKey]?.emoji} লোড করো
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* ✨ Modals section removed and replaced with inline shelves for better UX */}
 
       {/* New Routine Modal */}
       <AnimatePresence>
