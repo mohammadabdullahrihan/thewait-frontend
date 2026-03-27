@@ -37,6 +37,7 @@ import JournalArchives from './pages/JournalArchives';
 import Milestones from './pages/Milestones';
 import Analytics from './pages/Analytics';
 import Profile from './pages/Profile';
+import RoutineGuide from './pages/RoutineGuide';
 import './index.css';
 import Loader from './components/Common/Loader';
 import { useNavigate } from 'react-router-dom';
@@ -62,6 +63,7 @@ const MobileNav = () => {
   ];
 
   const moreNav = [
+    { to: '/routine-guide', icon: <BookOpen size={20} />, label: 'রুটিন গাইড' },
     { to: '/workout', icon: <Dumbbell size={20} />, label: 'ওয়ার্কআউট' },
     { to: '/journal', icon: <PenTool size={20} />, label: 'জার্নাল' },
     { to: '/milestones', icon: <Target size={20} />, label: 'মাইলস্টোন' },
@@ -247,7 +249,7 @@ function AppContent() {
       {user && !searchOpen && (
         <button
           onClick={() => setSearchOpen(true)}
-          className="fixed bottom-24 right-4 md:bottom-auto md:top-6 md:right-6 z-[999] flex items-center gap-2 px-4 py-3 md:py-2.5 bg-white border border-emerald-100 shadow-lg hover:shadow-xl rounded-2xl text-emerald-700 font-black text-[10px] uppercase tracking-widest transition-all hover:scale-105 active:scale-95 hover:border-emerald-300 group"
+          className="fixed bottom-36 right-4 md:bottom-auto md:top-6 md:right-6 z-[999] flex items-center gap-2 px-4 py-3 md:py-2.5 bg-white border border-emerald-100 shadow-lg hover:shadow-xl rounded-2xl text-emerald-700 font-black text-[10px] uppercase tracking-widest transition-all hover:scale-105 active:scale-95 hover:border-emerald-300 group"
           title="গ্লোবাল সার্চ (Ctrl+K)"
         >
           <Search size={16} className="text-emerald-500" />
@@ -305,6 +307,11 @@ function AppContent() {
       <Route path="/analytics" element={
         <ProtectedRoute>
           <AppLayout><Analytics /></AppLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/routine-guide" element={
+        <ProtectedRoute>
+          <AppLayout><RoutineGuide /></AppLayout>
         </ProtectedRoute>
       } />
       <Route path="/profile" element={

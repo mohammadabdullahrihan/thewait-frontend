@@ -39,6 +39,142 @@ import { SortableContext, arrayMove, sortableKeyboardCoordinates, verticalListSo
 import { SortableTask } from '../components/Routine/SortableTask';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// ============================================================
+// MY COMPLETE DAILY ROUTINE TEMPLATE
+// ============================================================
+const MY_DAILY_ROUTINE_TEMPLATE = [
+  { time: '05:50', task: 'ঘুম থেকে ওঠা — Snooze বন্ধ, কোনো শর্ত নেই', category: 'Discipline', completed: false },
+  { time: '05:50', task: 'ঠান্ডা পানি মুখে + ১ গ্লাস পানি পান (ফোন নয়)', category: 'Health', completed: false },
+  { time: '06:00', task: 'স্ট্রেচিং ১০ মিনিট + গভীর শ্বাস ৫ মিনিট', category: 'Health', completed: false },
+  { time: '06:15', task: 'কার্ডিও/দৌড় ৪৫ মিনিট (Motivational Playlist)', category: 'Health', completed: false },
+  { time: '07:00', task: 'স্ট্রেংথ: পুশ-আপ ৩x১৫, স্কোয়াট ৩x২০, প্ল্যাঙ্ক ৩x৪৫s', category: 'Health', completed: false },
+  { time: '07:30', task: 'ঠান্ডা পানিতে গোসল (বাধ্যতামূলক) + প্রোটিন নাস্তা', category: 'Discipline', completed: false },
+  { time: '08:00', task: 'মাইন্ড সেট: চোখ বন্ধ ৫ মিনিট — "আজকের মিশন শুরু"', category: 'Mindfulness', completed: false },
+  { time: '08:15', task: 'পোমোডোরো ১ — GED Math (২৫+৫ মিনিট)', category: 'Study', completed: false },
+  { time: '08:45', task: 'পোমোডোরো ২ — GED Math চালিয়ে (২৫+৫)', category: 'Study', completed: false },
+  { time: '09:15', task: 'পোমোডোরো ৩ — GED Science (২৫+৫)', category: 'Study', completed: false },
+  { time: '09:45', task: 'পোমোডোরো ৪ — GED Science চালিয়ে (২৫+৫)', category: 'Study', completed: false },
+  { time: '10:15', task: 'লং ব্রেক: হাঁটুন, পানি পান — ফোন নয়', category: 'Discipline', completed: false },
+  { time: '10:30', task: 'ইংরেজি লিসেনিং: VOA / BBC 6 Minute English', category: 'Study', completed: false },
+  { time: '11:00', task: 'ভোকাবুলারি: ১০টি নতুন ইংরেজি শব্দ (Anki-তে সেভ)', category: 'Study', completed: false },
+  { time: '11:30', task: 'রাইটিং: ১টি ইংরেজি প্যারাগ্রাফ (Google Keep)', category: 'Study', completed: false },
+  { time: '12:00', task: 'ইউরোপ বিশ্ববিদ্যালয় রিসার্চ: ১টি বিশ্ববিদ্যালয় (Notion)', category: 'Study', completed: false },
+  { time: '12:30', task: 'ফ্রি টাইম (ফোন ছাড়া) — নিজের মতো কাটান', category: 'Discipline', completed: false },
+  { time: '13:00', task: 'দুপুরের খাবার — ফোন বন্ধ, শুধু খাওয়ায় ফোকাস', category: 'Discipline', completed: false },
+  { time: '13:40', task: 'Power Nap / হালকা বিশ্রাম (টাইমার ২৫ মিনিট)', category: 'Health', completed: false },
+  { time: '14:10', task: 'ডে প্ল্যান রিভিউ: বাকি কাজ চেক (Todoist / Tasks)', category: 'Discipline', completed: false },
+  { time: '14:30', task: 'পোমোডোরো ৫ — GED Social Studies (২৫+৫)', category: 'Study', completed: false },
+  { time: '15:00', task: 'পোমোডোরো ৬ — GED RLA Reading (২৫+৫)', category: 'Study', completed: false },
+  { time: '15:30', task: 'পোমোডোরো ৭ — IELTS Listening Practice (২৫+৫)', category: 'Study', completed: false },
+  { time: '16:00', task: 'পোমোডোরো ৮ — IELTS Reading Practice (২৫+৫)', category: 'Study', completed: false },
+  { time: '16:30', task: 'লং ব্রেক: হাঁটুন, চা/কফি', category: 'Discipline', completed: false },
+  { time: '17:00', task: 'ওয়ার্ম আপ: স্ট্রেচিং, জাম্পিং জ্যাক', category: 'Health', completed: false },
+  { time: '17:15', task: 'মেইন ওয়ার্কআউট (দিন ১,৩,৫: পুশ-আপ/পুল-আপ/ডিপস | দিন ২,৪,৬: দৌড়/স্কিপিং/স্কোয়াট)', category: 'Health', completed: false },
+  { time: '17:45', task: 'কুল ডাউন: স্ট্রেচিং, গভীর শ্বাস', category: 'Health', completed: false },
+  { time: '18:00', task: 'গোসল + পোশাক পরিবর্তন', category: 'Health', completed: false },
+  { time: '18:30', task: 'পরিবারের সাথে সময় — ফোন অন্য রুমে', category: 'Discipline', completed: false },
+  { time: '19:30', task: 'রাতের খাবার পরিবারের সাথে — ফোন নয়', category: 'Discipline', completed: false },
+  { time: '20:15', task: 'হালকা রিডিং: গল্পের বই বা স্ট্র্যাটেজি', category: 'Mindfulness', completed: false },
+  { time: '20:45', task: 'ইবাদত/ধ্যান: ১৫ মিনিট শান্ত হয়ে বসুন', category: 'Ibadat', completed: false },
+  { time: '21:00', task: 'ডে রিভিউ: ৫ প্রশ্নের উত্তর লিখুন (কন্ট্রোল? ডিটাচমেন্ট? অপসিক? মিশন ফার্স্ট? কী শিখলাম?)', category: 'Mindfulness', completed: false },
+  { time: '21:15', task: 'আগামীকালের To-Do লিস্ট তৈরি (Todoist)', category: 'Discipline', completed: false },
+  { time: '21:30', task: 'ডিজিটাল ডিটক্স: মোবাইল বন্ধ — বই পড়ো বা ডায়েরি লেখো', category: 'Discipline', completed: false },
+  { time: '22:00', task: 'ঘুম — ফোন চার্জারে অন্য রুমে, অ্যালার্ম ০৫:৫০ AM', category: 'Discipline', completed: false },
+];
+
+// ============================================================
+// FRIDAY (RECHARGE DAY) ROUTINE TEMPLATE
+// ============================================================
+const FRIDAY_ROUTINE_TEMPLATE = [
+  { time: '06:00', task: 'স্বাভাবিক সময়ে উঠুন — কোনো চাপ নেই', category: 'Discipline', completed: false },
+  { time: '06:30', task: 'হালকা যোগব্যায়াম / স্ট্রেচিং (ভারী ওয়ার্কআউট নয়)', category: 'Health', completed: false },
+  { time: '07:30', task: 'নাস্তা + পানি পান', category: 'Health', completed: false },
+  { time: '08:00', task: 'রিভিশন পড়া ১ — GED Math (নতুন কিছু নয়, পুরনো রিভিউ)', category: 'Study', completed: false },
+  { time: '09:00', task: 'রিভিশন পড়া ২ — GED Science রিভিউ', category: 'Study', completed: false },
+  { time: '10:00', task: 'জুমার নামাজের প্রস্তুতি + মসজিদে যাওয়া', category: 'Ibadat', completed: false },
+  { time: '12:00', task: 'পরিবারের সাথে সময় কাটান — ফোন ছাড়া', category: 'Discipline', completed: false },
+  { time: '14:00', task: 'বিশ্রাম / Power Nap', category: 'Health', completed: false },
+  { time: '15:00', task: 'বাইরে হাঁটতে যান বা পরিবারের সাথে ঘুরতে যান', category: 'Health', completed: false },
+  { time: '18:00', task: 'হালকা রিডিং: গল্পের বই বা মোটিভেশনাল বই', category: 'Mindfulness', completed: false },
+  { time: '19:30', task: 'রাতের খাবার পরিবারের সাথে', category: 'Discipline', completed: false },
+  { time: '21:00', task: 'সাপ্তাহিক রিভিউ: এই সপ্তাহে কী করলাম? কী শিখলাম?', category: 'Mindfulness', completed: false },
+  { time: '21:30', task: 'আগামী সপ্তাহের প্ল্যান তৈরি করো', category: 'Discipline', completed: false },
+  { time: '22:00', task: 'ঘুম — অ্যালার্ম ০৬:০০ AM', category: 'Discipline', completed: false },
+];
+
+// ============================================================
+// SATURDAY (COMMANDO DAY) ROUTINE TEMPLATE
+// ============================================================
+const SATURDAY_ROUTINE_TEMPLATE = [
+  { time: '06:00', task: 'উঠুন — কমান্ডো ডে শুরু!', category: 'Discipline', completed: false },
+  { time: '06:30', task: 'লং রান ৫-১০ কিমি অথবা লং ওয়ার্কআউট সেশন', category: 'Health', completed: false },
+  { time: '08:00', task: 'ঠান্ডা পানিতে গোসল + প্রোটিন নাস্তা', category: 'Discipline', completed: false },
+  { time: '09:00', task: 'মডেল টেস্ট — GED Math (পুরো সেট)', category: 'Study', completed: false },
+  { time: '10:00', task: 'মডেল টেস্ট — GED Science (পুরো সেট)', category: 'Study', completed: false },
+  { time: '11:00', task: 'মডেল টেস্ট — GED Social Studies', category: 'Study', completed: false },
+  { time: '12:00', task: 'মডেল টেস্ট — GED RLA Reading', category: 'Study', completed: false },
+  { time: '13:00', task: 'দুপুরের খাবার + বিশ্রাম', category: 'Health', completed: false },
+  { time: '15:00', task: 'দুর্বল বিষয় নিয়ে এক্সট্রা কাজ — ভুলগুলো বিশ্লেষণ করো', category: 'Study', completed: false },
+  { time: '16:00', task: 'IELTS Practice — দুর্বল সেকশনে ফোকাস', category: 'Study', completed: false },
+  { time: '17:00', task: 'নিজের মতো কাটান — বিশ্রাম, পরিবার, বা হাঁটা', category: 'Discipline', completed: false },
+  { time: '19:30', task: 'রাতের খাবার', category: 'Discipline', completed: false },
+  { time: '21:00', task: 'সাপ্তাহিক ডে রিভিউ: কমান্ডো মিশন কেমন গেল?', category: 'Mindfulness', completed: false },
+  { time: '21:30', task: 'আগামীকালের রুটিন প্ল্যান করো (Daily-তে ফিরে যাও)', category: 'Discipline', completed: false },
+  { time: '22:00', task: 'ঘুম — অ্যালার্ম ০৫:৫০ AM (রবিবার থেকে আবার Daily)', category: 'Discipline', completed: false },
+];
+
+// All templates map
+const ALL_TEMPLATES = {
+  Daily: {
+    key: 'Daily',
+    label: 'ডেইলি রুটিন',
+    emoji: '⚔️',
+    description: 'সকাল ৫:৫০ থেকে রাত ১০:০০ — পূর্ণ মিশন মোড',
+    tasks: MY_DAILY_ROUTINE_TEMPLATE,
+    color: 'emerald',
+    highlights: [
+      '🌅 সকাল ৫:৫০ — কার্ডিও, স্ট্রেংথ, ঠান্ডা গোসল',
+      '📚 GED Math + Science (৪ পোমোডোরো)',
+      '🔤 ইংরেজি লিসেনিং + ভোকাব + রাইটিং',
+      '🌍 বিশ্ববিদ্যালয় রিসার্চ',
+      '📖 GED Social + IELTS (৪ পোমোডোরো)',
+      '💪 বিকালের ওয়ার্কআউট সেশন',
+      '🌙 ডে রিভিউ + ডিজিটাল ডিটক্স + ঘুম',
+    ],
+  },
+  Friday: {
+    key: 'Friday',
+    label: 'শুক্রবার (রিচার্জ ডে)',
+    emoji: '🌿',
+    description: 'হালকা রুটিন — রিভিশন, পরিবার ও মন রিচার্জ',
+    tasks: FRIDAY_ROUTINE_TEMPLATE,
+    color: 'teal',
+    highlights: [
+      '🕌 জুমার নামাজ',
+      '📖 হালকা রিভিশন (নতুন কিছু নয়)',
+      '👨‍👩‍👧 পরিবারের সাথে সময়',
+      '🌳 বাইরে ঘুরতে যাওয়া',
+      '📅 সাপ্তাহিক রিভিউ + পরের সপ্তাহের প্ল্যান',
+    ],
+  },
+  Saturday: {
+    key: 'Saturday',
+    label: 'শনিবার (কমান্ডো ডে)',
+    emoji: '🔥',
+    description: 'লং রান + পুরো মডেল টেস্ট + দুর্বল বিষয়ে এক্সট্রা',
+    tasks: SATURDAY_ROUTINE_TEMPLATE,
+    color: 'rose',
+    highlights: [
+      '🏃 লং রান ৫-১০ কিমি বা লং ওয়ার্কআউট',
+      '📝 GED Math মডেল টেস্ট',
+      '📝 GED Science মডেল টেস্ট',
+      '📝 GED Social + RLA মডেল টেস্ট',
+      '🎯 দুর্বল বিষয়ে এক্সট্রা প্র্যাকটিস',
+      '📖 IELTS দুর্বল সেকশন ফোকাস',
+    ],
+  },
+};
+
 const categoryMeta = {
   Discipline: { icon: <Target size={14} />, color: 'bg-orange-50 text-orange-600', border: 'border-orange-100' },
   Study: { icon: <Brain size={14} />, color: 'bg-sky-50 text-sky-600', border: 'border-sky-100' },
@@ -58,19 +194,22 @@ const Routine = () => {
   const [showAdd, setShowAdd] = useState(false);
   const [showNewRoutineModal, setShowNewRoutineModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [loadingTemplate, setLoadingTemplate] = useState(false);
   const [pendingRoutine, setPendingRoutine] = useState(null);
   const [newRoutineName, setNewRoutineName] = useState('');
   const [newTask, setNewTask] = useState({ time: '', task: '', category: 'Discipline' });
+  const [selectedTemplateKey, setSelectedTemplateKey] = useState('Daily');
 
-  // 🔒 শৃঙ্খলার সাথে স্ক্রিন লক
+  // scroll lock
   useEffect(() => {
-    if (showNewRoutineModal || showConfirmModal) {
+    if (showNewRoutineModal || showConfirmModal || showTemplateModal) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
     }
     return () => { document.body.style.overflow = ''; };
-  }, [showNewRoutineModal, showConfirmModal]);
+  }, [showNewRoutineModal, showConfirmModal, showTemplateModal]);
 
   // Sync activeName with user preference once user is loaded
   useEffect(() => {
@@ -79,6 +218,14 @@ const Routine = () => {
     }
   }, [user]);
 
+  // Helper: detect which template key to use for a given date string
+  const getTemplateKeyForDate = (dateStr) => {
+    const dayOfWeek = new Date(dateStr + 'T00:00:00').getDay(); // 0=Sun, 5=Fri, 6=Sat
+    if (dayOfWeek === 5) return 'Friday';
+    if (dayOfWeek === 6) return 'Saturday';
+    return 'Daily';
+  };
+
   const fetchRoutineData = async (d, name) => {
     setLoading(true);
     try {
@@ -86,14 +233,45 @@ const Routine = () => {
         routineAPI.get(d, name),
         routineAPI.getAllForDate(d)
       ]);
-      setRoutine(routineRes.data.routine);
+      const fetchedRoutine = routineRes.data.routine;
+      setRoutine(fetchedRoutine);
       const names = allRes.data.routines?.map(r => r.name) || [];
       if (!names.includes('Daily')) names.unshift('Daily');
       if (!names.includes('Ramadan')) names.push('Ramadan');
       if (user?.activeRoutineName && !names.includes(user.activeRoutineName)) names.push(user.activeRoutineName);
       setRoutineNames([...new Set(names)]);
 
-      // Removed automatic toast on every load
+      // ✅ AUTO-LOAD: যদি "Daily" রুটিনে কোনো টাস্ক না থাকে, তাহলে দিন বুঝে auto-load
+      const tasksEmpty = !fetchedRoutine?.tasks || fetchedRoutine.tasks.length === 0;
+      if (tasksEmpty && name === 'Daily') {
+        const templateKey = getTemplateKeyForDate(d);
+        const template = ALL_TEMPLATES[templateKey];
+        if (template) {
+          try {
+            const res = await routineAPI.save({ date: d, name, tasks: template.tasks });
+            setRoutine(res.data.routine);
+            if (templateKey === 'Friday') {
+              toast('🌿 শুক্রবার — রিচার্জ ডে রুটিন স্বয়ংক্রিয়ভাবে লোড হয়েছে!', {
+                style: { borderRadius: '2rem', background: '#0f766e', color: '#fff', border: '1px solid #14b8a6' },
+                duration: 4000,
+              });
+            } else if (templateKey === 'Saturday') {
+              confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+              toast('🔥 শনিবার — কমান্ডো ডে রুটিন স্বয়ংক্রিয়ভাবে লোড হয়েছে!', {
+                style: { borderRadius: '2rem', background: '#be123c', color: '#fff', border: '1px solid #f43f5e' },
+                duration: 4000,
+              });
+            } else {
+              toast('⚔️ Daily রুটিন স্বয়ংক্রিয়ভাবে লোড হয়েছে — মিশন শুরু করো!', {
+                style: { borderRadius: '2rem', background: '#064e3b', color: '#fff', border: '1px solid #10b981' },
+                duration: 4000,
+              });
+            }
+          } catch (autoErr) {
+            console.error('Auto-load failed:', autoErr);
+          }
+        }
+      }
     } catch (e) {
       toast.error('ডেটা লোড করা যায়নি');
     } finally {
@@ -278,6 +456,23 @@ const Routine = () => {
      }
   };
 
+  const loadDefaultTemplate = async () => {
+    const template = ALL_TEMPLATES[selectedTemplateKey];
+    if (!template) return;
+    setLoadingTemplate(true);
+    setShowTemplateModal(false);
+    try {
+      const res = await routineAPI.save({ date, name: activeName, tasks: template.tasks });
+      setRoutine(res.data.routine);
+      confetti({ particleCount: 250, spread: 120, origin: { y: 0.6 } });
+      toast.success(`${template.emoji} ${template.label} লোড হয়েছে! এখন মিশনে যাও।`, { duration: 4000 });
+    } catch(e) {
+      toast.error('টেমপ্লেট লোড করা যায়নি');
+    } finally {
+      setLoadingTemplate(false);
+    }
+  };
+
   if (loading && !routine) return (
     <div className="animate-in fade-in duration-500 space-y-8 pb-24">
       <HeaderSkeleton />
@@ -315,6 +510,17 @@ const Routine = () => {
            >
              {showAdd ? <X size={18} /> : <Plus size={18} />}
              {showAdd ? 'বাতিল' : 'নতুন টাস্ক'}
+           </button>
+
+           {/* Load My Full Routine Template */}
+           <button
+             onClick={() => setShowTemplateModal(true)}
+             disabled={loadingTemplate}
+             className="p-4 bg-amber-50 border border-amber-200 text-amber-600 rounded-3xl hover:bg-amber-100 transition-all shadow-sm flex items-center gap-2 disabled:opacity-50"
+             title="আমার সম্পূর্ণ দৈনিক রুটিন লোড করো"
+           >
+             <Sparkles size={20} />
+             <span className="hidden md:inline text-xs font-black uppercase tracking-widest">টেমপ্লেট</span>
            </button>
            
            {routine?._id && (
@@ -593,8 +799,89 @@ const Routine = () => {
         </div>
       </div>
 
-      {/* 🚀 New Routine Modal */}
+      {/* ✨ Template Selector Modal */}
+      {showTemplateModal && (
+        <div className="fixed inset-0 z-[9999] flex items-start justify-center p-4 pt-10 bg-emerald-950/40 backdrop-blur-sm animate-in fade-in duration-300 overflow-y-auto">
+          <div className="w-full max-w-lg bg-white rounded-[3rem] p-8 shadow-2xl border border-emerald-50 space-y-6 animate-in slide-in-from-top-10 duration-500 mb-8">
+            {/* Header */}
+            <div className="text-center space-y-2">
+              <div className="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center text-2xl mx-auto border border-amber-100">✨</div>
+              <h3 className="text-2xl font-black text-emerald-950">রুটিন টেমপ্লেট বেছে নাও</h3>
+              <p className="text-xs font-bold text-emerald-900/40">তোমার আজকের দিন অনুযায়ী একটি টেমপ্লেট বেছে নাও। বিদ্যমান টাস্ক মুছে নতুন টাস্ক লোড হবে।</p>
+            </div>
+
+            {/* Template Cards */}
+            <div className="space-y-3">
+              {Object.values(ALL_TEMPLATES).map((tmpl) => {
+                const isSelected = selectedTemplateKey === tmpl.key;
+                const colorMap = {
+                  emerald: { border: 'border-emerald-400', bg: 'bg-emerald-50', badge: 'bg-emerald-500', check: 'text-emerald-500', title: 'text-emerald-700' },
+                  teal: { border: 'border-teal-400', bg: 'bg-teal-50', badge: 'bg-teal-500', check: 'text-teal-500', title: 'text-teal-700' },
+                  rose: { border: 'border-rose-400', bg: 'bg-rose-50', badge: 'bg-rose-500', check: 'text-rose-500', title: 'text-rose-700' },
+                };
+                const c = colorMap[tmpl.color] || colorMap.emerald;
+                return (
+                  <button
+                    key={tmpl.key}
+                    onClick={() => setSelectedTemplateKey(tmpl.key)}
+                    className={`w-full text-left p-5 rounded-2xl border-2 transition-all ${isSelected ? `${c.border} ${c.bg}` : 'border-gray-100 hover:border-gray-200 bg-white'}`}
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl flex-shrink-0 ${isSelected ? c.bg : 'bg-gray-50'} border ${isSelected ? c.border : 'border-gray-100'}`}>
+                        {tmpl.emoji}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className={`font-black text-sm ${isSelected ? c.title : 'text-emerald-950'}`}>{tmpl.label}</p>
+                          <span className={`text-[9px] font-black text-white px-2 py-0.5 rounded-full uppercase tracking-widest ${c.badge}`}>
+                            {tmpl.tasks.length} টাস্ক
+                          </span>
+                        </div>
+                        <p className="text-[11px] font-bold text-emerald-900/50 mt-0.5">{tmpl.description}</p>
+                        {isSelected && (
+                          <div className="mt-3 space-y-1.5 max-h-32 overflow-y-auto">
+                            {tmpl.highlights.map((h, i) => (
+                              <div key={i} className={`flex items-start gap-1.5 text-[11px] font-bold ${c.title}`}>
+                                <Check size={11} className={`${c.check} mt-0.5 flex-shrink-0`} />
+                                {h}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      {isSelected && (
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${c.badge}`}>
+                          <Check size={14} className="text-white" />
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-4 pt-2">
+              <button
+                onClick={() => setShowTemplateModal(false)}
+                className="flex-1 py-4 rounded-[1.5rem] font-black text-xs uppercase tracking-widest text-emerald-900/40 hover:bg-gray-50 transition-all"
+              >
+                বাতিল
+              </button>
+              <button
+                onClick={loadDefaultTemplate}
+                className="flex-1 py-4 bg-emerald-600 text-white rounded-[1.5rem] font-black text-xs uppercase tracking-widest hover:bg-emerald-700 shadow-xl shadow-emerald-600/20 transition-all flex items-center justify-center gap-2"
+              >
+                <Sparkles size={16} /> {ALL_TEMPLATES[selectedTemplateKey]?.emoji} লোড করো
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* New Routine Modal */}
       {showNewRoutineModal && (
+
         <div className="fixed inset-0 z-[9999] flex items-start justify-center p-6 pt-20 bg-emerald-950/30 backdrop-blur-sm animate-in fade-in duration-300">
            <div className="w-full max-w-md bg-white rounded-[3rem] p-10 shadow-2xl border border-emerald-50 space-y-8 animate-in slide-in-from-top-10 duration-500">
               <div className="text-center space-y-2">

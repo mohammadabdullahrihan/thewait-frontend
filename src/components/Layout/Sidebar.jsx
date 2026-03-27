@@ -19,6 +19,7 @@ import { xpToNextLevel } from '../../utils/helpers';
 const navItems = [
   { to: '/dashboard', icon: <Home size={18} />, label: 'ড্যাশবোর্ড' },
   { to: '/routine', icon: <ClipboardList size={18} />, label: 'দৈনিক রুটিন' },
+  { to: '/routine-guide', icon: <BookOpen size={18} />, label: 'রুটিন গাইড' },
   { to: '/habits', icon: <Flame size={18} />, label: 'হ্যাবিট ট্র্যাকার' },
   { to: '/study', icon: <BookOpen size={18} />, label: 'পড়াশোনা' },
   { to: '/workout', icon: <Activity size={18} />, label: 'ওয়ার্কআউট' },
