@@ -1369,7 +1369,7 @@ const Routine = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9999] flex flex-col items-center justify-start sm:justify-center bg-emerald-950/60 backdrop-blur-md p-4 sm:p-0"
+            className="fixed inset-0 z-[9999] flex flex-col items-center justify-start bg-emerald-950/60 backdrop-blur-md p-4 sm:pt-10 sm:pb-10"
             onClick={() => setShowTemplateModal(false)}
           >
             <motion.div
@@ -1514,7 +1514,7 @@ const Routine = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9999] flex flex-col items-center justify-start sm:justify-center p-6 bg-emerald-950/40 backdrop-blur-sm"
+            className="fixed inset-0 z-[9999] flex flex-col items-center justify-start p-6 bg-emerald-950/40 backdrop-blur-sm sm:pt-20"
             onClick={() => setShowNewRoutineModal(false)}
           >
             <motion.div
@@ -1603,7 +1603,7 @@ const Routine = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9999] flex flex-col items-center justify-start sm:justify-center p-6 bg-emerald-950/40 backdrop-blur-sm"
+            className="fixed inset-0 z-[9999] flex flex-col items-center justify-start p-6 bg-emerald-950/40 backdrop-blur-sm sm:pt-24"
             onClick={() => setShowConfirmModal(false)}
           >
             <motion.div
